@@ -1,0 +1,9 @@
+[submodule "fcrepo"]
+	path = fcrepo
+	url = git@github.com:fcrepo/fcrepo.git
+[submodule "islandora"]
+	path = islandora
+	url = git@github.com:Islandora/islandora.git
+[submodule "drupal"]
+	path = drupal
+	url = git@git.drupal.org:project/drupal.git
