@@ -7,3 +7,6 @@
 [submodule "drupal"]
 	path = drupal
 	url = git@git.drupal.org:project/drupal.git
+[submodule "islandora_drupal_filter"]
+	path = islandora_drupal_filter
+	url = git://github.com/Islandora/islandora_drupal_filter.git
