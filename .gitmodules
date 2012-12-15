@@ -4,6 +4,9 @@
 [submodule "islandora"]
 	path = islandora
 	url = git@github.com:Islandora/islandora.git
+[submodule "fedora_home"]
+	path = fedora_home
+	url = git@github.com:dltj/fedora_home.git
 [submodule "drupal"]
 	path = drupal
 	url = git@git.drupal.org:project/drupal.git
