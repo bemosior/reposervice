@@ -13,3 +13,30 @@
 [submodule "islandora_drupal_filter"]
 	path = islandora_drupal_filter
 	url = git://github.com/Islandora/islandora_drupal_filter.git
+[submodule "islandora_solution_pack_collection"]
+	path = islandora_solution_pack_collection
+	url = https://github.com/Islandora/islandora_solution_pack_collection
+[submodule "islandora_solr_search"]
+	path = islandora_solr_search
+	url = https://github.com/Islandora/islandora_solr_search
+[submodule "islandora_solr_views"]
+	path = islandora_solr_views
+	url = https://github.com/Islandora/islandora_solr_views
+[submodule "islandora_solution_pack_image"]
+	path = islandora_solution_pack_image
+	url = https://github.com/Islandora/islandora_solution_pack_image
+[submodule "islandora_solution_pack_pdf"]
+	path = islandora_solution_pack_pdf
+	url = https://github.com/Islandora/islandora_solution_pack_pdf
+[submodule "islandora_content_model_forms"]
+	path = islandora_content_model_forms
+	url = https://github.com/Islandora/islandora_content_model_forms
+[submodule "objective_forms"]
+	path = objective_forms
+	url = https://github.com/Islandora/objective_forms
+[submodule "islandora_xml_forms"]
+	path = islandora_xml_forms
+	url = https://github.com/Islandora/islandora_xml_forms
+[submodule "php_lib"]
+	path = php_lib
+	url = https://github.com/Islandora/php_lib
