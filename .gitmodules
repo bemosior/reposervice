@@ -40,3 +40,6 @@
 [submodule "php_lib"]
 	path = php_lib
 	url = https://github.com/Islandora/php_lib
+[submodule "tuque"]
+	path = tuque
+	url = git://github.com/Islandora/tuque.git
