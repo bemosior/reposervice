@@ -63,7 +63,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
 		any of the sources if that source is never to be used.  If no sources are to be used,
 		and just the default filename and extension below are to be used, specify &quot; &quot;.</comment>
   </param>
-  <param name="adminEmailList" value="bob@example.org sally@example.org">
+  <param name="adminEmailList" value="${FEDORA_ADMIN_EMAIL}">
     <comment>Defines one or more email addresses for server administrators; 
 		list is space delimited.</comment>
   </param>
@@ -75,11 +75,11 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
 		this value must be less than the limit specified for the 
 		datastreamExpirationLimit.</comment>
   </param>
-  <param name="fedoraServerPort" value="8080">
+  <param name="fedoraServerPort" value="${FEDORA_SERVER_PORT}">
     <comment>Defines the port number on which the Fedora server runs; 
 		default is 8080.</comment>
   </param>
-  <param name="fedoraRedirectPort" value="8443">
+  <param name="fedoraRedirectPort" value="${FEDORA_REDIRECT_PORT}">
     <comment>Defines the redirect port of the Fedora sever; default is 8443.</comment>
   </param>
   <param name="httpClientFollowRedirects" value="true">
@@ -100,12 +100,12 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
 		have it provided when download=true is specified, in which case the content disposition
 		of &quot;attachment&quot; will be used; which is generally supported.</comment>
   </param>
-  <param name="fedoraAppServerContext" value="fedora">
+  <param name="fedoraAppServerContext" value="${FEDORA_APP_SERVER_CONTEXT}">
     <comment>Defines the context name for the Fedora server within the 
 		application server. If set to eg &quot;myfedora&quot; the URL for Fedora will result
 		in http[s]://fedoraServerHost[:fedoraServerPort]/myfedora.</comment>
   </param>
-  <param name="fedoraShutdownPort" value="8005">
+  <param name="fedoraShutdownPort" value="${FEDORA_SHUTDOWN_PORT}">
     <comment>Defines the port number used to shutdown the Fedora sever; 
 		default is 8005.</comment>
   </param>
@@ -130,7 +130,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
     <comment>Number of seconds Fedora http client will wait for a connection before timing 
 		out.</comment>
   </param>
-  <param name="repositoryName" value="Fedora Repository">
+  <param name="repositoryName" value="${FEDORA_REPOSITORY_NAME}">
     <comment>Defines a human readable name for the Fedora server; default is 
 		Fedora Repository.</comment>
   </param>
@@ -216,7 +216,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
             RELS-INT datastreams where these are not already present when
             adding relationships via addRelationship.  Must be &quot;X&quot; or &quot;M&quot;.</comment>
     </param>
-    <param name="pidNamespace" value="changeme">
+    <param name="pidNamespace" value="${FEDORA_PID_NAMESPACE}">
       <comment>This is the namespace id for pids of newly-created objects. 
 	    	This should be unique for a repository. It can be from 1 to 17 
 	    	characters, and may only contain A-Z, a-z, 0-9, &apos;.&apos;, or &apos;-&apos; (dash).</comment>
@@ -409,10 +409,10 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
     <comment>Description: Exposes the repository for OAI harvesters.</comment>
     <param name="maxRecords" value="100"/>
     <param name="friends" value="http://arXiv.org/oai2 http://memory.loc.gov/cgi-bin/oai2_0"/>
-    <param name="adminEmails" value="oai-admin@example.org bob@example.org"/>
-    <param name="repositoryDomainName" value="example.org"/>
+    <param name="adminEmails" value="${FEDORA_ADMIN_EMAIL}"/>
+    <param name="repositoryDomainName" value="${FEDORA_REPOSITORY_DOMAINNAME}"/>
     <param name="maxHeaders" value="100"/>
-    <param name="repositoryName" value="Your Fedora Repository Name Here"/>
+    <param name="repositoryName" value="${FEDORA_REPOSITORY_NAME}"/>
   </module>
   <module role="org.fcrepo.server.storage.translation.DOTranslator" class="org.fcrepo.server.storage.translation.DOTranslatorModule">
     <comment>Supports translation from DigitalObject to a stream of some
