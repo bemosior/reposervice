@@ -43,3 +43,15 @@
 [submodule "gsearch"]
 	path = gsearch
 	url = git://github.com/fcrepo/gsearch.git
+[submodule "drupal-views"]
+	path = drupal-views
+	url = http://git.drupal.org/project/views.git
+[submodule "drupal-ctools"]
+	path = drupal-ctools
+	url = http://git.drupal.org/project/ctools.git
+[submodule "drupal-jquery_update"]
+	path = drupal-jquery_update
+	url = http://git.drupal.org/project/jquery_update.git
+[submodule "drupal-devel"]
+	path = drupal-devel
+	url = http://git.drupal.org/project/devel.git
