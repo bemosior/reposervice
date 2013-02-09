@@ -92,3 +92,8 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 ## Set up Islandora module and servlet filter
 
 Note: need to install the security filter (`mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true` then move `target/fcrepo-drupalauthfilter-3.6.2.jar` to `$CATALINA_HOME/webapps/fedora/WEB-INF/lib`).
+
+## Set up GSearch
+
+1. `cd $SERVICE_HOME/gsearch/FedoraGenericSearch`
+2. `ant buildfromsource`

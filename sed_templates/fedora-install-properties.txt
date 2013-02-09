@@ -7,8 +7,8 @@ apia.auth.required=false
 database.jdbcDriverClass=com.mysql.jdbc.Driver
 upstream.auth.enabled=false
 tomcat.ssl.port=8443
-ssl.available=true
-database.jdbcURL=jdbc\:mysql\://localhost/fcrepo_islandora?useUnicode\=true&amp;characterEncoding\=UTF-8&amp;autoReconnect\=true
+ssl.available=false
+database.jdbcURL=jdbc\:mysql\://localhost/${DB_FEDORA_DATABASE}?useUnicode\=true&amp;characterEncoding\=UTF-8&amp;autoReconnect\=true
 messaging.uri=vm\:(broker\:(tcp\://localhost\:61616))
 database.password=${DB_FEDORA_PASSWORD}
 database.mysql.driver=included
@@ -30,5 +30,5 @@ fedora.home=${FEDORA_HOME}
 install.type=custom
 servlet.engine=existingTomcat
 apim.ssl.required=false
-fedora.admin.pass=testing
+fedora.admin.pass=${FEDORA_ADMIN_PASSWORD}
 apia.ssl.required=false
