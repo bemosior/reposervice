@@ -55,3 +55,12 @@
 [submodule "drupal-devel"]
 	path = drupal-devel
 	url = http://git.drupal.org/project/devel.git
+[submodule "islandora_marcxml"]
+	path = islandora_marcxml
+	url = git://github.com/Islandora/islandora_marcxml.git
+[submodule "islandora_importer"]
+	path = islandora_importer
+	url = git://github.com/discoverygarden/islandora_importer.git
+[submodule "islandora_theme_flvc"]
+	path = islandora_theme_flvc
+	url = git://github.com/FLVC/islandoratheme.git
