@@ -1,5 +1,7 @@
 <?php
 /**
  * @file
- * Drupal needs this blank file.
+ * Code for the LYR Base Islandora feature.
  */
+
+include_once 'lyr_base_islandora.features.inc';
