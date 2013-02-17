@@ -64,3 +64,9 @@
 [submodule "islandora_theme_flvc"]
 	path = islandora_theme_flvc
 	url = git://github.com/FLVC/islandoratheme.git
+[submodule "drupal-theme-adaptivetheme"]
+	path = drupal-theme-adaptivetheme
+	url = http://git.drupal.org/project/adaptivetheme.git
+[submodule "drupal-theme-corolla"]
+	path = drupal-theme-corolla
+	url = http://git.drupal.org/project/corolla.git
