@@ -3,7 +3,7 @@
 	url = git@github.com:fcrepo/fcrepo.git
 [submodule "islandora"]
 	path = islandora
-	url = git@github.com:Islandora/islandora.git
+	url = git@github.com:lyrasis/islandora.git
 [submodule "drupal"]
 	path = drupal
 	url = git@git.drupal.org:project/drupal.git
