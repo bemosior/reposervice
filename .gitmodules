@@ -48,7 +48,7 @@
 	url = git://github.com/Islandora/islandora_marcxml.git
 [submodule "islandora_importer"]
 	path = islandora_importer
-	url = git://github.com/Islandora/islandora_importer.git
+	url = ssh://islandora.lyrasistechnology.org/var/gitrepo/islandora_importer.git
 [submodule "islandora_theme_flvc"]
 	path = islandora_theme_flvc
 	url = git://github.com/FLVC/islandoratheme.git
