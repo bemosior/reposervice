@@ -97,3 +97,10 @@ Note: need to install the security filter (`mvn install:install-file -Dfile=fcre
 
 1. `cd $SERVICE_HOME/gsearch/FedoraGenericSearch`
 2. `ant buildfromsource`
+
+## Setting up the environment from the bare Git repo
+
+1. `git clone reposervice.git`
+2. `cd reposervice`
+3. `git submodule init`
+4. `git submodule update`

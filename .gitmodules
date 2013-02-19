@@ -1,54 +1,51 @@
 [submodule "fcrepo"]
 	path = fcrepo
-	url = git@github.com:fcrepo/fcrepo.git
+	url = git@github.com:lyrasis/fcrepo.git
 [submodule "islandora"]
 	path = islandora
 	url = git@github.com:lyrasis/islandora.git
 [submodule "drupal"]
 	path = drupal
-	url = git@git.drupal.org:project/drupal.git
+	url = ssh://islandora.lyrasistechnology.org/var/gitrepo/drupal.git
 [submodule "islandora_drupal_filter"]
 	path = islandora_drupal_filter
 	url = git@github.com:lyrasis/islandora_drupal_filter.git
 [submodule "islandora_solution_pack_collection"]
 	path = islandora_solution_pack_collection
-	url = https://github.com/Islandora/islandora_solution_pack_collection
+	url = git@github.com:lyrasis/islandora_solution_pack_collection.git
 [submodule "islandora_solr_search"]
 	path = islandora_solr_search
-	url = https://github.com/Islandora/islandora_solr_search
+	url = git@github.com:lyrasis/islandora_solr_search.git
 [submodule "islandora_solr_views"]
 	path = islandora_solr_views
-	url = https://github.com/Islandora/islandora_solr_views
+	url = git@github.com:lyrasis/islandora_solr_views.git
 [submodule "islandora_solution_pack_image"]
 	path = islandora_solution_pack_image
-	url = https://github.com/Islandora/islandora_solution_pack_image
+	url = git@github.com:lyrasis/islandora_solution_pack_image.git
 [submodule "islandora_solution_pack_pdf"]
 	path = islandora_solution_pack_pdf
-	url = https://github.com/Islandora/islandora_solution_pack_pdf
-[submodule "islandora_content_model_forms"]
-	path = islandora_content_model_forms
-	url = https://github.com/Islandora/islandora_content_model_forms
+	url = git@github.com:lyrasis/islandora_solution_pack_pdf.git
 [submodule "objective_forms"]
 	path = objective_forms
-	url = https://github.com/Islandora/objective_forms
+	url = git@github.com:lyrasis/objective_forms.git
 [submodule "islandora_xml_forms"]
 	path = islandora_xml_forms
-	url = https://github.com/Islandora/islandora_xml_forms
+	url = git@github.com:lyrasis/islandora_xml_forms.git
 [submodule "php_lib"]
 	path = php_lib
-	url = https://github.com/Islandora/php_lib
+	url = git@github.com:lyrasis/php_lib.git
 [submodule "tuque"]
 	path = tuque
 	url = git@github.com:lyrasis/tuque.git
 [submodule "gsearch"]
 	path = gsearch
-	url = git://github.com/fcrepo/gsearch.git
+	url = git@github.com:lyrasis/gsearch.git
 [submodule "islandora_marcxml"]
 	path = islandora_marcxml
-	url = git://github.com/Islandora/islandora_marcxml.git
+	url = git@github.com:lyrasis/islandora_marcxml.git
 [submodule "islandora_importer"]
 	path = islandora_importer
-	url = ssh://islandora.lyrasistechnology.org/var/gitrepo/islandora_importer.git
+	url = git@github.com:lyrasis/islandora_importer.git
 [submodule "islandora_theme_flvc"]
 	path = islandora_theme_flvc
-	url = git://github.com/FLVC/islandoratheme.git
+	url = git@github.com:lyrasis/islandora_theme_flvc.git
