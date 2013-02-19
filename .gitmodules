@@ -9,7 +9,7 @@
 	url = git@git.drupal.org:project/drupal.git
 [submodule "islandora_drupal_filter"]
 	path = islandora_drupal_filter
-	url = git://github.com/Islandora/islandora_drupal_filter.git
+	url = git@github:lyrasis/islandora_drupal_filter
 [submodule "islandora_solution_pack_collection"]
 	path = islandora_solution_pack_collection
 	url = https://github.com/Islandora/islandora_solution_pack_collection
