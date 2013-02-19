@@ -39,7 +39,7 @@
 	url = https://github.com/Islandora/php_lib
 [submodule "tuque"]
 	path = tuque
-	url = git://github.com/Islandora/tuque.git
+	url = git@github.com:lyrasis/tuque.git
 [submodule "gsearch"]
 	path = gsearch
 	url = git://github.com/fcrepo/gsearch.git
