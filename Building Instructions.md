@@ -9,6 +9,33 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 
 ## Project Naming Conventions
 
+## Prerequisites for using LYRASIS `reposervice` environment
+
+See Appendix for Aptitude log.
+
+1. Apache HTTPD
+1. MySQL-5.1
+1. Maven2 (mvn)
+1. Ant
+1. PHP-5
+	1. Drush
+	1. php5-gd
+	1. php5-imagick
+	1. php5-xdebug (for debugging only)
+1. ImageMagick
+1. Ghostscript
+1. Drush
+
+## Setting up the environment from the bare Git repo
+
+1. `git clone reposervice.git` -- use either ssh://islandora.lyrasistechnology.org/var/gitrepo/reposervice or file:///var/gitrepo/reposervice as required (whether the git repo is remote or on the local machine)
+1. `cd reposervice`
+1. `git submodule init`
+1. `git submodule update` -- Use `git submodule status` to make sure all of the submodules are up-to-date.  There should be no plus signs or minus signs in the left-most column.
+1. Download and unpack Apache Tomcat and Apache SOLR 3.x into binaries directory.
+1. Create symbolic links in binaries directory for `tomcat` and `solr` that point to the unpacked directories of each.
+
+
 ## Setting Up Drupal
 
 1. Create database
@@ -19,7 +46,10 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 			flush privileges;
 			EOM
 
-1. Go through the Drupal install instructions
+1. Create symbolic link in Apache's htdocs directory to the drupal directory of the git repo.
+1. Delete the `sites/all/settings.php` file
+1. Go through the Drupal install web pages
+1. `drush enable lyr_base_islandora`
 
 ## Setting up Fedora Commons
 Be sure `$SERVICE_HOME/bootstrap.sh` has been run to set the environment variables.  You'll see failures for the 'sed' replacements in the `$FEDORA_HOME` directory -- that is okay.  Having the `$FEDORA_HOME` and `$CATALINA_HOME` environment variables set, though, will preconfigure defaults in the repository installer.
@@ -97,10 +127,3 @@ Note: need to install the security filter (`mvn install:install-file -Dfile=fcre
 
 1. `cd $SERVICE_HOME/gsearch/FedoraGenericSearch`
 2. `ant buildfromsource`
-
-## Setting up the environment from the bare Git repo
-
-1. `git clone reposervice.git`
-2. `cd reposervice`
-3. `git submodule init`
-4. `git submodule update`
