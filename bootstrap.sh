@@ -24,7 +24,7 @@ export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS=-XX:MaxPermSize=256m
 export PATH=$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin
 
-if [ ! -d $FEDORA_HOME/gsearch/solr ];
+if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ];
 then
     echo "Directory '$FEDORA_HOME/gsearch/solr' not found; must be copied from SOLR dist examples/solr directory."
     exit 1;
