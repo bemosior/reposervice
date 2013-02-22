@@ -5,15 +5,26 @@ then
     echo "File 'config-values.sed' not found; cannot continue."
     exit 1;
 fi
+if [ ! -h binaries/tomcat ];
+then
+    echo "Download Apache Tomcat; create symbolic link at binaries/tomcat to unpacked directory."
+    exit 1;
+fi
+if [ ! -h binaries/solr ];
+then 
+    echo "Download Apache SOLR 3.x; create symbolic link at binaries/solr to unpacked directory."
+    exit 1;
+fi
+
 
 export SERVICE_HOME=`pwd`
 export FEDORA_HOME=$SERVICE_HOME/fedora_home
 export DRUPAL_HOME=$SERVICE_HOME/drupal
-export CATALINA_HOME=/usr/local/opt/tomcat/libexec
+export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS=-XX:MaxPermSize=256m
 export PATH=$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin
 
-if [ ! -d $FEDORA_HOME/gsearch/solr ];
+if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ];
 then
     echo "Directory '$FEDORA_HOME/gsearch/solr' not found; must be copied from SOLR dist examples/solr directory."
     exit 1;
