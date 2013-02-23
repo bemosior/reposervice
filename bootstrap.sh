@@ -13,7 +13,6 @@ if [ ! -h binaries/solr ]; then
     exit 1;
 fi
 
-
 export SERVICE_HOME=`pwd`
 export FEDORA_HOME=$SERVICE_HOME/fedora_home
 export DRUPAL_HOME=$SERVICE_HOME/drupal
@@ -24,6 +23,10 @@ export PATH=$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME
 if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
     echo "Directory '$FEDORA_HOME/gsearch/solr' not found; must be copied from SOLR dist examples/solr directory."
     exit 1;
+fi
+
+if [ ! -d $SERVICE_HOME/sed_substituted_files ]; then
+	mkdir $SERVICE_HOME/sed_substituted_files
 fi
 
 SED_TEMPLATES_DIR=sed_templates

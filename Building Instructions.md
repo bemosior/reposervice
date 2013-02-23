@@ -11,8 +11,6 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 
 ## Prerequisites for using LYRASIS `reposervice` environment
 
-See Appendix for Aptitude log.
-
 1. Apache HTTPD
 1. MySQL-5.1
 1. Maven2 (mvn)
@@ -22,9 +20,11 @@ See Appendix for Aptitude log.
 	1. php5-gd
 	1. php5-imagick
 	1. php5-xdebug (for debugging only)
+	1. php-pear
 1. ImageMagick
 1. Ghostscript
-1. Drush
+
+PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and add "extension=uploadprogress.so" to php.ini.
 
 ## Setting up the environment from the bare Git repo
 
@@ -68,6 +68,8 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 			ALTER DATABASE fcrepo_islandora DEFAULT COLLATE utf8_bin;
 
 1. Run the installer: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar `
+
+You can feed the installer JAR file the properties file created by `bootstrap.sh` to have these choices selected for you: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar $SERVICE_HOME/sed_substituted_files/fedora-install-properties.txt`
 
 	1. Installation type: `custom`
 	1. Fedora home directory: *use default response; set by the FEDORA_HOME environment variable*
