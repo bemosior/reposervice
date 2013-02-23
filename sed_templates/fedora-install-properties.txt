@@ -24,7 +24,7 @@ database=mysql
 database.driver=included
 fedora.serverContext=fedora
 llstore.type=akubra-fs
-tomcat.home=${TOMCAT_HOME}
+tomcat.home=${CATALINA_HOME}
 database.mysql.jdbcURL=jdbc\:mysql\://localhost/${DB_FEDORA_DATABASE}?useUnicode\=true&amp;characterEncoding\=UTF-8&amp;autoReconnect\=true
 fedora.home=${FEDORA_HOME}
 install.type=custom

@@ -1,17 +1,14 @@
 #!/bin/env bash
 #
-if [ ! -f config-values.sed ];
-then
+if [ ! -f config-values.sed ]; then
     echo "File 'config-values.sed' not found; cannot continue."
     exit 1;
 fi
-if [ ! -h binaries/tomcat ];
-then
+if [ ! -h binaries/tomcat ]; then
     echo "Download Apache Tomcat; create symbolic link at binaries/tomcat to unpacked directory."
     exit 1;
 fi
-if [ ! -h binaries/solr ];
-then 
+if [ ! -h binaries/solr ]; then 
     echo "Download Apache SOLR 3.x; create symbolic link at binaries/solr to unpacked directory."
     exit 1;
 fi
@@ -24,33 +21,52 @@ export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS=-XX:MaxPermSize=256m
 export PATH=$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin
 
-if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ];
-then
+if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
     echo "Directory '$FEDORA_HOME/gsearch/solr' not found; must be copied from SOLR dist examples/solr directory."
     exit 1;
 fi
 
-
-SED_CONFIG_SUBSTITUTES=$(mktemp "$SERVICE_HOME/temp.XXXXXXX")
+SED_TEMPLATES_DIR=sed_templates
+EXPANDED_CONFIG_DIR=$SERVICE_HOME/sed_substituted_files
+SED_CONFIG_SUBSTITUTES=$(mktemp "$EXPANDED_CONFIG_DIR/temp.XXXXXXX")
 cat config-values.sed >> $SED_CONFIG_SUBSTITUTES
 printf 's:${SERVICE_HOME}:%s:\n' $SERVICE_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${FEDORA_HOME}:%s:\n' $FEDORA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${DRUPAL_HOME}:%s:\n' $DRUPAL_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${CATALINA_HOME}:%s:\n' $CATALINA_HOME >> $SED_CONFIG_SUBSTITUTES
 
-SED_TEMPLATES_DIR=sed_templates
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/drupal-settings.txt > $DRUPAL_HOME/sites/default/settings.php
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/filter-drupal.txt > $FEDORA_HOME/server/config/filter-drupal.xml
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/fedora-catalina-context.xml > $CATALINA_HOME/conf/Catalina/localhost/fedora.xml
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/fedora-install-properties.txt > $FEDORA_HOME/install/install.properties
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/fedora-fcfg.txt > $FEDORA_HOME/server/config/fedora.fcfg
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/solr.xml > $CATALINA_HOME/conf/Catalina/localhost/solr.xml
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/solr-schema.xml > $FEDORA_HOME/gsearch/solr/conf/schema.xml
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/solrconfig.xml > $FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/fedora-users.xml > $FEDORA_HOME/server/config/fedora-users.xml
-sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/fgsconfig-islandora-properties.txt > $FEDORA_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
+CONFIG_FILES=$( cat <<EOF
+drupal-settings.txt|$DRUPAL_HOME/sites/default/settings.php
+filter-drupal.txt|$FEDORA_HOME/server/config/filter-drupal.xml
+fedora-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedora.xml
+fedora-install-properties.txt|$FEDORA_HOME/install/install.properties
+fedora-fcfg.txt|$FEDORA_HOME/server/config/fedora.fcfg
+solr.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
+solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
+solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
+fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
+fgsconfig-islandora-properties.txt|$FEDORA_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
+EOF
+)
 
-rm $SED_CONFIG_SUBSTITUTES
+for line in $CONFIG_FILES; do
+    SOURCE_FILE=$(echo $line | cut -d"|" -f1)
+    DEST_FILE=$(echo $line | cut -d"|" -f2)
+	sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/$SOURCE_FILE > $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+	if [ -f $DEST_FILE ] && [ "$(md5 -q $EXPANDED_CONFIG_DIR/$SOURCE_FILE)" != "$(md5 -q $DEST_FILE)" ]; then
+		diff $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
+		read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
+		echo
+		if [[ $REPLY =~ ^[Yy]$ ]]
+		then
+			cp $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
+		fi
+	else
+		cp $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
+	fi
+done
+
+rm -r $SED_CONFIG_SUBSTITUTES
 
 ## Files to be copied
 ## $FEDORA_HOME/install/*war to $CATALINA_HOME/webapps
