@@ -56,7 +56,7 @@ for line in $CONFIG_FILES; do
     SOURCE_FILE=$(echo $line | cut -d"|" -f1)
     DEST_FILE=$(echo $line | cut -d"|" -f2)
 	sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/$SOURCE_FILE > $EXPANDED_CONFIG_DIR/$SOURCE_FILE
-	if [ -f $DEST_FILE ] && [ "$(md5 -q $EXPANDED_CONFIG_DIR/$SOURCE_FILE)" != "$(md5 -q $DEST_FILE)" ]; then
+	if [ -f $DEST_FILE ] && [ "$(openssl md5 $EXPANDED_CONFIG_DIR/$SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
 		diff $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
 		read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
 		echo
