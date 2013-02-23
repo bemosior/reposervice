@@ -1,7 +1,7 @@
 #!/bin/env bash
 #
 if [ ! -f config-values.sed ]; then
-    echo "File 'config-values.sed' not found; cannot continue."
+    echo "File 'config-values.sed' not found; cannot continue. Copy config-values.sed-sample to config-values.sed and edit."
     exit 1;
 fi
 if [ ! -h binaries/tomcat ]; then
@@ -21,7 +21,7 @@ export CATALINA_OPTS=-XX:MaxPermSize=256m
 export PATH=$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin
 
 if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
-    echo "Directory '$FEDORA_HOME/gsearch/solr' not found; must be copied from SOLR dist examples/solr directory."
+    echo "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
     exit 1;
 fi
 
@@ -49,6 +49,9 @@ solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
 solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
 fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
 fgsconfig-islandora-properties.txt|$FEDORA_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
+permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+jaas.conf|$FEDORA_HOME/server/config/jaas.conf
+logback.xml|$FEDORA_HOME/server/config/logback.xml
 EOF
 )
 

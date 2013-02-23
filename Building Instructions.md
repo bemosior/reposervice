@@ -54,6 +54,8 @@ PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and 
 ## Setting up Fedora Commons
 Be sure `$SERVICE_HOME/bootstrap.sh` has been run to set the environment variables.  You'll see failures for the 'sed' replacements in the `$FEDORA_HOME` directory -- that is okay.  Having the `$FEDORA_HOME` and `$CATALINA_HOME` environment variables set, though, will preconfigure defaults in the repository installer.
 
+You can feed the installer JAR file the properties file created by `bootstrap.sh` to have these choices selected for you: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar $SERVICE_HOME/sed_substituted_files/fedora-install-properties.txt`
+
 1. Go into the 'fcrepo' directory: `cd fcrepo`
 
 1. Build repository installer:  `mvn clean install -Dintegration.test.skip=true`  (see [Install Fedora from source](https://wiki.duraspace.org/display/FEDORA35/Installation+From+Source)).
@@ -67,9 +69,7 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 			ALTER DATABASE fcrepo_islandora DEFAULT CHARACTER SET utf8;
 			ALTER DATABASE fcrepo_islandora DEFAULT COLLATE utf8_bin;
 
-1. Run the installer: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar `
-
-You can feed the installer JAR file the properties file created by `bootstrap.sh` to have these choices selected for you: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar $SERVICE_HOME/sed_substituted_files/fedora-install-properties.txt`
+1. Run the installer: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar` -- If you add `$SERVICE_HOME/sed_substituted_files/fedora-install-properties.txt` to the command line, the following questions will not be asked and the values from the properties file will be used.
 
 	1. Installation type: `custom`
 	1. Fedora home directory: *use default response; set by the FEDORA_HOME environment variable*
@@ -101,29 +101,13 @@ You can feed the installer JAR file the properties file created by `bootstrap.sh
 	1. Messaging Provider URI: *use default*
 	1. Deploy local services and demos: *use default `true`*
 
-1. Follow the instructions to add the `permit-apim-to-authenticated.xml` file to the `$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default` directory as described by [https://wiki.duraspace.org/display/ISLANDORA6122/Installing+Fedora](https://wiki.duraspace.org/display/ISLANDORA6122/Installing+Fedora)
-
-1. Modify `$FEDORA_HOME/server/config/jaas.conf` to add the DrupalAuth module to the top stanza:
-
-		fedora-auth
-		{
-       		ca.upei.roblib.fedora.servletfilter.DrupalAuthModule sufficient
-        	debug=true;
-        	org.fcrepo.server.security.jaas.auth.module.XmlUsersFileModule sufficient
-        	debug=true;
-		};
-
-1. Modify `$FEDORA_HOME/server/config/logback.xml` to add this stanza at the end of the FESL definitions:
-
-		<logger name="ca.upei.roblib.fedora.servletfilter" additivity="false" level="DEBUG">
-			<appender-ref ref="FESL"/>
-		</logger>
-
 1. Run `$SERVICE_HOME/bootstrap.sh` to create the configuration files based on the template.
 
 ## Set up Islandora module and servlet filter
 
-Note: need to install the security filter (`mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true` then move `target/fcrepo-drupalauthfilter-3.6.2.jar` to `$CATALINA_HOME/webapps/fedora/WEB-INF/lib`).
+1. `cd $SERVICE_HOME/islandora_drupal_filter`
+1. Build the servlet filter: `mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true`
+1. Move `target/fcrepo-drupalauthfilter-3.6.2.jar` to `$CATALINA_HOME/webapps/fedora/WEB-INF/lib`
 
 ## Set up GSearch
 
