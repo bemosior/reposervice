@@ -79,15 +79,6 @@ function lyr_base_islandora_user_default_permissions() {
     'module' => 'islandora_solr',
   );
 
-  // Exported permission: configure islandora gsearch.
-  $permissions['configure islandora gsearch'] = array(
-    'name' => 'configure islandora gsearch',
-    'roles' => array(
-      'administrator' => 'administrator',
-    ),
-    'module' => 'islandora_gsearch',
-  );
-
   // Exported permission: create child collection.
   $permissions['create child collection'] = array(
     'name' => 'create child collection',

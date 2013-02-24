@@ -22,10 +22,11 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 	1. php5-imagick
 	1. php5-xdebug (for debugging only)
 	1. php-pear
+	1. php5-curl
 1. ImageMagick
 1. Ghostscript
 
-PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and add "extension=uploadprogress.so" to php.ini.
+PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and add "extension=uploadprogress.so" to php.ini.  Apache httpd mod_rewrite is needed for clean URLs; for Ubuntu, move `/etc/apache2/mods-available/rewrite.load` to `/etc/apache2/mods-enabled/`.  Also be sure to allow .htaccess directives to be honored by setting `AllowOverride All` in the httpd configuration file.
 
 ## Setting up the environment from the bare Git repo
 
