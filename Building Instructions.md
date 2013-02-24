@@ -13,8 +13,9 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 
 1. Apache HTTPD
 1. MySQL-5.1
-1. Maven2 (mvn)
-1. Ant
+1. Java6 JDK
+	1. Maven3 (mvn)
+	1. Ant
 1. PHP-5
 	1. Drush
 	1. php5-gd
@@ -101,7 +102,11 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 	1. Messaging Provider URI: *use default*
 	1. Deploy local services and demos: *use default `true`*
 
-1. Run `$SERVICE_HOME/bootstrap.sh` to create the configuration files based on the template.
+1. Run `(cd $SERVICE_HOME; sh bootstrap.sh)` to create the configuration files based on the template.  Some copy errors will happen because not all of the directories are in place yet.
+1. Start Tomcat: `catalina.sh start`
+1. Watch the end of the Tomcat logfile for the end of the startup: `tail -f $SERVICE_HOME/binaries/tomcat/logs/catalina.out` -- You'll see "INFO: Server startup in xxxxx ms"
+1. Stop Tomcat: `catalina.sh stop`
+2. Run `(cd $SERVICE_HOME; sh bootstrap.sh)` to create the remaining configuration files.
 
 ## Set up Islandora module and servlet filter
 
@@ -112,4 +117,7 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 ## Set up GSearch
 
 1. `cd $SERVICE_HOME/gsearch/FedoraGenericSearch`
-2. `ant buildfromsource`
+1. `ant buildfromsource`
+1. `cp $SERVICE_HOME/gsearch/FgsBuild/fromsource/fedoragsearch.war $CATALINA_HOME/webapps`
+1. Let fedoragsearch deploy for the first time; it will throw errors in the catalina.log file until the configuration is saved into the unpacked war file in the next step.
+1. `cd $SERVICE_HOME/gsearch/FgsConfig && ant -f fgsconfig-basic.xml -Dlocal.FEDORA_HOME=$FEDORA_HOME -propertyfile fgsconfig-basic-for-islandora.properties`

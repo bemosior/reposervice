@@ -48,7 +48,7 @@ solr.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
 solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
 solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
 fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
-fgsconfig-islandora-properties.txt|$FEDORA_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
+fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
 permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 jaas.conf|$FEDORA_HOME/server/config/jaas.conf
 logback.xml|$FEDORA_HOME/server/config/logback.xml
