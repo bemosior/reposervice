@@ -23,6 +23,7 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 	1. php5-xdebug (for debugging only)
 	1. php-pear
 	1. php5-curl
+	1. php5-xsl
 1. ImageMagick
 1. Ghostscript
 
