@@ -1,0 +1,76 @@
+#!/usr/bin/perl -w
+#
+# 
+
+use strict;
+use warnings;
+use constant { TRUE => 1, FALSE => 0 };
+
+my %ignoreSubmodule = (
+  fcrepo => TRUE,
+  drupal => TRUE,
+);
+
+my %submodUpstreamBranch = (
+  fcrepo => 'maintenance-3.4',
+  islandora => '7.x',
+  islandora_drupal_filter => '6.x',
+  islandora_solution_pack_collection => '7.x',
+  islandora_solr_search => '7.x',
+  islandora_solr_views => '7.x',
+  islandora_solution_pack_image => '7.x',
+  islandora_solution_pack_pdf => '7.x',
+  objective_forms => '7.x',
+  islandora_xml_forms => '7.x',
+  php_lib => '7.x',
+  tuque => '1.x',
+  gsearch => 'master',
+  islandora_marcxml => '7.x',
+  islandora_importer => '7.x',
+  islandora_theme_flvc => 'master',
+);
+
+use Cwd;
+my $pwd = cwd();
+
+if ( !defined($ENV{SERVICE_HOME}) ) {
+  die "SERVICE_HOME environment variable not defined. Did you exec bootstrap.sh?\n";
+}
+
+my $submodulesFile = "$ENV{SERVICE_HOME}/.gitmodules";
+if ( ! -f $submodulesFile ) {
+  die "Odd... can't find .gitmodules file in SERVICE_HOME directory\n";
+}
+
+open my $inFH, $submodulesFile or die "Could not open $submodulesFile: $!\n";
+
+while (my $line = <$inFH>) {   
+  chomp($line);
+  if ($line =~ /\[submodule \"(\S+?)\"]/) {
+    my $submodule = $1;
+    if (! $ignoreSubmodule{$submodule}) {
+      my $submodulePath = "$ENV{SERVICE_HOME}/$submodule";
+      open my $cmd1FH, "cd $submodulePath && git fetch upstream |" or die "Couldn't 'git fetch upstream' the $submodule repository: $!\n";
+      while (my $cmdLine = <$cmd1FH>) {
+        print $cmdLine;
+      }
+      print "\n\n";
+      close $cmd1FH;
+  	
+      if (defined($submodUpstreamBranch{$submodule})) {
+  	    print ">>> Checking for upstream changes of $submodule\n";
+  	    open my $cmd2FH, "cd $submodulePath && git lg lyr-master..upstream/$submodUpstreamBranch{$submodule} |" or die "Couldn't 'git lg' the $submodule repository: $!\n";
+  	    while (my $cmdLine = <$cmd2FH>) {
+  	      print $cmdLine;
+  	    }
+  	    close $cmd2FH;
+  	    print "\n\n";
+  	  } else {
+  	    warn "No upstream tracking branch defined for $submodule\n";
+      }
+	}
+  }
+}
+
+close $inFH;
+chdir($pwd);

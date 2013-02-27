@@ -18,7 +18,7 @@ export FEDORA_HOME=$SERVICE_HOME/fedora_home
 export DRUPAL_HOME=$SERVICE_HOME/drupal
 export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS=-XX:MaxPermSize=256m
-export PATH=$PATH:$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin
+export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
 
 if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
     echo "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
