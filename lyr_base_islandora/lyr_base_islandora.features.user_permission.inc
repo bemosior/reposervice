@@ -14,7 +14,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['Associate XML Forms'] = array(
     'name' => 'Associate XML Forms',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -24,7 +23,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['Create XML Forms'] = array(
     'name' => 'Create XML Forms',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -34,7 +32,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['Delete XML Forms'] = array(
     'name' => 'Delete XML Forms',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -44,7 +41,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['Edit XML Forms'] = array(
     'name' => 'Edit XML Forms',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -54,7 +50,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['List XML Forms'] = array(
     'name' => 'List XML Forms',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -64,7 +59,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['add fedora datastreams'] = array(
     'name' => 'add fedora datastreams',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -83,7 +77,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['create child collection'] = array(
     'name' => 'create child collection',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -93,7 +86,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['delete fedora objects and datastreams'] = array(
     'name' => 'delete fedora objects and datastreams',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -103,7 +95,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['edit fedora metadata'] = array(
     'name' => 'edit fedora metadata',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -113,7 +104,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['ingest fedora objects'] = array(
     'name' => 'ingest fedora objects',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -123,7 +113,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['manage collection policy'] = array(
     'name' => 'manage collection policy',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -133,7 +122,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['manage content model association'] = array(
     'name' => 'manage content model association',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -143,7 +131,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['manage object properties'] = array(
     'name' => 'manage object properties',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -153,7 +140,6 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['migrate collection members'] = array(
     'name' => 'migrate collection members',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -169,21 +155,10 @@ function lyr_base_islandora_user_default_permissions() {
     'module' => 'islandora_solr',
   );
 
-  // Exported permission: view fedora repository datastreams.
-  $permissions['view fedora repository datastreams'] = array(
-    'name' => 'view fedora repository datastreams',
-    'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
-      'administrator' => 'administrator',
-    ),
-    'module' => 'islandora',
-  );
-
   // Exported permission: view fedora repository objects.
   $permissions['view fedora repository objects'] = array(
     'name' => 'view fedora repository objects',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
       'administrator' => 'administrator',
       'anonymous user' => 'anonymous user',
     ),
