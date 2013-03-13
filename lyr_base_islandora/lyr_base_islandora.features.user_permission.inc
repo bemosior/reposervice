@@ -118,15 +118,6 @@ function lyr_base_islandora_user_default_permissions() {
     'module' => 'islandora_basic_collection',
   );
 
-  // Exported permission: manage content model association.
-  $permissions['manage content model association'] = array(
-    'name' => 'manage content model association',
-    'roles' => array(
-      'administrator' => 'administrator',
-    ),
-    'module' => 'islandora_basic_collection',
-  );
-
   // Exported permission: manage object properties.
   $permissions['manage object properties'] = array(
     'name' => 'manage object properties',
