@@ -26,6 +26,7 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 	1. php5-xsl
 1. ImageMagick
 1. Ghostscript
+1. Poppler or Poppler-utils (for `pdftotext`)
 
 PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and add "extension=uploadprogress.so" to php.ini.  Apache httpd mod_rewrite is needed for clean URLs; for Ubuntu, move `/etc/apache2/mods-available/rewrite.load` to `/etc/apache2/mods-enabled/`.  Also be sure to allow .htaccess directives to be honored by setting `AllowOverride All` in the httpd configuration file.
 

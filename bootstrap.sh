@@ -57,6 +57,7 @@ fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch/FgsConfig/fgsconfig-bas
 permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 jaas.conf|$FEDORA_HOME/server/config/jaas.conf
 logback.xml|$FEDORA_HOME/server/config/logback.xml
+lyr_base_islandora.strongarm.inc|$SERVICE_HOME/lyr_base_islandora/lyr_base_islandora.strongarm.inc
 EOF
 )
 
