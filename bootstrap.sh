@@ -58,6 +58,7 @@ permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/reposit
 jaas.conf|$FEDORA_HOME/server/config/jaas.conf
 logback.xml|$FEDORA_HOME/server/config/logback.xml
 lyr_base_islandora.strongarm.inc|$SERVICE_HOME/lyr_base_islandora/lyr_base_islandora.strongarm.inc
+tomcat-server.xml|$CATALINA_HOME/conf/server.xml
 EOF
 )
 
