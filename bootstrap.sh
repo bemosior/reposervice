@@ -21,9 +21,9 @@ export DRUPAL_HOME=$SERVICE_HOME/drupal
 export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS=-XX:MaxPermSize=256m
 export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
-alias catalinalog="cat $CATALINA_HOME/logs/catalina.out"
-alias fedoralog="cat $FEDORA_HOME/server/logs/fedora.log"
-alias fedoragsearchlog="cat $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
+alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
+alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
+alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
 
 if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
@@ -53,7 +53,7 @@ solr.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
 solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
 solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
 fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
-fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
+fgsconfig-islandora-properties.txt|$FEDORA_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
 permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 jaas.conf|$FEDORA_HOME/server/config/jaas.conf
 logback.xml|$FEDORA_HOME/server/config/logback.xml
