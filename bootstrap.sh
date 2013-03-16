@@ -1,5 +1,9 @@
 #!/bin/env bash
 #
+
+#CATALINA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+
+
 function echoerr { echo "$@" >&2; }
 
 if [ ! -f config-values.sed ]; then
@@ -14,12 +18,16 @@ if [ ! -h binaries/solr ]; then
     echoerr "Download Apache SOLR 3.x; create symbolic link at binaries/solr to unpacked directory."
     exit 1;
 fi
+if [ ! -h binaries/adore-djatoka ]; then 
+    echoerr "Download adore-djatoka; create symbolic link at binaries/adore-djatoka to unpacked directory."
+    exit 1;
+fi
 
 export SERVICE_HOME=`pwd`
 export FEDORA_HOME=$SERVICE_HOME/fedora_home
 export DRUPAL_HOME=$SERVICE_HOME/drupal
 export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
-export CATALINA_OPTS=-XX:MaxPermSize=256m
+export CATALINA_OPTS="$CATALINA_DEBUG -XX:MaxPermSize=256m"
 export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
 alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
 alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
@@ -59,6 +67,7 @@ jaas.conf|$FEDORA_HOME/server/config/jaas.conf
 logback.xml|$FEDORA_HOME/server/config/logback.xml
 lyr_base_islandora.strongarm.inc|$SERVICE_HOME/lyr_base_islandora/lyr_base_islandora.strongarm.inc
 tomcat-server.xml|$CATALINA_HOME/conf/server.xml
+djatoka-log4j.properties|$CATALINA_HOME/webapps/adore-djatoka/WEB-INF/classes/log4j.properties
 EOF
 )
 
@@ -88,6 +97,7 @@ $FEDORA_HOME/install/fedora.war|$CATALINA_HOME/webapps
 $FEDORA_HOME/install/fop.war|$CATALINA_HOME/webapps
 $FEDORA_HOME/install/imagemanip.war|$CATALINA_HOME/webapps
 $FEDORA_HOME/install/saxon.war|$CATALINA_HOME/webapps
+$SERVICE_HOME/binaries/adore-djatoka/dist/adore-djatoka.war|$CATALINA_HOME/webapps
 $SERVICE_HOME/islandora_drupal_filter/target/fcrepo-drupalauthfilter-3.6.2.jar|$CATALINA_HOME/webapps/fedora/WEB-INF/lib
 $SERVICE_HOME/gsearch/FgsBuild/fromsource/fedoragsearch.war|$CATALINA_HOME/webapps
 EOF
@@ -120,6 +130,64 @@ for line in $BINARY_FILES; do
     	fi
     fi
 done
+
+###
+### BEGIN Copied and Adapted from djatoka distribution
+###
+# Define DJATOKA_HOME dynamically
+export DJATOKA_HOME=$SERVICE_HOME/binaries/adore-djatoka
+DJATOKA_LAUNCHDIR=$DJATOKA_HOME/bin
+DJATOKA_LIBPATH=$DJATOKA_HOME/lib
+
+if [ `uname` = 'Linux' ] ; then
+  if [ `uname -p` = "x86_64" ] ; then
+    # Assume Linux AMD 64 has 64-bit Java
+    DJATOKA_PLATFORM="Linux-x86-64"
+    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  else
+    # 32-bit Java
+    DJATOKA_PLATFORM="Linux-x86-32"
+    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  fi
+elif [ `uname` = 'Darwin' ] ; then
+  # Mac OS X
+  DJATOKA_PLATFORM="Mac-x86"
+  export DYLD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  KAKADU_LIBRARY_PATH="-DDYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+elif [ `uname` = 'SunOS' ] ; then
+  if [ `uname -p` = "i386" ] ; then
+    # Assume Solaris x86
+    DJATOKA_PLATFORM="Solaris-x86"
+    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  else
+    # Sparcv9
+    DJATOKA_PLATFORM="Solaris-Sparcv9"
+    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  fi
+else
+  echo "djatoka env: Unsupported DJATOKA_PLATFORM: `uname`"
+  exit
+fi
+
+export KAKADU_HOME=$DJATOKA_HOME/bin/$DJATOKA_PLATFORM
+djatoka_classpath=
+for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
+  do
+  djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
+done
+
+#echo "#!/bin/bash" > $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
+#echo "# Generated `date` by $SERVICE_HOME/bootstrap.sh" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
+#echo "CLASSPATH=$DJATOKA_LAUNCHDIR:$DJATOKA_HOME/build/:$djatoka_classpath" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
+
+CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx512M -Xms64M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
+
+###
+### END Copied and Adapted from djatoka distribution
+###
+
 
 ## Build and install GSearch config files
 ##
