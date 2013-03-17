@@ -52,3 +52,6 @@
 [submodule "islandora_solution_pack_large_image"]
 	path = islandora_solution_pack_large_image
 	url = git@github.com:lyrasis/islandora_solution_pack_large_image.git
+[submodule "islandora_openseadragon"]
+	path = islandora_openseadragon
+	url = git@github.com:lyrasis/islandora_openseadragon.git
