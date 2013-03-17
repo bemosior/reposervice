@@ -38,6 +38,65 @@ if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
     exit 1;
 fi
 
+
+###
+### BEGIN Copied and Adapted from djatoka distribution
+###
+# Define DJATOKA_HOME dynamically
+export DJATOKA_HOME=$SERVICE_HOME/binaries/adore-djatoka
+DJATOKA_LAUNCHDIR=$DJATOKA_HOME/bin
+DJATOKA_LIBPATH=$DJATOKA_HOME/lib
+
+if [ `uname` = 'Linux' ] ; then
+  if [ `uname -p` = "x86_64" ] ; then
+    # Assume Linux AMD 64 has 64-bit Java
+    DJATOKA_PLATFORM="Linux-x86-64"
+    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    KAKADU_LIBRARY_PATH="-DDJATOKA_LD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  else
+    # 32-bit Java
+    DJATOKA_PLATFORM="Linux-x86-32"
+    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    KAKADU_LIBRARY_PATH="-DDJATOKA_LD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  fi
+elif [ `uname` = 'Darwin' ] ; then
+  # Mac OS X
+  DJATOKA_PLATFORM="Mac-x86"
+  export DJATOKA_DYLD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  KAKADU_LIBRARY_PATH="-DDJATOKA_DYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+elif [ `uname` = 'SunOS' ] ; then
+  if [ `uname -p` = "i386" ] ; then
+    # Assume Solaris x86
+    DJATOKA_PLATFORM="Solaris-x86"
+    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  else
+    # Sparcv9
+    DJATOKA_PLATFORM="Solaris-Sparcv9"
+    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  fi
+else
+  echo "djatoka env: Unsupported DJATOKA_PLATFORM: `uname`"
+  exit
+fi
+
+export KAKADU_HOME=$DJATOKA_HOME/bin/$DJATOKA_PLATFORM
+djatoka_classpath=
+for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
+  do
+  djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
+done
+
+#echo "#!/bin/bash" > $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
+#echo "# Generated `date` by $SERVICE_HOME/bootstrap.sh" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
+#echo "CLASSPATH=$DJATOKA_LAUNCHDIR:$DJATOKA_HOME/build/:$djatoka_classpath" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
+
+CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx512M -Xms64M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
+
+###
+### END Copied and Adapted from djatoka distribution
+###
+
+
 SED_TEMPLATES_DIR=$SERVICE_HOME/sed_templates
 EXPANDED_CONFIG_DIR=$SERVICE_HOME/sed_substituted_files
 if [ ! -d $EXPANDED_CONFIG_DIR ]; then
@@ -50,6 +109,7 @@ printf 's:${SERVICE_HOME}:%s:\n' $SERVICE_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${FEDORA_HOME}:%s:\n' $FEDORA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${DRUPAL_HOME}:%s:\n' $DRUPAL_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${CATALINA_HOME}:%s:\n' $CATALINA_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${PATH_KAKADU}:%s/kdu_compress:\n' $KAKADU_HOME >> $SED_CONFIG_SUBSTITUTES
 
 CONFIG_FILES=$( cat <<EOF
 drupal-settings.txt|$DRUPAL_HOME/sites/default/settings.php
@@ -75,6 +135,19 @@ for line in $CONFIG_FILES; do
     SOURCE_FILE=$(echo $line | cut -d"|" -f1)
     DEST_FILE=$(echo $line | cut -d"|" -f2)
 	sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/$SOURCE_FILE > $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+	
+	## For Kakadu to function, we need to inject a LD_LIBRARY_PATH (Linux) or 
+	## DYLD_LIBRARY_PATH (MacOSX) environment variable into the Drupal environment. 
+	## We're choosing to do this by appending a PHP putenv() at the end of the
+	## Drupal settings.php File
+	if [ "$SOURCE_FILE" == "drupal-settings.txt" ]; then
+		if [ -n "$DJATOKA_LD_LIBRARY_PATH" ]; then
+    		echo "putenv(\"LD_LIBRARY_PATH=$DJATOKA_LD_LIBRARY_PATH\");" >> $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+		elif [ -n "$DJATOKA_DYLD_LIBRARY_PATH" ]; then
+			echo "putenv(\"DYLD_LIBRARY_PATH=$DJATOKA_DYLD_LIBRARY_PATH\");" >> $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+		fi
+	fi
+
 	if [ -f $DEST_FILE ]; then
 		if [ "$(openssl md5 $EXPANDED_CONFIG_DIR/$SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
 			diff $DEST_FILE $EXPANDED_CONFIG_DIR/$SOURCE_FILE
@@ -130,64 +203,6 @@ for line in $BINARY_FILES; do
     	fi
     fi
 done
-
-###
-### BEGIN Copied and Adapted from djatoka distribution
-###
-# Define DJATOKA_HOME dynamically
-export DJATOKA_HOME=$SERVICE_HOME/binaries/adore-djatoka
-DJATOKA_LAUNCHDIR=$DJATOKA_HOME/bin
-DJATOKA_LIBPATH=$DJATOKA_HOME/lib
-
-if [ `uname` = 'Linux' ] ; then
-  if [ `uname -p` = "x86_64" ] ; then
-    # Assume Linux AMD 64 has 64-bit Java
-    DJATOKA_PLATFORM="Linux-x86-64"
-    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-  else
-    # 32-bit Java
-    DJATOKA_PLATFORM="Linux-x86-32"
-    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-  fi
-elif [ `uname` = 'Darwin' ] ; then
-  # Mac OS X
-  DJATOKA_PLATFORM="Mac-x86"
-  export DYLD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-  KAKADU_LIBRARY_PATH="-DDYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-elif [ `uname` = 'SunOS' ] ; then
-  if [ `uname -p` = "i386" ] ; then
-    # Assume Solaris x86
-    DJATOKA_PLATFORM="Solaris-x86"
-    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-  else
-    # Sparcv9
-    DJATOKA_PLATFORM="Solaris-Sparcv9"
-    export LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-  fi
-else
-  echo "djatoka env: Unsupported DJATOKA_PLATFORM: `uname`"
-  exit
-fi
-
-export KAKADU_HOME=$DJATOKA_HOME/bin/$DJATOKA_PLATFORM
-djatoka_classpath=
-for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
-  do
-  djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
-done
-
-#echo "#!/bin/bash" > $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
-#echo "# Generated `date` by $SERVICE_HOME/bootstrap.sh" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
-#echo "CLASSPATH=$DJATOKA_LAUNCHDIR:$DJATOKA_HOME/build/:$djatoka_classpath" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
-
-CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx512M -Xms64M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
-
-###
-### END Copied and Adapted from djatoka distribution
-###
-
 
 ## Build and install GSearch config files
 ##

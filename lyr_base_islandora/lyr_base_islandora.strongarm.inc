@@ -21,7 +21,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'imagemagick_convert';
-  $strongarm->value = 'convert';
+  $strongarm->value = '/Applications/mampstack-5.3.22-0/common/bin/convert';
   $export['imagemagick_convert'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -34,8 +34,29 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_pdf_allow_text_upload';
+  $strongarm->name = 'islandora_kakadu_url';
+  $strongarm->value = '/Users/peter/reposervice/binaries/adore-djatoka/bin/Mac-x86/kdu_compress';
+  $export['islandora_kakadu_url'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_large_image_uncompress_tiff';
   $strongarm->value = 1;
+  $export['islandora_large_image_uncompress_tiff'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_lossless';
+  $strongarm->value = 0;
+  $export['islandora_lossless'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_pdf_allow_text_upload';
+  $strongarm->value = 0;
   $export['islandora_pdf_allow_text_upload'] = $strongarm;
 
   $strongarm = new stdClass();

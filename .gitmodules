@@ -49,3 +49,6 @@
 [submodule "islandora_theme_flvc"]
 	path = islandora_theme_flvc
 	url = git@github.com:lyrasis/islandora_theme_flvc.git
+[submodule "islandora_solution_pack_large_image"]
+	path = islandora_solution_pack_large_image
+	url = git@github.com:lyrasis/islandora_solution_pack_large_image.git
