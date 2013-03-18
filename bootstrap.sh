@@ -32,6 +32,7 @@ export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$
 alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
 alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
 alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
+alias tomcattunnel="ssh -fNg -L 18080:localhost:8080 islandora.lyrasistechnology.org"
 
 if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
@@ -48,22 +49,22 @@ DJATOKA_LAUNCHDIR=$DJATOKA_HOME/bin
 DJATOKA_LIBPATH=$DJATOKA_HOME/lib
 
 if [ `uname` = 'Linux' ] ; then
-  if [ `uname -p` = "x86_64" ] ; then
+  if [ `uname -m` = "x86_64" ] ; then
     # Assume Linux AMD 64 has 64-bit Java
     DJATOKA_PLATFORM="Linux-x86-64"
     export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-    KAKADU_LIBRARY_PATH="-DDJATOKA_LD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
   else
     # 32-bit Java
     DJATOKA_PLATFORM="Linux-x86-32"
     export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-    KAKADU_LIBRARY_PATH="-DDJATOKA_LD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
   fi
 elif [ `uname` = 'Darwin' ] ; then
   # Mac OS X
   DJATOKA_PLATFORM="Mac-x86"
   export DJATOKA_DYLD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
-  KAKADU_LIBRARY_PATH="-DDJATOKA_DYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  KAKADU_LIBRARY_PATH="-DDYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
 elif [ `uname` = 'SunOS' ] ; then
   if [ `uname -p` = "i386" ] ; then
     # Assume Solaris x86

@@ -124,3 +124,13 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 1. `cp $SERVICE_HOME/gsearch/FgsBuild/fromsource/fedoragsearch.war $CATALINA_HOME/webapps`
 1. Let fedoragsearch deploy for the first time; it will throw errors in the catalina.log file until the configuration is saved into the unpacked war file in the next step.
 1. `cd $SERVICE_HOME/gsearch/FgsConfig && ant -f fgsconfig-basic.xml -Dlocal.FEDORA_HOME=$FEDORA_HOME -propertyfile fgsconfig-basic-for-islandora.properties`
+
+## Install Sun Java JDK
+Ubuntu installs OpenJDK by default, but there is a [bug in OpenJDK that Djatoka will trip over](http://sourceforge.net/apps/mediawiki/djatoka/index.php?title=Installation#Ubuntu_-_IncompatibleClassChangeError).
+The solution is to [install](http://askubuntu.com/questions/55848/how-do-i-install-oracle-java-jdk-7) the [Sun Java version](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
+
+## Set up Open Seadragon large image viewer
+Add these lines to the Apache HTTPD configuration:
+
+		ProxyPass /adore-djatoka http://localhost:8080/adore-djatoka
+		ProxyPassReverse /adore-djatoka http://localhost:8080/adore-djatoka
