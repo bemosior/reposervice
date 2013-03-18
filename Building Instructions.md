@@ -115,7 +115,7 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 
 1. `cd $SERVICE_HOME/islandora_drupal_filter`
 1. Build the servlet filter: `mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true`
-1. Move `target/fcrepo-drupalauthfilter-3.6.2.jar` to `$CATALINA_HOME/webapps/fedora/WEB-INF/lib`
+1. `source bootstrap.sh` will move the jar into the correct location.
 
 ## Set up GSearch
 
