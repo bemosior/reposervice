@@ -2,3 +2,4 @@ config-values.sed
 fedora_home
 binaries
 sed_substituted_files
+gsearch-config/fgsconfig-basic-for-islandora.properties

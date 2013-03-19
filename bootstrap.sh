@@ -1,7 +1,7 @@
 #!/bin/env bash
 #
 
-CATALINA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+# CATALINA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 
 
 function echoerr { echo "$@" >&2; }
@@ -34,7 +34,7 @@ alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
 alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
 alias tomcattunnel="ssh -fNg -L 18080:localhost:8080 islandora.lyrasistechnology.org"
 
-if [ -d $FEDORA_HOME/gsearch -a ! -d $FEDORA_HOME/gsearch/solr ]; then
+if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
     exit 1;
 fi
@@ -86,10 +86,6 @@ for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
   do
   djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
 done
-
-#echo "#!/bin/bash" > $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
-#echo "# Generated `date` by $SERVICE_HOME/bootstrap.sh" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
-#echo "CLASSPATH=$DJATOKA_LAUNCHDIR:$DJATOKA_HOME/build/:$djatoka_classpath" >> $SERVICE_HOME/binaries/tomcat/bin/setenv.sh
 
 CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx512M -Xms64M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
 

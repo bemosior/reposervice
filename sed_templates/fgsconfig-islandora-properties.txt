@@ -80,7 +80,7 @@ namesOfIndexes=FgsIndex
   indexBase=http://localhost:${FEDORA_SERVER_PORT}/solr
 
   # FgsIndex: indexDir is the path to the index.
-  # indexDir=${FEDORA_HOME}/gsearch/FgsIndex
+  indexDir=${FEDORA_HOME}/gsearch/solr/data/index
 
   # FgsIndex: indexingDocXslt is the name of the indexing stylesheet.
   indexingDocXslt=foxmlToSolr
