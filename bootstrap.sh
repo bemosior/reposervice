@@ -1,7 +1,7 @@
 #!/bin/env bash
 #
 
-#CATALINA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+CATALINA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 
 
 function echoerr { echo "$@" >&2; }
@@ -122,7 +122,7 @@ solr.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
 solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
 solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
 fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
-fgsconfig-islandora-properties.txt|$FEDORA_HOME/gsearch/FgsConfig/fgsconfig-basic-for-islandora.properties
+fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch-config/fgsconfig-basic-for-islandora.properties
 permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 jaas.conf|$FEDORA_HOME/server/config/jaas.conf
 logback.xml|$FEDORA_HOME/server/config/logback.xml
@@ -207,8 +207,5 @@ done
 
 ## Build and install GSearch config files
 ##
-## cd $FEDORA_HOME/gsearch/FgsConfig
+## cd $SERVICE-HOME/gsearch-config
 ## ant -f fgsconfig-basic.xml -Dlocal.FEDORA_HOME=$FEDORA_HOME -propertyfile fgsconfig-basic-for-islandora.properties
-
-## TODO 
-## * Save the FgsConfig directory somewhere in version control
