@@ -30,6 +30,7 @@ my %submodUpstreamBranch = (
   islandora_theme_flvc => 'master',
   islandora_solution_pack_large_image => '7.x',
   islandora_openseadragon => '7.x',
+  islandora_solution_pack_book => '7.x',
 );
 
 use Cwd;

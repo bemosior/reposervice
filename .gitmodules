@@ -55,3 +55,6 @@
 [submodule "islandora_openseadragon"]
 	path = islandora_openseadragon
 	url = git@github.com:lyrasis/islandora_openseadragon.git
+[submodule "islandora_solution_pack_book"]
+	path = islandora_solution_pack_book
+	url = git@github.com:lyrasis/islandora_solution_pack_book.git
