@@ -34,6 +34,64 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_book_ingest_derivatives';
+  $strongarm->value = array(
+    'pdf' => 'pdf',
+    'image' => 'image',
+    'ocr' => 'ocr',
+  );
+  $export['islandora_book_ingest_derivatives'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_book_page_viewers';
+  $strongarm->value = array(
+    'name' => array(
+      'none' => 'none',
+      'islandora_openseadragon' => 'islandora_openseadragon',
+    ),
+    'default' => 'islandora_openseadragon',
+  );
+  $export['islandora_book_page_viewers'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_book_parent_book_solr_field';
+  $strongarm->value = 'RELS_EXT_isMemberOf_uri_ms';
+  $export['islandora_book_parent_book_solr_field'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_book_viewers';
+  $strongarm->value = array(
+    'name' => array(
+      'none' => 'none',
+      'islandora_internet_archive_bookreader' => 'islandora_internet_archive_bookreader',
+    ),
+    'default' => 'islandora_internet_archive_bookreader',
+  );
+  $export['islandora_book_viewers'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_internet_archive_bookreader_compression';
+  $strongarm->value = '4';
+  $export['islandora_internet_archive_bookreader_compression'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_internet_archive_bookreader_ocr_filter_field';
+  $strongarm->value = 'rels.isMemberOf';
+  $export['islandora_internet_archive_bookreader_ocr_filter_field'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'islandora_kakadu_url';
   $strongarm->value = '${PATH_KAKADU}';
   $export['islandora_kakadu_url'] = $strongarm;
@@ -64,6 +122,57 @@ function lyr_base_islandora_strongarm() {
   $strongarm->name = 'islandora_lossless';
   $strongarm->value = 0;
   $export['islandora_lossless'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_ocr_solr_hocr_highlighting_field';
+  $strongarm->value = 'text_nodes_HOCR_hlt';
+  $export['islandora_ocr_solr_hocr_highlighting_field'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_ocr_solr_hocr_highlighting_use_fast';
+  $strongarm->value = 1;
+  $export['islandora_ocr_solr_hocr_highlighting_use_fast'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_ocr_solr_hocr_result_count';
+  $strongarm->value = '32';
+  $export['islandora_ocr_solr_hocr_result_count'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_ocr_tesseract';
+  $strongarm->value = '${PATH_TESSERACT}';
+  $export['islandora_ocr_tesseract'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_ocr_tesseract_enabled_languages';
+  $strongarm->value = array(
+    'eng' => 'eng',
+  );
+  $export['islandora_ocr_tesseract_enabled_languages'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_paged_content_djatoka_url';
+  $strongarm->value = 'http://localhost:8080/adore-djatoka/';
+  $export['islandora_paged_content_djatoka_url'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_paged_content_gs';
+  $strongarm->value = '${PATH_GS}';
+  $export['islandora_paged_content_gs'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */

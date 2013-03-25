@@ -58,3 +58,12 @@
 [submodule "islandora_solution_pack_book"]
 	path = islandora_solution_pack_book
 	url = git@github.com:lyrasis/islandora_solution_pack_book.git
+[submodule "islandora_paged_content"]
+	path = islandora_paged_content
+	url = git@github.com:lyrasis/islandora_paged_content.git
+[submodule "islandora_internet_archive_bookreader"]
+	path = islandora_internet_archive_bookreader
+	url = git@github.com:lyrasis/islandora_internet_archive_bookreader.git
+[submodule "islandora_ocr"]
+	path = islandora_ocr
+	url = git@github.com:lyrasis/islandora_ocr.git
