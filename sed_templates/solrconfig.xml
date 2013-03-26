@@ -805,13 +805,13 @@
        <str name="rows">10</str>
        <str name="fl">*,score</str>
        <str name="mlt.qf">
-         text^0.5 features^1.0 name^1.2 sku^1.5 id^10.0 manu^1.1 cat^1.4
+         PID^0.5 text^0.5 features^1.0 name^1.2 sku^1.5 id^10.0 manu^1.1 cat^1.4
        </str>
        <str name="mlt.fl">text,features,name,sku,id,manu,cat</str>
        <int name="mlt.count">3</int>
 
        <str name="qf">
-          text^0.5 features^1.0 name^1.2 sku^1.5 id^10.0 manu^1.1 cat^1.4
+          PID^0.5 text^0.5 features^1.0 name^1.2 sku^1.5 id^10.0 manu^1.1 cat^1.4
        </str>
 
        <str name="facet">on</str>
@@ -843,6 +843,9 @@
        <str name="hl.fl">text features name</str>
        <str name="f.name.hl.fragsize">0</str>
        <str name="f.name.hl.alternateField">name</str>
+       
+       <str name="f.text.hl.fragmenter">regex</str> <!-- defined below -->       
+       
      </lst>
      <arr name="last-components">
        <str>spellcheck</str>

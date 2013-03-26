@@ -949,9 +949,7 @@
    <!-- Uncommenting the following will create a "timestamp" field using
         a default value of "NOW" to indicate when each document was indexed.
      -->
-   <!--
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
-     -->
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
@@ -962,8 +960,20 @@
         both match, the first appearing in the schema will be used.  -->
    <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
    <dynamicField name="*_s"  type="string"  indexed="true"  stored="true"/>
+<!-- Copied from DGI -->
+   <dynamicField name="*_ms"  type="string"  indexed="true"  stored="true" multiValued="true"/>
+
    <dynamicField name="*_l"  type="long"   indexed="true"  stored="true"/>
    <dynamicField name="*_t"  type="text_general"    indexed="true"  stored="true"/>
+
+<!-- Copied from DGI -->
+   <dynamicField name="*_mt"  type="text"    indexed="true"  stored="true" multiValued="true"/>
+   <!-- Solr must parse through a stored, indexed field to construct highlighted snippets around search terms.  
+   The three options, termVectors, termPositions and termOffsets help Solr determine the locations in stored 
+   fields of the search parameters, so it doesn't have to scan through a complete stored field each time snippets are requested.  
+   This is of particular concern with large full-text (OCR) fields. -->
+   <dynamicField name="*_hlt" type="text"    indexed="true"  stored="true" termVectors="true" termPositions="true" termOffsets="true"/>
+
    <dynamicField name="*_txt" type="text_general"    indexed="true"  stored="true" multiValued="true"/>
    <dynamicField name="*_en"  type="text_en"    indexed="true"  stored="true" multiValued="true" />
    <dynamicField name="*_b"  type="boolean" indexed="true"  stored="true"/>
