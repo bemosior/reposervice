@@ -126,6 +126,30 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_newspaper_ingest_derivatives';
+  $strongarm->value = array(
+    'pdf' => 'pdf',
+    'image' => 'image',
+    'ocr' => 'ocr',
+  );
+  $export['islandora_newspaper_ingest_derivatives'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_newspaper_page_viewers';
+  $strongarm->value = array(
+    'name' => array(
+      'none' => 'none',
+      'islandora_openseadragon' => 'islandora_openseadragon',
+    ),
+    'default' => 'islandora_openseadragon',
+  );
+  $export['islandora_newspaper_page_viewers'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'islandora_ocr_solr_hocr_highlighting_field';
   $strongarm->value = 'text_nodes_HOCR_hlt';
   $export['islandora_ocr_solr_hocr_highlighting_field'] = $strongarm;

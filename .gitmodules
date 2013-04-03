@@ -67,3 +67,6 @@
 [submodule "islandora_ocr"]
 	path = islandora_ocr
 	url = git@github.com:lyrasis/islandora_ocr.git
+[submodule "islandora_solution_pack_newspaper"]
+	path = islandora_solution_pack_newspaper
+	url = https://github.com/Islandora/islandora_solution_pack_newspaper.git
