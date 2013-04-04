@@ -14,6 +14,7 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['Associate XML Forms'] = array(
     'name' => 'Associate XML Forms',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -50,6 +51,8 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['List XML Forms'] = array(
     'name' => 'List XML Forms',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -59,6 +62,8 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['add fedora datastreams'] = array(
     'name' => 'add fedora datastreams',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -73,10 +78,29 @@ function lyr_base_islandora_user_default_permissions() {
     'module' => 'islandora_solr',
   );
 
+  // Exported permission: administer masquerade.
+  $permissions['administer masquerade'] = array(
+    'name' => 'administer masquerade',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'masquerade',
+  );
+
+  // Exported permission: bypass inactive object state.
+  $permissions['bypass inactive object state'] = array(
+    'name' => 'bypass inactive object state',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'islandora_simple_workflow',
+  );
+
   // Exported permission: create child collection.
   $permissions['create child collection'] = array(
     'name' => 'create child collection',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -86,6 +110,7 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['delete fedora objects and datastreams'] = array(
     'name' => 'delete fedora objects and datastreams',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -95,6 +120,8 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['edit fedora metadata'] = array(
     'name' => 'edit fedora metadata',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -104,6 +131,8 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['ingest fedora objects'] = array(
     'name' => 'ingest fedora objects',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -113,24 +142,56 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['manage collection policy'] = array(
     'name' => 'manage collection policy',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
+  );
+
+  // Exported permission: manage inactive objects.
+  $permissions['manage inactive objects'] = array(
+    'name' => 'manage inactive objects',
+    'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'islandora_simple_workflow',
   );
 
   // Exported permission: manage object properties.
   $permissions['manage object properties'] = array(
     'name' => 'manage object properties',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
+  );
+
+  // Exported permission: masquerade as admin.
+  $permissions['masquerade as admin'] = array(
+    'name' => 'masquerade as admin',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'masquerade',
+  );
+
+  // Exported permission: masquerade as user.
+  $permissions['masquerade as user'] = array(
+    'name' => 'masquerade as user',
+    'roles' => array(
+      'IslandoraAdmin' => 'IslandoraAdmin',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'masquerade',
   );
 
   // Exported permission: migrate collection members.
   $permissions['migrate collection members'] = array(
     'name' => 'migrate collection members',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -140,6 +201,8 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['search islandora solr'] = array(
     'name' => 'search islandora solr',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
       'anonymous user' => 'anonymous user',
     ),
@@ -150,6 +213,8 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['view fedora repository objects'] = array(
     'name' => 'view fedora repository objects',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
       'anonymous user' => 'anonymous user',
     ),

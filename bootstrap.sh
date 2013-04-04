@@ -40,6 +40,17 @@ if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     exit 1;
 fi
 
+if [ -f $FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default/deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator.xml ]; then
+    echoerr "Found deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator XACML policy."
+    echoerr "This will cause the Islandora Simple Workflow functionality to fail."
+    read -p "Remove this file? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        rm $FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default/deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator.xml
+	echoerr "Restart Tomcat, if needed, for this to take effect."
+    fi
+fi
+
 
 ###
 ### BEGIN Copied and Adapted from djatoka distribution
@@ -172,6 +183,10 @@ $FEDORA_HOME/install/saxon.war|$CATALINA_HOME/webapps
 $SERVICE_HOME/binaries/adore-djatoka/dist/adore-djatoka.war|$CATALINA_HOME/webapps
 $SERVICE_HOME/islandora_drupal_filter/target/fcrepo-drupalauthfilter-3.6.2.jar|$CATALINA_HOME/webapps/fedora/WEB-INF/lib
 $SERVICE_HOME/gsearch/FgsBuild/fromsource/fedoragsearch.war|$CATALINA_HOME/webapps
+$SERVICE_HOME/islandora/policies/permit-apim-to-authenticated-user.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+$SERVICE_HOME/islandora/policies/permit-getDatastream-unrestricted.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+$SERVICE_HOME/islandora/policies/permit-getDatastreamHistory-unrestricted.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+$SERVICE_HOME/islandora/policies/permit-upload-to-authenticated-user.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 EOF
 )
 

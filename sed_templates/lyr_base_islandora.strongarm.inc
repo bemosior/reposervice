@@ -276,6 +276,38 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'masquerade_admin_roles';
+  $strongarm->value = array(
+    3 => '3',
+    1 => 0,
+    2 => 0,
+    4 => 0,
+    5 => 0,
+    6 => 0,
+  );
+  $export['masquerade_admin_roles'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'masquerade_quick_switches';
+  $strongarm->value = array(
+    0 => '12',
+    1 => '13',
+    2 => '0',
+  );
+  $export['masquerade_quick_switches'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'masquerade_test_user';
+  $strongarm->value = '';
+  $export['masquerade_test_user'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'site_frontpage';
   $strongarm->value = 'islandora/object/islandora%3Aroot';
   $export['site_frontpage'] = $strongarm;
