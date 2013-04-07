@@ -576,6 +576,10 @@
           -->
       </arr>
     </listener>
+
+    <!-- a firstSearcher event is fired whenever a new searcher is being
+         prepared but there is no current registered searcher to handle
+         requests or to gain autowarming data from. -->
     <listener event="firstSearcher" class="solr.QuerySenderListener">
       <arr name="queries">
         <lst>
@@ -778,6 +782,18 @@
        </arr>
       -->
   </requestHandler>
+
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
+    <!-- default values for query parameters -->
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <int name="rows">10</int>
+       <str name="df">text</str>
+       <str name="fl">*</str>
+       <str name="q.alt">*:*</str>
+     </lst>
+  </requestHandler>
+
 
   <!-- A Robust Example
 

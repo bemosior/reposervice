@@ -897,25 +897,6 @@
    <field name="id" type="string" indexed="true" stored="true" required="true" />
         -->
    
-   <field name="sku" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true"/>
-   <field name="name" type="text_general" indexed="true" stored="true"/>
-   <field name="alphaNameSort" type="alphaOnlySort" indexed="true" stored="false"/>
-   <field name="manu" type="text_general" indexed="true" stored="true" omitNorms="true"/>
-   <field name="cat" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="features" type="text_general" indexed="true" stored="true" multiValued="true"/>
-   <field name="includes" type="text_general" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
-
-   <field name="weight" type="float" indexed="true" stored="true"/>
-   <field name="price"  type="float" indexed="true" stored="true"/>
-   <field name="popularity" type="int" indexed="true" stored="true" />
-   <field name="inStock" type="boolean" indexed="true" stored="true" />
-
-   <!--
-   The following store examples are used to demonstrate the various ways one might _CHOOSE_ to
-    implement spatial.  It is highly unlikely that you would ever have ALL of these fields defined.
-    -->
-   <field name="store" type="location" indexed="true" stored="true"/>
-
    <!-- Common metadata fields, named specifically to match up with
      SolrCell metadata when parsing rich documents such as Word, PDF.
      Some fields are multiValued only because Tika currently may return
@@ -940,10 +921,6 @@
         leading wildcard queries. -->
    <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
 
-   <!-- non-tokenized version of manufacturer to make it easier to sort or group
-        results by manufacturer.  copied from "manu" via copyField -->
-   <field name="manu_exact" type="string" indexed="true" stored="false"/>
-
    <field name="payloads" type="payloads" indexed="true" stored="true"/>
 
    <!-- Uncommenting the following will create a "timestamp" field using
@@ -967,12 +944,12 @@
    <dynamicField name="*_t"  type="text_general"    indexed="true"  stored="true"/>
 
 <!-- Copied from DGI -->
-   <dynamicField name="*_mt"  type="text"    indexed="true"  stored="true" multiValued="true"/>
+   <dynamicField name="*_mt"  type="text_en_splitting"    indexed="true"  stored="true" multiValued="true"/>
    <!-- Solr must parse through a stored, indexed field to construct highlighted snippets around search terms.  
    The three options, termVectors, termPositions and termOffsets help Solr determine the locations in stored 
    fields of the search parameters, so it doesn't have to scan through a complete stored field each time snippets are requested.  
    This is of particular concern with large full-text (OCR) fields. -->
-   <dynamicField name="*_hlt" type="text"    indexed="true"  stored="true" termVectors="true" termPositions="true" termOffsets="true"/>
+   <dynamicField name="*_hlt" type="text_general"    indexed="true"  stored="true" termVectors="true" termPositions="true" termOffsets="true"/>
 
    <dynamicField name="*_txt" type="text_general"    indexed="true"  stored="true" multiValued="true"/>
    <dynamicField name="*_en"  type="text_en"    indexed="true"  stored="true" multiValued="true" />
@@ -1041,9 +1018,6 @@
    <copyField source="includes" dest="text"/>
    <copyField source="manu" dest="manu_exact"/>
 
-   <!-- Copy the price into a currency enabled field (default USD) -->
-   <copyField source="price" dest="price_c"/>
-	
    <!-- Above, multiple source fields are copied to the [text] field. 
 	  Another way to map multiple source fields to the same 
 	  destination field is to use the dynamic field syntax. 
