@@ -23,6 +23,11 @@ if [ ! -h binaries/adore-djatoka ]; then
     echoerr "Download adore-djatoka; create symbolic link at binaries/adore-djatoka to unpacked directory."
     exit 1;
 fi
+if [ $(uname) = "Darwin" ]; then
+	READLINK="greadlink"
+else
+	READLINK="readlink"
+fi
 
 export SERVICE_HOME=`pwd`
 export FEDORA_HOME=$SERVICE_HOME/fedora_home
@@ -30,10 +35,11 @@ export DRUPAL_HOME=$SERVICE_HOME/drupal
 export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS="$CATALINA_DEBUG -XX:MaxPermSize=256m"
 export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
+export JAVA_HOME=$($READLINK -f /usr/bin/java | sed "s:/bin/java::")
 alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
 alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
 alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
-alias tomcattunnel="ssh -fNg -L 18080:localhost:8080 islandora.lyrasistechnology.org"
+alias isltunnel="ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org"
 
 if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
