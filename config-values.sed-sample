@@ -19,4 +19,4 @@ s:${PATH_PDFTOTEXT}:/path/to/pdftotext:
 s:${PATH_IMAGEMAGICK_CONVERT}:/path/to/imagemagick/convert:
 s:${PATH_GS}:/path/to/gs:
 s:${PATH_TESSERACT}:/path/to/tesseract:
-s:${ADORE_DJATOKA_URL}:http://___HOSTNAME___/adore-djatoka:
+s#${ADORE_DJATOKA_URL}#http://___HOSTNAME___/adore-djatoka#
