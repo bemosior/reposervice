@@ -41,6 +41,29 @@ alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
 alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
 alias isltunnel="ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org"
 
+command -v drush >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-information 'Data Entry' 2>/dev/null | cut -f2 -d',')
+	if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+		DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-create 'Data Entry' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
+		if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+			echoerr "Couldn't create 'Data Entry' Drupal User"
+		fi
+	fi
+	drush --pipe --root=$DRUPAL_HOME user-add-role 'Mediated Data Entry' --uid=$DATA_ENTRY_DRUPAL_UID >/dev/null 2>&1
+	SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-information 'Supervisor' 2>/dev/null | cut -f2 -d',')
+	if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+		SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-create 'Supervisor' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
+		if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+			echoerr "Couldn't create 'Supervisor' Drupal User"
+		fi
+	fi
+	drush --pipe --root=$DRUPAL_HOME user-add-role 'Islandora Collection Supervisor' --uid=$SUPERVISOR_DRUPAL_UID >/dev/null 2>&1
+else
+	echoerr "'drush' is not in the current path"
+	exit 1;
+fi
+
 if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
     exit 1;
@@ -125,6 +148,8 @@ printf 's:${FEDORA_HOME}:%s:\n' $FEDORA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${DRUPAL_HOME}:%s:\n' $DRUPAL_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${CATALINA_HOME}:%s:\n' $CATALINA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${PATH_KAKADU}:%s/kdu_compress:\n' $KAKADU_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's/${DATA_ENTRY_DRUPAL_UID}/%s/\n' $DATA_ENTRY_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
+printf 's/${SUPERVISOR_DRUPAL_UID}/%s/\n' $SUPERVISOR_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
 
 CONFIG_FILES=$( cat <<EOF
 drupal-settings.txt|$DRUPAL_HOME/sites/default/settings.php

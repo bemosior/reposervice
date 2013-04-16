@@ -188,7 +188,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_paged_content_djatoka_url';
-  $strongarm->value = 'http://localhost:8080/adore-djatoka/';
+  $strongarm->value = '${ADORE_DJATOKA_URL}';
   $export['islandora_paged_content_djatoka_url'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -434,8 +434,8 @@ function lyr_base_islandora_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'masquerade_quick_switches';
   $strongarm->value = array(
-    0 => '12',
-    1 => '13',
+    0 => '${DATA_ENTRY_DRUPAL_UID}',
+    1 => '${SUPERVISOR_DRUPAL_UID}',
     2 => '0',
   );
   $export['masquerade_quick_switches'] = $strongarm;
