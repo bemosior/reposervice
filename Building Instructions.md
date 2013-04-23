@@ -27,6 +27,10 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 1. ImageMagick
 1. Ghostscript
 1. Poppler or Poppler-utils (for `pdftotext`)
+1. Tesseract (needs to be [built from source](http://ubuntuforums.org/showthread.php?t=1647350&p=10248384#post10248384), along with leptonica, and requires these prerequisites)
+	1. libpng12-dev
+	1. libjpeg62-dev
+	1. libtiff4-dev
 
 PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and add "extension=uploadprogress.so" to php.ini.  Apache httpd mod_rewrite is needed for clean URLs; for Ubuntu, move `/etc/apache2/mods-available/rewrite.load` to `/etc/apache2/mods-enabled/`.  Also be sure to allow .htaccess directives to be honored by setting `AllowOverride All` in the httpd configuration file.
 
@@ -134,3 +138,14 @@ Add these lines to the Apache HTTPD configuration:
 
 		ProxyPass /adore-djatoka http://localhost:8080/adore-djatoka
 		ProxyPassReverse /adore-djatoka http://localhost:8080/adore-djatoka
+		
+## Committing changes to submodules
+One will need to run `reset` in the terminal after this. 
+
+		git diff --cached --no-color --submodule [submodule] | git commit -e --file=-
+
+## Creating a new site
+
+1. Create instance: `drush site-install standard --account-mail=Peter.Murray+cldemo_demo@lyrasis.org --account-name=cldemo_admin --account-pass=blah --db-su=${DB_ROOT_USER} --db-su-pw=${DB_ROOT_PASSWORD} --locale=en-US --site-name="cldemo Site" --site-mail=Peter.Murray+cldemo@lyrasis.org --sites-subdir=${SITE_HOSTNAME} --db-url="mysql://${DB_DRUPAL_USER}:${DB_DRUPAL_PASSWORD}@localhost/drupal_cldemo"`
+1. Set public file directory permissions: `chmod g+w,o+w $DRUPAL_HOME/sites/${SITE_HOSTNAME}/files`
+1. Enable `lyr_base_islandora module`

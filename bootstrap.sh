@@ -28,6 +28,11 @@ if [ $(uname) = "Darwin" ]; then
 else
 	READLINK="readlink"
 fi
+if [ -x /usr/libexec/java_home ]; then
+	export JAVA_HOME=$(/usr/libexec/java_home)
+else
+	export JAVA_HOME=$($READLINK -f /usr/bin/java | sed "s:/bin/java::")
+fi
 
 export SERVICE_HOME=`pwd`
 export FEDORA_HOME=$SERVICE_HOME/fedora_home
@@ -35,34 +40,10 @@ export DRUPAL_HOME=$SERVICE_HOME/drupal
 export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
 export CATALINA_OPTS="$CATALINA_DEBUG -XX:MaxPermSize=256m"
 export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
-export JAVA_HOME=$($READLINK -f /usr/bin/java | sed "s:/bin/java::")
 alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
 alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
 alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
 alias isltunnel="ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org"
-
-command -v drush >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-	DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-information 'Data Entry' 2>/dev/null | cut -f2 -d',')
-	if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-		DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-create 'Data Entry' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
-		if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-			echoerr "Couldn't create 'Data Entry' Drupal User"
-		fi
-	fi
-	drush --pipe --root=$DRUPAL_HOME user-add-role 'Mediated Data Entry' --uid=$DATA_ENTRY_DRUPAL_UID >/dev/null 2>&1
-	SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-information 'Supervisor' 2>/dev/null | cut -f2 -d',')
-	if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-		SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME user-create 'Supervisor' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
-		if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-			echoerr "Couldn't create 'Supervisor' Drupal User"
-		fi
-	fi
-	drush --pipe --root=$DRUPAL_HOME user-add-role 'Islandora Collection Supervisor' --uid=$SUPERVISOR_DRUPAL_UID >/dev/null 2>&1
-else
-	echoerr "'drush' is not in the current path"
-	exit 1;
-fi
 
 if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"

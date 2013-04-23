@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+
+REPOCODE=$1  # A short, database-friendly code
+REPOHOST=$2  # The hostname of the repository
+
+function echoerr { echo "$@" >&2; }
+
+
+if [ ! -d $DRUPAL_HOME/sites/$REPOHOST ]; then
+	echoerr "Site $DRUPAL_HOME/sites/$REPOHOST ($REPOCODE) not created. Exiting."
+	exit 1
+fi
+
+command -v drush >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	LOCALADMIN_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/ user-information "$REPOCODE Islandora Administrator" 2>/dev/null | cut -f2 -d',')
+	if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+		LOCALADMIN_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-create "$REPOCODE Islandora Administrator" --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
+		if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+			echoerr "Couldn't create 'Data Entry' Drupal User"
+		fi
+	fi
+	drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-add-role 'Islandora Administrator' --uid=$LOCALADMIN_DRUPAL_UID >/dev/null 2>&1
+
+	DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/ user-information 'Data Entry' 2>/dev/null | cut -f2 -d',')
+	if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+		DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-create 'Data Entry' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
+		if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+			echoerr "Couldn't create 'Data Entry' Drupal User"
+		fi
+	fi
+	drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-add-role 'Mediated Data Entry' --uid=$DATA_ENTRY_DRUPAL_UID >/dev/null 2>&1
+
+	SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-information 'Supervisor' 2>/dev/null | cut -f2 -d',')
+	if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+		SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-create 'Supervisor' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
+		if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
+			echoerr "Couldn't create 'Supervisor' Drupal User"
+		fi
+	fi
+	drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-add-role 'Islandora Collection Supervisor' --uid=$SUPERVISOR_DRUPAL_UID >/dev/null 2>&1
+else
+	echoerr "'drush' is not in the current path"
+	exit 1;
+fi
+

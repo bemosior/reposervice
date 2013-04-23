@@ -201,13 +201,6 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_pdf_allow_text_upload';
-  $strongarm->value = 1;
-  $export['islandora_pdf_allow_text_upload'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'islandora_pdf_create_fulltext';
   $strongarm->value = 1;
   $export['islandora_pdf_create_fulltext'] = $strongarm;
@@ -299,20 +292,6 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_solr_facet_max_limit';
-  $strongarm->value = '20';
-  $export['islandora_solr_facet_max_limit'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_solr_facet_min_limit';
-  $strongarm->value = '2';
-  $export['islandora_solr_facet_min_limit'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_facet_soft_limit';
   $strongarm->value = '10';
   $export['islandora_solr_facet_soft_limit'] = $strongarm;
@@ -323,20 +302,6 @@ function lyr_base_islandora_strongarm() {
   $strongarm->name = 'islandora_solr_limit_result_fields';
   $strongarm->value = 0;
   $export['islandora_solr_limit_result_fields'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_solr_namespace_restriction';
-  $strongarm->value = '';
-  $export['islandora_solr_namespace_restriction'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_solr_num_of_results';
-  $strongarm->value = '20';
-  $export['islandora_solr_num_of_results'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
@@ -370,13 +335,6 @@ function lyr_base_islandora_strongarm() {
     ),
   );
   $export['islandora_solr_primary_display_table'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_solr_query_fields';
-  $strongarm->value = 'dc.title^5 dc.subject^2 dc.description^2 dc.creator^2 dc.contributor^1 ds.OCR^3 ds.FULL_TEXT^3 dc.type';
-  $export['islandora_solr_query_fields'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
@@ -418,71 +376,11 @@ function lyr_base_islandora_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'masquerade_admin_roles';
-  $strongarm->value = array(
-    3 => '3',
-    1 => 0,
-    2 => 0,
-    4 => 0,
-    5 => 0,
-    6 => 0,
-  );
-  $export['masquerade_admin_roles'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'masquerade_quick_switches';
-  $strongarm->value = array(
-    0 => '${DATA_ENTRY_DRUPAL_UID}',
-    1 => '${SUPERVISOR_DRUPAL_UID}',
-    2 => '0',
-  );
-  $export['masquerade_quick_switches'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'masquerade_test_user';
   $strongarm->value = '';
   $export['masquerade_test_user'] = $strongarm;
 
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'site_frontpage';
-  $strongarm->value = 'islandora/object/islandora%3Aroot';
-  $export['site_frontpage'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'site_mail';
-  $strongarm->value = '${FEDORA_ADMIN_EMAIL}';
-  $export['site_mail'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'site_name';
-  $strongarm->value = '${FEDORA_REPOSITORY_NAME}';
-  $export['site_name'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'site_slogan';
-  $strongarm->value = 'Site Slogan';
-  $export['site_slogan'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'theme_default';
-  $strongarm->value = 'islandoratheme';
-  $export['theme_default'] = $strongarm;
-
-  $strongarm = new stdClass();
+x  $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'theme_islandoratheme_settings';

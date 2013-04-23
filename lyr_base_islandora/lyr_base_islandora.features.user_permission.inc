@@ -91,6 +91,7 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['bypass inactive object state'] = array(
     'name' => 'bypass inactive object state',
     'roles' => array(
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_simple_workflow',
@@ -181,7 +182,7 @@ function lyr_base_islandora_user_default_permissions() {
   $permissions['masquerade as user'] = array(
     'name' => 'masquerade as user',
     'roles' => array(
-      'IslandoraAdmin' => 'IslandoraAdmin',
+      'Islandora Administrator' => 'Islandora Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'masquerade',
