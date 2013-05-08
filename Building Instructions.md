@@ -148,4 +148,28 @@ One will need to run `reset` in the terminal after this.
 
 1. Create instance: `drush site-install standard --account-mail=Peter.Murray+cldemo_demo@lyrasis.org --account-name=cldemo_admin --account-pass=blah --db-su=${DB_ROOT_USER} --db-su-pw=${DB_ROOT_PASSWORD} --locale=en-US --site-name="cldemo Site" --site-mail=Peter.Murray+cldemo@lyrasis.org --sites-subdir=${SITE_HOSTNAME} --db-url="mysql://${DB_DRUPAL_USER}:${DB_DRUPAL_PASSWORD}@localhost/drupal_cldemo"`
 1. Set public file directory permissions: `chmod g+w,o+w $DRUPAL_HOME/sites/${SITE_HOSTNAME}/files`
-1. Enable `lyr_base_islandora module`
+1. Enable `lyr_base_islandora` module
+
+## Migrating Content
+[emory-libraries/eulfedora · GitHub](https://github.com/emory-libraries/eulfedora)
+EULfedora is a Python module that provides utilities, API wrappers, and classes for interacting with the Fedora-Commons Repository (versions 3.4.x and 3.5) in a pythonic, object-oriented way, with optional Django integration.
+
+eulfedora.api provides complete access to the Fedora API, primarily making use of Fedora's REST API. This low-level interface is wrapped by eulfedora.server.Repository and eulfedora.models.DigitalObject, which provide a more abstract, object-oriented, and Pythonic way of interacting with a Fedora Repository or with individual objects and datastreams.
+
+eulfedora.indexdata provides a webservice that returns data for fedora objects in JSON form, which can be used in conjunction with a service for updating an index, such as eulindexer.
+
+When used with Django, eulfedora can pull the Repository connection configuration from Django settings, and provides a custom management command for loading simple content models and fixture objects to the configured repository.
+
+[acoburn/cloche · GitHub](https://github.com/acoburn/cloche)
+Python utilities for interacting with a fedora repository
+
+[nigelgbanks/islandora_drush · GitHub](https://github.com/nigelgbanks/islandora_drush)
+Batch tasks for maintaining a Fedora Repository, requires the Tuque API.
+
+[manidora/manidora.drush.inc at 7.x · nigelgbanks/manidora · GitHub](https://github.com/nigelgbanks/manidora/blob/7.x/manidora.drush.inc)
+Book batch ingest script for University of Manitoba.
+
+[UCLALibrary/ucla_migration · GitHub](https://github.com/UCLALibrary/ucla_migration)
+This drush script will migrate an entire collection based on a METS manifest.
+
+
