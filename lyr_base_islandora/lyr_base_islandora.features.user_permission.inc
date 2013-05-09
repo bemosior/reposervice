@@ -222,5 +222,17 @@ function lyr_base_islandora_user_default_permissions() {
     'module' => 'islandora',
   );
 
+  // Exported permission: view technical metadata.
+  $permissions['view technical metadata'] = array(
+    'name' => 'view technical metadata',
+    'roles' => array(
+      'Islandora Administrator' => 'Islandora Administrator',
+      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'islandora_fits',
+  );
+
   return $permissions;
 }

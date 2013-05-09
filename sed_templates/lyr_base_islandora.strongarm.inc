@@ -14,7 +14,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'clean_url';
-  $strongarm->value = TRUE;
+  $strongarm->value = '1';
   $export['clean_url'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -74,6 +74,20 @@ function lyr_base_islandora_strongarm() {
     'default' => 'islandora_internet_archive_bookreader',
   );
   $export['islandora_book_viewers'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_fits_executable_path';
+  $strongarm->value = '${PATH_FITS}';
+  $export['islandora_fits_executable_path'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'islandora_fits_techmd_dsid';
+  $strongarm->value = 'TECHMD';
+  $export['islandora_fits_techmd_dsid'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
@@ -400,13 +414,6 @@ function lyr_base_islandora_strongarm() {
     'csv' => 0,
   );
   $export['islandora_solr_secondary_display'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'islandora_solr_tabs__active_tab';
-  $strongarm->value = 'edit-query-defaults';
-  $export['islandora_solr_tabs__active_tab'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */

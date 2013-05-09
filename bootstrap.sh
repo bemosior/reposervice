@@ -23,6 +23,13 @@ if [ ! -h binaries/adore-djatoka ]; then
     echoerr "Download adore-djatoka; create symbolic link at binaries/adore-djatoka to unpacked directory."
     exit 1;
 fi
+if [ ! -h binaries/fits ]; then 
+    echoerr "Download fits; create symbolic link at binaries/fits to unpacked directory."
+    exit 1;
+fi
+if [ ! -x binaries/fits/fits.sh ]; then 
+    chmod 755 binaries/fits/fits.sh
+fi
 if [ $(uname) = "Darwin" ]; then
 	READLINK="greadlink"
 else
@@ -129,6 +136,7 @@ printf 's:${FEDORA_HOME}:%s:\n' $FEDORA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${DRUPAL_HOME}:%s:\n' $DRUPAL_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${CATALINA_HOME}:%s:\n' $CATALINA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${PATH_KAKADU}:%s/kdu_compress:\n' $KAKADU_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${PATH_FITS}:%s/binaries/fits/fits.sh:\n' $SERVICE_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's/${DATA_ENTRY_DRUPAL_UID}/%s/\n' $DATA_ENTRY_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
 printf 's/${SUPERVISOR_DRUPAL_UID}/%s/\n' $SUPERVISOR_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
 
