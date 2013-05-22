@@ -37,6 +37,8 @@ my %submodUpstreamBranch = (
   islandora_solution_pack_newspaper => '7.x',
   islandora_simple_workflow => '7.x',
   islandora_fits => '7.x',
+  islandora_batch => '7.x-uofm',
+  islandora_book_batch => '7.x',
 );
 
 use Cwd;

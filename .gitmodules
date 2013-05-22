@@ -69,10 +69,16 @@
 	url = git@github.com:lyrasis/islandora_ocr.git
 [submodule "islandora_solution_pack_newspaper"]
 	path = islandora_solution_pack_newspaper
-	url = https://github.com/Islandora/islandora_solution_pack_newspaper.git
+	url = git@github.com:lyrasis/islandora_solution_pack_newspaper.git
 [submodule "islandora_simple_workflow"]
 	path = islandora_simple_workflow
-	url = https://github.com/lyrasis/islandora_simple_workflow
+	url = git@github.com:lyrasis/islandora_simple_workflow
 [submodule "islandora_fits"]
 	path = islandora_fits
 	url = git@github.com:lyrasis/islandora_fits.git
+[submodule "islandora_book_batch"]
+	path = islandora_book_batch
+	url = git@github.com:lyrasis/islandora_book_batch.git
+[submodule "islandora_batch"]
+	path = islandora_batch
+	url = git@github.com:lyrasis/islandora_batch.git
