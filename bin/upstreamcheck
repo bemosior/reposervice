@@ -39,6 +39,7 @@ my %submodUpstreamBranch = (
   islandora_fits => '7.x',
   islandora_batch => '7.x-uofm',
   islandora_book_batch => '7.x',
+  islandora_utils => 'master',
 );
 
 use Cwd;

@@ -82,3 +82,6 @@
 [submodule "islandora_batch"]
 	path = islandora_batch
 	url = git@github.com:lyrasis/islandora_batch.git
+[submodule "islandora_utils"]
+	path = islandora_utils
+	url = git@github.com:lyrasis/islandora_utils.git
