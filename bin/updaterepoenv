@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+
+function echoerr { echo "$@" >&2; }
+
+[ -z "$SERVICE_HOME" ] && { echoerr "SERVICE_HOME env variable not defined; have you bootstrapped?"; exit 1; }
+starting_cwd=$(pwd)
+
+read -p "Pull reposervice updates from git repository? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cd $SERVICE_HOME
+	git pull
+fi
+
+read -p "Update git submodules? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cd $SERVICE_HOME
+	git submodule update --init
+fi
+
+read -p "Run bootstrap script? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cd $SERVICE_HOME
+	./bootstrap.sh
+fi
+
+read -p "Update Drupal features? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cd $DRUPAL_HOME
+	drush features-revert lyr_base_islandora lyrasis_drupal_base
+fi
+
+read -p "Run Drupal database update? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cd $DRUPAL_HOME
+	drush updatedb
+fi
+
+read -p "Run Drupal clear cache? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cd $DRUPAL_HOME
+	drush cache-clear all
+fi
+
+cd $starting_cwd
