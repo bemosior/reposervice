@@ -147,6 +147,7 @@ fedora-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedora.xml
 fedora-install-properties.txt|$FEDORA_HOME/install/install.properties
 fedora-fcfg.txt|$FEDORA_HOME/server/config/fedora.fcfg
 solr.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
+fedoragsearch.xml|$CATALINA_HOME/conf/Catalina/localhost/fedoragsearch.xml
 solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
 solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
 fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
