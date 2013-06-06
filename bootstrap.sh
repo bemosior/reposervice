@@ -73,7 +73,7 @@ export SERVICE_HOME=`pwd`
 export FEDORA_HOME=$SERVICE_HOME/fedora_home
 export DRUPAL_HOME=$SERVICE_HOME/drupal
 export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
-export CATALINA_OPTS="$CATALINA_DEBUG -XX:MaxPermSize=256m"
+export CATALINA_OPTS="$CATALINA_DEBUG -XX:MaxPermSize=256m -Xmx1G -Xms128M"
 export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
 alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
 alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
@@ -144,7 +144,7 @@ for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
   djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
 done
 
-CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx1G -Xms128M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
+CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
 
 ###
 ### END Copied and Adapted from djatoka distribution
