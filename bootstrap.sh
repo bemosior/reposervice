@@ -7,6 +7,34 @@ CATALINA_DEBUG=
 
 function echoerr { echo "$@" >&2; }
 
+##
+## Function checkAndReplace()
+##
+## Test, using MD5 checksums, if the source file is different from the destination file.
+## If so, output the diff and ask if the file should be updated.  If the file doesn't
+## exist, silently copy it to the destination.
+##
+## @param string $SOURCE_FILE
+##   The new, possibly modified, file location
+## @param string $DESTINATION_FILE
+##   The existing file location
+##
+function checkAndReplace {
+	SOURCE_FILE=$1; DESTINATION_FILE=$2
+  	if [ -f $DESTINATION_FILE ]; then
+		if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DESTINATION_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
+			diff $DESTINATION_FILE $SOURCE_FILE
+			read -p "FOUND UPDATED $DESTINATION_FILE -- replace? (y/N) " -n 1 -r
+			echo
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				cp $SOURCE_FILE $DESTINATION_FILE
+			fi
+		fi
+	else
+		cp $SOURCE_FILE $DESTINATION_FILE
+	fi
+}
+
 if [ ! -f config-values.sed ]; then
     echoerr "File 'config-values.sed' not found; cannot continue. Copy config-values.sed-sample to config-values.sed and edit."
     exit 1;
@@ -177,18 +205,7 @@ for line in $CONFIG_FILES; do
 		fi
 	fi
 
-	if [ -f $DEST_FILE ]; then
-		if [ "$(openssl md5 $EXPANDED_CONFIG_DIR/$SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
-			diff $DEST_FILE $EXPANDED_CONFIG_DIR/$SOURCE_FILE
-			read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
-			echo
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				cp $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
-			fi
-		fi
-	else
-		cp $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
-	fi
+	checkAndReplace $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
 done
 
 ##
@@ -209,40 +226,18 @@ cd $EXPANDED_CONFIG_DIR/fgsconfigFinal
 for line in $(find . -type f -print); do
 	SOURCE_FILE="$EXPANDED_CONFIG_DIR/fgsconfigFinal/$line"
 	DEST_FILE="$FEDORA_HOME/gsearch/fgsconfigFinal/$line"
-	if [ -f $DEST_FILE ]; then
-		if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
-			diff $DEST_FILE $SOURCE_FILE
-			read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
-			echo
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				cp $SOURCE_FILE $DEST_FILE
-			fi
-		fi
-	else
-		cp $SOURCE_FILE $DEST_FILE
-	fi
+	checkAndReplace $SOURCE_FILE $DEST_FILE
 done
 
 cd $EXPANDED_CONFIG_DIR/solr-conf
 for line in $(find . -type f -print); do
 	SOURCE_FILE="$EXPANDED_CONFIG_DIR/solr-conf/$line"
 	DEST_FILE="$FEDORA_HOME/gsearch/solr/conf/$line"
-	if [ -f $DEST_FILE ]; then
-		if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
-			diff $DEST_FILE $SOURCE_FILE
-			read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
-			echo
-			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				cp $SOURCE_FILE $DEST_FILE
-			fi
-		fi
-	else
-		cp $SOURCE_FILE $DEST_FILE
-	fi
+	checkAndReplace $SOURCE_FILE $DEST_FILE
 done
 
 cd $starting_cwd
-rm -r $SED_CONFIG_SUBSTITUTES
+rm $SED_CONFIG_SUBSTITUTES
 
 BINARY_FILES=$( cat <<EOF
 $FEDORA_HOME/install/fedora-demo.war|$CATALINA_HOME/webapps
@@ -271,24 +266,7 @@ for line in $BINARY_FILES; do
     	if [ ! -d $DEST_DIR ]; then
     		echoerr "Binary destination directory $DEST_DIR doesn't exist, and it probably should."
     	else
-    		if [ -f $DEST_FILE ]; then
-    			if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
-    				ls -l $SOURCE_FILE
-    				ls -l $DEST_FILE
-    				read -p "Update $BASE_FILENAME? (y/N) " -n 1 -r
-	    			echo
-   		 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-    					cp $SOURCE_FILE $DEST_FILE
-    				fi
-    			fi
-    		else
-    			cp $SOURCE_FILE $DEST_FILE
-    		fi
+			checkAndReplace $SOURCE_FILE $DEST_FILE
     	fi
     fi
 done
-
-## Build and install GSearch config files
-##
-## cd $SERVICE-HOME/gsearch-config
-## ant -f fgsconfig-basic.xml -Dlocal.FEDORA_HOME=$FEDORA_HOME -propertyfile fgsconfig-basic-for-islandora.properties
