@@ -123,11 +123,11 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 
 ## Set up GSearch
 
-1. `cd $SERVICE_HOME/gsearch/FedoraGenericSearch`
-1. `ant buildfromsource`
-1. `cp $SERVICE_HOME/gsearch/FgsBuild/fromsource/fedoragsearch.war $CATALINA_HOME/webapps`
-1. Let fedoragsearch deploy for the first time; it will throw errors in the catalina.log file until the configuration is saved into the unpacked war file in the next step.
-1. `cd $SERVICE_HOME/gsearch/FgsConfig && ant -f fgsconfig-basic.xml -Dlocal.FEDORA_HOME=$FEDORA_HOME -propertyfile fgsconfig-basic-for-islandora.properties`
+Indexing configuration for GSearch
+
+This repo will holds a basic solr config, schema and xslt to use as a starting point for future projects.
+It requires the joda library deployed to gsearch's lib directory
+http://sourceforge.net/projects/joda-time/files/joda-time/
 
 ## Install Sun Java JDK
 Ubuntu installs OpenJDK by default, but there is a [bug in OpenJDK that Djatoka will trip over](http://sourceforge.net/apps/mediawiki/djatoka/index.php?title=Installation#Ubuntu_-_IncompatibleClassChangeError).

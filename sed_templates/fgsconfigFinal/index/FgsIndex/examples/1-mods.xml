@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+    <mods:titleInfo>
+        <mods:title>Patriarch Athenagoras, Archbishop of Greek Orthodox Church, with group of men in Los Angeles, Calif., 1948</mods:title>
+    </mods:titleInfo>
+    <mods:identifier type="local">uclalat_1387_b128_43971-1</mods:identifier>
+    <mods:originInfo>
+        <mods:dateCreated>December 10, 1948</mods:dateCreated>
+        <mods:dateCreated encoding="iso8601">1948-12-10</mods:dateCreated>
+    </mods:originInfo>
+    <mods:genre authority="aat">news photographs</mods:genre>
+    <mods:typeOfResource>still image</mods:typeOfResource>
+    <mods:relatedItem type="host">
+        <mods:titleInfo>
+            <mods:title>Los Angeles Daily News Negatives. Department of Special Collections, Charles E. Young Research Library, University of California at Los Angeles.</mods:title>
+        </mods:titleInfo>
+    </mods:relatedItem>
+    <mods:subject authority="lcsh">
+        <mods:topic>Patriarchs and patriarchate</mods:topic>
+    </mods:subject>
+    <mods:subject authority="lcsh">
+        <mods:topic>Orthodox Eastern Church $z Bishops</mods:topic>
+    </mods:subject>
+    <mods:subject authority="cla_topic">
+        <mods:topic>Religion</mods:topic>
+    </mods:subject>
+    <mods:subject authority="cla_topic">
+        <mods:topic>People</mods:topic>
+    </mods:subject>
+    <mods:subject>
+        <mods:geographic>Los Angeles (Calif.)</mods:geographic>
+    </mods:subject>
+    <mods:name type="personal">
+        <mods:namePart>Athe¯nagoras I, Ecumenical Patriarch of Constantinople, 1886-1972--Travel--California--Los Angeles</mods:namePart>
+        <mods:role>
+            <mods:roleTerm type="text">subject</mods:roleTerm>
+        </mods:role>
+    </mods:name>
+    <mods:physicalDescription>
+        <mods:extent>1 photograph</mods:extent>
+        <mods:extent>b&amp;w negative</mods:extent>
+        <mods:extent>10 x 12.5 cm.</mods:extent>
+    </mods:physicalDescription>
+    <mods:recordInfo>
+        <mods:recordIdentifier>21198-zz0002nt8d</mods:recordIdentifier>
+    </mods:recordInfo>
+</mods:mods>

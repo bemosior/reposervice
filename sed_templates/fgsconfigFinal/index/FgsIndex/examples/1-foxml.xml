@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="edu.ucla.library.specialCollections.losAngelesDailyNews:2"
+    xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+    <foxml:objectProperties>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Patriarch Athenagoras, Archbishop of Greek Orthodox Church, with group of men in Los Angeles, Calif., 1948"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE=""/>
+        <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2013-04-13T02:18:13.222Z"/>
+        <foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2013-04-13T02:19:15.341Z"/>
+    </foxml:objectProperties>
+    <foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+        <foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2013-04-13T02:18:13.222Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+            <foxml:xmlContent>
+                <audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+                    <audit:record ID="AUDREC1">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>TECHMD</audit:componentID>
+                        <audit:responsibility>anonymous</audit:responsibility>
+                        <audit:date>2013-04-13T02:18:44.894Z</audit:date>
+                        <audit:justification>Copied datastream from edu.ucla.library.specialCollections.losAngelesDailyNews:2.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC2">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>JP2</audit:componentID>
+                        <audit:responsibility>anonymous</audit:responsibility>
+                        <audit:date>2013-04-13T02:19:02.119Z</audit:date>
+                        <audit:justification>Copied datastream from edu.ucla.library.specialCollections.losAngelesDailyNews:2.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC3">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>JPG</audit:componentID>
+                        <audit:responsibility>anonymous</audit:responsibility>
+                        <audit:date>2013-04-13T02:19:09.996Z</audit:date>
+                        <audit:justification>Copied datastream from edu.ucla.library.specialCollections.losAngelesDailyNews:2.</audit:justification>
+                    </audit:record>
+                    <audit:record ID="AUDREC4">
+                        <audit:process type="Fedora API-M"/>
+                        <audit:action>addDatastream</audit:action>
+                        <audit:componentID>TN</audit:componentID>
+                        <audit:responsibility>anonymous</audit:responsibility>
+                        <audit:date>2013-04-13T02:19:15.341Z</audit:date>
+                        <audit:justification>Copied datastream from edu.ucla.library.specialCollections.losAngelesDailyNews:2.</audit:justification>
+                    </audit:record>
+                </audit:auditTrail>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object to Object Relationship Metadata." CREATED="2013-04-13T02:18:13.362Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="640">
+            <foxml:xmlContent>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#" xmlns:fedora-model="info:fedora/fedora-system:def/model#" xmlns:islandora="http://islandora.ca/ontology/relsext#">
+                    <rdf:Description rdf:about="info:fedora/edu.ucla.library.specialCollections.losAngelesDailyNews:2">
+                        <fedora-model:hasModel rdf:resource="info:fedora/islandora:sp_large_image_cmodel"></fedora-model:hasModel>
+                        <fedora:isMemberOfCollection rdf:resource="info:fedora/edu.ucla.library.specialCollections.losAngelesDailyNews:1"></fedora:isMemberOfCollection>
+                    </rdf:Description>
+                </rdf:RDF>
+            </foxml:xmlContent>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="MODS" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="MODS.0" LABEL="MODS Record" CREATED="2013-04-13T02:18:13.362Z" MIMETYPE="text/xml" SIZE="3005">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+MODS+MODS.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="DC.0" LABEL="Dublin Core Record" CREATED="2013-04-13T02:18:13.362Z" MIMETYPE="text/xml" SIZE="1266">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+DC+DC.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="OBJ" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="OBJ.0" LABEL="High Quality Tiff" CREATED="2013-04-13T02:18:13.363Z" MIMETYPE="image/tiff" SIZE="30223492">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+OBJ+OBJ.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="TECHMD" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="TECHMD.0" LABEL="TECHMD" CREATED="2013-04-13T02:18:44.894Z" MIMETYPE="text/xml" SIZE="6809">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+TECHMD+TECHMD.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="JP2" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="JP2.0" LABEL="JPEG 2000" CREATED="2013-04-13T02:19:02.119Z" MIMETYPE="image/jp2" SIZE="705864">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+JP2+JP2.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="JPG" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="JPG.0" LABEL="Medium sized JPEG" CREATED="2013-04-13T02:19:09.996Z" MIMETYPE="image/jpeg" SIZE="58360">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+JPG+JPG.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+    <foxml:datastream ID="TN" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+        <foxml:datastreamVersion ID="TN.0" LABEL="Thumbnail" CREATED="2013-04-13T02:19:15.341Z" MIMETYPE="image/jpeg" SIZE="28795">
+            <foxml:contentLocation TYPE="INTERNAL_ID" REF="edu.ucla.library.specialCollections.losAngelesDailyNews:2+TN+TN.0"/>
+        </foxml:datastreamVersion>
+    </foxml:datastream>
+</foxml:digitalObject>
