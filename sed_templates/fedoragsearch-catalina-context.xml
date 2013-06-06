@@ -1,9 +1,9 @@
 <Context path="/fedoragsearch">
 	<Resources className="org.apache.naming.resources.VirtualDirContext"
-		extraResourcePaths="/WEB-INF/classes/fgsconfigFinal=${SERVICE_HOME}/fgsconfigFinal"
+		extraResourcePaths="/WEB-INF/classes/fgsconfigFinal=${FEDORA_HOME}/gsearch/fgsconfigFinal"
 		/>
 	<Loader className="org.apache.catalina.loader.VirtualWebappLoader"
-		virtualClasspath="${SERVICE_HOME}/fgsconfigFinal"
+		virtualClasspath="${FEDORA_HOME}/gsearch/fgsconfigFinal"
 		/>
 	<JarScanner scanAllDirectories="true" />
 </Context>

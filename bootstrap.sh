@@ -116,7 +116,7 @@ for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
   djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
 done
 
-CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx512M -Xms64M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
+CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true  -Xmx1G -Xms128M -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
 
 ###
 ### END Copied and Adapted from djatoka distribution
@@ -146,10 +146,8 @@ filter-drupal.txt|$FEDORA_HOME/server/config/filter-drupal.xml
 fedora-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedora.xml
 fedora-install-properties.txt|$FEDORA_HOME/install/install.properties
 fedora-fcfg.txt|$FEDORA_HOME/server/config/fedora.fcfg
-solr.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
-fedoragsearch.xml|$CATALINA_HOME/conf/Catalina/localhost/fedoragsearch.xml
-solr-schema.xml|$FEDORA_HOME/gsearch/solr/conf/schema.xml
-solrconfig.xml|$FEDORA_HOME/gsearch/solr/conf/solrconfig.xml
+solr-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
+fedoragsearch-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedoragsearch.xml
 fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
 fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch-config/fgsconfig-basic-for-islandora.properties
 gsearch-log4j.xml|$CATALINA_HOME/webapps/fedoragsearch/WEB-INF/classes/log4j.xml
@@ -193,6 +191,57 @@ for line in $CONFIG_FILES; do
 	fi
 done
 
+##
+## Recreate the GSearch configuration directory structure in EXPANDED_CONFIG_DIR and FEDORA_HOME/gsearch
+starting_cwd=$(pwd)
+cd $SED_TEMPLATES_DIR
+find . -type d -exec mkdir -p -- $EXPANDED_CONFIG_DIR/{} \;
+
+cd $SED_TEMPLATES_DIR/fgsconfigFinal
+find . -type d -exec mkdir -p -- $FEDORA_HOME/gsearch/fgsconfigFinal/{} \;
+find . -type f -exec sh -c "sed -f $SED_CONFIG_SUBSTITUTES {} > $EXPANDED_CONFIG_DIR/fgsconfigFinal/{}" \;
+
+cd $SED_TEMPLATES_DIR/solr-conf
+find . -type d -exec mkdir -p -- $FEDORA_HOME/gsearch/solr/conf/{} \;
+find . -type f -exec sh -c "sed -f $SED_CONFIG_SUBSTITUTES {} > $EXPANDED_CONFIG_DIR/solr-conf/{}" \;
+
+cd $EXPANDED_CONFIG_DIR/fgsconfigFinal
+for line in $(find . -type f -print); do
+	SOURCE_FILE="$EXPANDED_CONFIG_DIR/fgsconfigFinal/$line"
+	DEST_FILE="$FEDORA_HOME/gsearch/fgsconfigFinal/$line"
+	if [ -f $DEST_FILE ]; then
+		if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
+			diff $DEST_FILE $SOURCE_FILE
+			read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
+			echo
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				cp $SOURCE_FILE $DEST_FILE
+			fi
+		fi
+	else
+		cp $SOURCE_FILE $DEST_FILE
+	fi
+done
+
+cd $EXPANDED_CONFIG_DIR/solr-conf
+for line in $(find . -type f -print); do
+	SOURCE_FILE="$EXPANDED_CONFIG_DIR/solr-conf/$line"
+	DEST_FILE="$FEDORA_HOME/gsearch/solr/conf/$line"
+	if [ -f $DEST_FILE ]; then
+		if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DEST_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
+			diff $DEST_FILE $SOURCE_FILE
+			read -p "Updated $DEST_FILE -- replace? (y/N) " -n 1 -r
+			echo
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				cp $SOURCE_FILE $DEST_FILE
+			fi
+		fi
+	else
+		cp $SOURCE_FILE $DEST_FILE
+	fi
+done
+
+cd $starting_cwd
 rm -r $SED_CONFIG_SUBSTITUTES
 
 BINARY_FILES=$( cat <<EOF
