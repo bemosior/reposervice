@@ -1,8 +1,12 @@
 #!/bin/bash
 #
 
-CATALINA_DEBUG=
-# CATALINA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+export SERVICE_HOME=`pwd`
+COMMAND_SETUP_FILE=$SERVICE_HOME/bin/reposervice-env
+
+##
+## Wipe out any existing reposervice-env file by echoing a command interpreter line to it
+echo "#!/bin/bash" > $COMMAND_SETUP_FILE
 
 
 function echoerr { echo "$@" >&2; }
@@ -35,6 +39,32 @@ function checkAndReplace {
 	fi
 }
 
+##
+## Function saveSetupAndReturn()
+##
+## Appends the entire function argument as a line in the repository environment
+## setup file and returns the function argument.  This function is suitable for
+## performing actions like:
+##
+##   saveSetupAndReturn "export SERVICE_HOME=`pwd`" && eval $SAVED_LINE
+##
+## which will save 'export SERVICE_HOME=`pwd`' in the repository environment setup
+## file and save that line in the SAVED_LINE global environment variable so it can
+## be `eval`ed after the function returns.
+##
+## @param string $SAVED_LINE
+##   The shell command to be saved and returned
+##
+## @side_effect
+##   SAVED_LINE global variable contains the contents of the function argument
+##
+function saveSetupAndReturn {
+	SAVED_LINE="$@"
+	echo $SAVED_LINE >> $COMMAND_SETUP_FILE
+}
+
+
+
 if [ ! -f config-values.sed ]; then
     echoerr "File 'config-values.sed' not found; cannot continue. Copy config-values.sed-sample to config-values.sed and edit."
     exit 1;
@@ -64,21 +94,23 @@ else
 	READLINK="readlink"
 fi
 if [ -x /usr/libexec/java_home ]; then
-	export JAVA_HOME=$(/usr/libexec/java_home)
+	saveSetupAndReturn "export JAVA_HOME=$(/usr/libexec/java_home)" && eval $SAVED_LINE
 else
-	export JAVA_HOME=$($READLINK -f /usr/bin/java | sed "s:/bin/java::")
+	saveSetupAndReturn "export JAVA_HOME=$($READLINK -f /usr/bin/java | sed 's:/bin/java::')" && eval $SAVED_LINE
 fi
 
-export SERVICE_HOME=`pwd`
-export FEDORA_HOME=$SERVICE_HOME/fedora_home
-export DRUPAL_HOME=$SERVICE_HOME/drupal
-export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat
-export CATALINA_OPTS="$CATALINA_DEBUG -XX:MaxPermSize=256m -Xmx1G -Xms128M"
-export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH
-alias lesscatalinalog="less $CATALINA_HOME/logs/catalina.out"
-alias lessfedoralog="less $FEDORA_HOME/server/logs/fedora.log"
-alias lessgsearchlog="less $FEDORA_HOME/server/logs/fedoragsearch.daily.log"
-alias isltunnel="ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org"
+saveSetupAndReturn "CATALINA_DEBUG=" && eval $SAVED_LINE
+saveSetupAndReturn "# CATALINA_DEBUG=\"-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n\"" && eval $SAVED_LINE
+
+saveSetupAndReturn "export FEDORA_HOME=$SERVICE_HOME/fedora_home" && eval $SAVED_LINE
+saveSetupAndReturn "export DRUPAL_HOME=$SERVICE_HOME/drupal" && eval $SAVED_LINE
+saveSetupAndReturn "export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat" && eval $SAVED_LINE
+saveSetupAndReturn "export CATALINA_OPTS=\"\$CATALINA_DEBUG -XX:MaxPermSize=256m -Xmx1G -Xms128M\"" && eval $SAVED_LINE
+saveSetupAndReturn "export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH" && eval $SAVED_LINE
+saveSetupAndReturn "alias lesscatalinalog=\"less $CATALINA_HOME/logs/catalina.out\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias lessfedoralog=\"less $FEDORA_HOME/server/logs/fedora.log\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias lessgsearchlog=\"less $FEDORA_HOME/server/logs/fedoragsearch.daily.log\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias isltunnel=\"ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org\"" && eval $SAVED_LINE
 
 if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
@@ -101,7 +133,7 @@ fi
 ### BEGIN Copied and Adapted from djatoka distribution
 ###
 # Define DJATOKA_HOME dynamically
-export DJATOKA_HOME=$SERVICE_HOME/binaries/adore-djatoka
+saveSetupAndReturn "export DJATOKA_HOME=$SERVICE_HOME/binaries/adore-djatoka" && eval $SAVED_LINE
 DJATOKA_LAUNCHDIR=$DJATOKA_HOME/bin
 DJATOKA_LIBPATH=$DJATOKA_HOME/lib
 
@@ -109,43 +141,35 @@ if [ `uname` = 'Linux' ] ; then
   if [ `uname -m` = "x86_64" ] ; then
     # Assume Linux AMD 64 has 64-bit Java
     DJATOKA_PLATFORM="Linux-x86-64"
-    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
     KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
   else
     # 32-bit Java
     DJATOKA_PLATFORM="Linux-x86-32"
-    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
     KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
   fi
 elif [ `uname` = 'Darwin' ] ; then
   # Mac OS X
   DJATOKA_PLATFORM="Mac-x86"
-  export DJATOKA_DYLD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  saveSetupAndReturn "export DJATOKA_DYLD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
   KAKADU_LIBRARY_PATH="-DDYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
 elif [ `uname` = 'SunOS' ] ; then
   if [ `uname -p` = "i386" ] ; then
     # Assume Solaris x86
     DJATOKA_PLATFORM="Solaris-x86"
-    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
   else
     # Sparcv9
     DJATOKA_PLATFORM="Solaris-Sparcv9"
-    export DJATOKA_LD_LIBRARY_PATH="$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
   fi
 else
-  echo "djatoka env: Unsupported DJATOKA_PLATFORM: `uname`"
-  exit
+  echoerr "djatoka env: Unsupported DJATOKA_PLATFORM: `uname`"
 fi
 
-export KAKADU_HOME=$DJATOKA_HOME/bin/$DJATOKA_PLATFORM
-djatoka_classpath=
-for line in `ls -1 $DJATOKA_LIBPATH | grep '.jar'`
-  do
-  djatoka_classpath="$djatoka_classpath:$DJATOKA_LIBPATH/$line"
-done
-
-CATALINA_OPTS="$CATALINA_OPTS -Djava.awt.headless=true -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH"
-
+saveSetupAndReturn "export KAKADU_HOME=$DJATOKA_HOME/bin/$DJATOKA_PLATFORM" && eval $SAVED_LINE
+saveSetupAndReturn "CATALINA_OPTS=\"\$CATALINA_OPTS -Djava.awt.headless=true -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH\"" && eval $SAVED_LINE
 ###
 ### END Copied and Adapted from djatoka distribution
 ###
@@ -270,3 +294,8 @@ for line in $BINARY_FILES; do
     	fi
     fi
 done
+
+echo "#"
+echo "#"
+echo "# Now don't forget to eval \$SERVICE_HOME/bin/reposervice-env in order to get the right shell environment setup."
+echo "eval $SERVICE_HOME/bin/reposervice-env"
