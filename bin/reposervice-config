@@ -1,0 +1,301 @@
+#!/bin/bash
+#
+
+export SERVICE_HOME=`pwd`
+COMMAND_SETUP_FILE=$SERVICE_HOME/bin/reposervice-env
+
+##
+## Wipe out any existing reposervice-env file by echoing a command interpreter line to it
+echo "#!/bin/bash" > $COMMAND_SETUP_FILE
+
+
+function echoerr { echo "$@" >&2; }
+
+##
+## Function checkAndReplace()
+##
+## Test, using MD5 checksums, if the source file is different from the destination file.
+## If so, output the diff and ask if the file should be updated.  If the file doesn't
+## exist, silently copy it to the destination.
+##
+## @param string $SOURCE_FILE
+##   The new, possibly modified, file location
+## @param string $DESTINATION_FILE
+##   The existing file location
+##
+function checkAndReplace {
+	SOURCE_FILE=$1; DESTINATION_FILE=$2
+  	if [ -f $DESTINATION_FILE ]; then
+		if [ "$(openssl md5 $SOURCE_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" != "$(openssl md5 $DESTINATION_FILE | sed 's/.*(\(.*\))= \(.*\)$/\2/')" ]; then
+			diff $DESTINATION_FILE $SOURCE_FILE
+			read -p "FOUND UPDATED $DESTINATION_FILE -- replace? (y/N) " -n 1 -r
+			echo
+			if [[ $REPLY =~ ^[Yy]$ ]]; then
+				cp $SOURCE_FILE $DESTINATION_FILE
+			fi
+		fi
+	else
+		cp $SOURCE_FILE $DESTINATION_FILE
+	fi
+}
+
+##
+## Function saveSetupAndReturn()
+##
+## Appends the entire function argument as a line in the repository environment
+## setup file and returns the function argument.  This function is suitable for
+## performing actions like:
+##
+##   saveSetupAndReturn "export SERVICE_HOME=`pwd`" && eval $SAVED_LINE
+##
+## which will save 'export SERVICE_HOME=`pwd`' in the repository environment setup
+## file and save that line in the SAVED_LINE global environment variable so it can
+## be `eval`ed after the function returns.
+##
+## @param string $SAVED_LINE
+##   The shell command to be saved and returned
+##
+## @side_effect
+##   SAVED_LINE global variable contains the contents of the function argument
+##
+function saveSetupAndReturn {
+	SAVED_LINE="$@"
+	echo $SAVED_LINE >> $COMMAND_SETUP_FILE
+}
+
+
+
+if [ ! -f config-values.sed ]; then
+    echoerr "File 'config-values.sed' not found; cannot continue. Copy config-values.sed-sample to config-values.sed and edit."
+    exit 1;
+fi
+if [ ! -h binaries/tomcat ]; then
+    echoerr "Download Apache Tomcat; create symbolic link at binaries/tomcat to unpacked directory."
+    exit 1;
+fi
+if [ ! -h binaries/solr ]; then 
+    echoerr "Download Apache SOLR 3.x; create symbolic link at binaries/solr to unpacked directory."
+    exit 1;
+fi
+if [ ! -h binaries/adore-djatoka ]; then 
+    echoerr "Download adore-djatoka; create symbolic link at binaries/adore-djatoka to unpacked directory."
+    exit 1;
+fi
+if [ ! -h binaries/fits ]; then 
+    echoerr "Download fits; create symbolic link at binaries/fits to unpacked directory."
+    exit 1;
+fi
+if [ ! -x binaries/fits/fits.sh ]; then 
+    chmod 755 binaries/fits/fits.sh
+fi
+if [ $(uname) = "Darwin" ]; then
+	READLINK="greadlink"
+else
+	READLINK="readlink"
+fi
+if [ -x /usr/libexec/java_home ]; then
+	saveSetupAndReturn "export JAVA_HOME=$(/usr/libexec/java_home)" && eval $SAVED_LINE
+else
+	saveSetupAndReturn "export JAVA_HOME=$($READLINK -f /usr/bin/java | sed 's:/bin/java::')" && eval $SAVED_LINE
+fi
+
+saveSetupAndReturn "CATALINA_DEBUG=" && eval $SAVED_LINE
+saveSetupAndReturn "# CATALINA_DEBUG=\"-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n\"" && eval $SAVED_LINE
+
+saveSetupAndReturn "export FEDORA_HOME=$SERVICE_HOME/fedora_home" && eval $SAVED_LINE
+saveSetupAndReturn "export DRUPAL_HOME=$SERVICE_HOME/drupal" && eval $SAVED_LINE
+saveSetupAndReturn "export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat" && eval $SAVED_LINE
+saveSetupAndReturn "export CATALINA_OPTS=\"\$CATALINA_DEBUG -XX:MaxPermSize=256m -Xmx1G -Xms128M\"" && eval $SAVED_LINE
+saveSetupAndReturn "export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH" && eval $SAVED_LINE
+saveSetupAndReturn "alias lesscatalinalog=\"less $CATALINA_HOME/logs/catalina.out\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias lessfedoralog=\"less $FEDORA_HOME/server/logs/fedora.log\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias lessgsearchlog=\"less $FEDORA_HOME/server/logs/fedoragsearch.daily.log\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias isltunnel=\"ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org\"" && eval $SAVED_LINE
+
+if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
+    echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
+    exit 1;
+fi
+
+if [ -f $FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default/deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator.xml ]; then
+    echoerr "Found deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator XACML policy."
+    echoerr "This will cause the Islandora Simple Workflow functionality to fail."
+    read -p "Remove this file? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        rm $FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default/deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator.xml
+	echoerr "Restart Tomcat, if needed, for this to take effect."
+    fi
+fi
+
+
+###
+### BEGIN Copied and Adapted from djatoka distribution
+###
+# Define DJATOKA_HOME dynamically
+saveSetupAndReturn "export DJATOKA_HOME=$SERVICE_HOME/binaries/adore-djatoka" && eval $SAVED_LINE
+DJATOKA_LAUNCHDIR=$DJATOKA_HOME/bin
+DJATOKA_LIBPATH=$DJATOKA_HOME/lib
+
+if [ `uname` = 'Linux' ] ; then
+  if [ `uname -m` = "x86_64" ] ; then
+    # Assume Linux AMD 64 has 64-bit Java
+    DJATOKA_PLATFORM="Linux-x86-64"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
+    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  else
+    # 32-bit Java
+    DJATOKA_PLATFORM="Linux-x86-32"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
+    KAKADU_LIBRARY_PATH="-DLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+  fi
+elif [ `uname` = 'Darwin' ] ; then
+  # Mac OS X
+  DJATOKA_PLATFORM="Mac-x86"
+  saveSetupAndReturn "export DJATOKA_DYLD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
+  KAKADU_LIBRARY_PATH="-DDYLD_LIBRARY_PATH=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM"
+elif [ `uname` = 'SunOS' ] ; then
+  if [ `uname -p` = "i386" ] ; then
+    # Assume Solaris x86
+    DJATOKA_PLATFORM="Solaris-x86"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
+  else
+    # Sparcv9
+    DJATOKA_PLATFORM="Solaris-Sparcv9"
+    saveSetupAndReturn "export DJATOKA_LD_LIBRARY_PATH=\"$DJATOKA_LIBPATH/$DJATOKA_PLATFORM\"" && eval $SAVED_LINE
+  fi
+else
+  echoerr "djatoka env: Unsupported DJATOKA_PLATFORM: `uname`"
+fi
+
+saveSetupAndReturn "export KAKADU_HOME=$DJATOKA_HOME/bin/$DJATOKA_PLATFORM" && eval $SAVED_LINE
+saveSetupAndReturn "CATALINA_OPTS=\"\$CATALINA_OPTS -Djava.awt.headless=true -Dkakadu.home=$KAKADU_HOME -Djava.library.path=$DJATOKA_LIBPATH/$DJATOKA_PLATFORM $KAKADU_LIBRARY_PATH\"" && eval $SAVED_LINE
+###
+### END Copied and Adapted from djatoka distribution
+###
+
+
+SED_TEMPLATES_DIR=$SERVICE_HOME/sed_templates
+EXPANDED_CONFIG_DIR=$SERVICE_HOME/sed_substituted_files
+if [ ! -d $EXPANDED_CONFIG_DIR ]; then
+	mkdir $EXPANDED_CONFIG_DIR
+fi
+
+SED_CONFIG_SUBSTITUTES=$(mktemp "$EXPANDED_CONFIG_DIR/temp.XXXXXXX")
+cat config-values.sed >> $SED_CONFIG_SUBSTITUTES
+printf 's:${SERVICE_HOME}:%s:\n' $SERVICE_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${FEDORA_HOME}:%s:\n' $FEDORA_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${DRUPAL_HOME}:%s:\n' $DRUPAL_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${CATALINA_HOME}:%s:\n' $CATALINA_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${PATH_KAKADU}:%s/kdu_compress:\n' $KAKADU_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's:${PATH_FITS}:%s/binaries/fits/fits.sh:\n' $SERVICE_HOME >> $SED_CONFIG_SUBSTITUTES
+printf 's/${DATA_ENTRY_DRUPAL_UID}/%s/\n' $DATA_ENTRY_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
+printf 's/${SUPERVISOR_DRUPAL_UID}/%s/\n' $SUPERVISOR_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
+
+CONFIG_FILES=$( cat <<EOF
+drupal-settings.txt|$DRUPAL_HOME/sites/default/settings.php
+filter-drupal.txt|$FEDORA_HOME/server/config/filter-drupal.xml
+fedora-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedora.xml
+fedora-install-properties.txt|$FEDORA_HOME/install/install.properties
+fedora-fcfg.txt|$FEDORA_HOME/server/config/fedora.fcfg
+solr-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
+fedoragsearch-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedoragsearch.xml
+fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
+fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch-config/fgsconfig-basic-for-islandora.properties
+gsearch-log4j.xml|$CATALINA_HOME/webapps/fedoragsearch/WEB-INF/classes/log4j.xml
+permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+jaas.conf|$FEDORA_HOME/server/config/jaas.conf
+logback.xml|$FEDORA_HOME/server/config/logback.xml
+lyr_base_islandora.strongarm.inc|$SERVICE_HOME/lyr_base_islandora/lyr_base_islandora.strongarm.inc
+tomcat-server.xml|$CATALINA_HOME/conf/server.xml
+djatoka-log4j.properties|$CATALINA_HOME/webapps/adore-djatoka/WEB-INF/classes/log4j.properties
+EOF
+)
+
+for line in $CONFIG_FILES; do
+    SOURCE_FILE=$(echo $line | cut -d"|" -f1)
+    DEST_FILE=$(echo $line | cut -d"|" -f2)
+	sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/$SOURCE_FILE > $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+	
+	## For Kakadu to function, we need to inject a LD_LIBRARY_PATH (Linux) or 
+	## DYLD_LIBRARY_PATH (MacOSX) environment variable into the Drupal environment. 
+	## We're choosing to do this by appending a PHP putenv() at the end of the
+	## Drupal settings.php File
+	if [ "$SOURCE_FILE" == "drupal-settings.txt" ]; then
+		if [ -n "$DJATOKA_LD_LIBRARY_PATH" ]; then
+    		echo "putenv(\"LD_LIBRARY_PATH=$DJATOKA_LD_LIBRARY_PATH\");" >> $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+		elif [ -n "$DJATOKA_DYLD_LIBRARY_PATH" ]; then
+			echo "putenv(\"DYLD_LIBRARY_PATH=$DJATOKA_DYLD_LIBRARY_PATH\");" >> $EXPANDED_CONFIG_DIR/$SOURCE_FILE
+		fi
+	fi
+
+	checkAndReplace $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
+done
+
+##
+## Recreate the GSearch configuration directory structure in EXPANDED_CONFIG_DIR and FEDORA_HOME/gsearch
+starting_cwd=$(pwd)
+cd $SED_TEMPLATES_DIR
+find . -type d -exec mkdir -p -- $EXPANDED_CONFIG_DIR/{} \;
+
+cd $SED_TEMPLATES_DIR/fgsconfigFinal
+find . -type d -exec mkdir -p -- $FEDORA_HOME/gsearch/fgsconfigFinal/{} \;
+find . -type f -exec sh -c "sed -f $SED_CONFIG_SUBSTITUTES {} > $EXPANDED_CONFIG_DIR/fgsconfigFinal/{}" \;
+
+cd $SED_TEMPLATES_DIR/solr-conf
+find . -type d -exec mkdir -p -- $FEDORA_HOME/gsearch/solr/conf/{} \;
+find . -type f -exec sh -c "sed -f $SED_CONFIG_SUBSTITUTES {} > $EXPANDED_CONFIG_DIR/solr-conf/{}" \;
+
+cd $EXPANDED_CONFIG_DIR/fgsconfigFinal
+for line in $(find . -type f -print); do
+	SOURCE_FILE="$EXPANDED_CONFIG_DIR/fgsconfigFinal/$line"
+	DEST_FILE="$FEDORA_HOME/gsearch/fgsconfigFinal/$line"
+	checkAndReplace $SOURCE_FILE $DEST_FILE
+done
+
+cd $EXPANDED_CONFIG_DIR/solr-conf
+for line in $(find . -type f -print); do
+	SOURCE_FILE="$EXPANDED_CONFIG_DIR/solr-conf/$line"
+	DEST_FILE="$FEDORA_HOME/gsearch/solr/conf/$line"
+	checkAndReplace $SOURCE_FILE $DEST_FILE
+done
+
+cd $starting_cwd
+rm $SED_CONFIG_SUBSTITUTES
+
+BINARY_FILES=$( cat <<EOF
+$FEDORA_HOME/install/fedora-demo.war|$CATALINA_HOME/webapps
+$FEDORA_HOME/install/fedora.war|$CATALINA_HOME/webapps
+$FEDORA_HOME/install/fop.war|$CATALINA_HOME/webapps
+$FEDORA_HOME/install/imagemanip.war|$CATALINA_HOME/webapps
+$FEDORA_HOME/install/saxon.war|$CATALINA_HOME/webapps
+$SERVICE_HOME/binaries/adore-djatoka/dist/adore-djatoka.war|$CATALINA_HOME/webapps
+$SERVICE_HOME/islandora_drupal_filter/target/fcrepo-drupalauthfilter-3.6.2.jar|$CATALINA_HOME/webapps/fedora/WEB-INF/lib
+$SERVICE_HOME/gsearch/FgsBuild/fromsource/fedoragsearch.war|$CATALINA_HOME/webapps
+$SERVICE_HOME/islandora/policies/permit-apim-to-authenticated-user.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+$SERVICE_HOME/islandora/policies/permit-getDatastream-unrestricted.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+$SERVICE_HOME/islandora/policies/permit-getDatastreamHistory-unrestricted.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+$SERVICE_HOME/islandora/policies/permit-upload-to-authenticated-user.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
+EOF
+)
+
+for line in $BINARY_FILES; do
+    SOURCE_FILE=$(echo $line | cut -d"|" -f1)
+    DEST_DIR=$(echo $line | cut -d"|" -f2)
+    BASE_FILENAME=$(basename $SOURCE_FILE)
+    DEST_FILE=$DEST_DIR/$BASE_FILENAME
+    if [ ! -f $SOURCE_FILE ]; then 
+    	echoerr "Binary source file $SOURCE_FILE doesn't exist, and it probably should."
+    else
+    	if [ ! -d $DEST_DIR ]; then
+    		echoerr "Binary destination directory $DEST_DIR doesn't exist, and it probably should."
+    	else
+			checkAndReplace $SOURCE_FILE $DEST_FILE
+    	fi
+    fi
+done
+
+echo "#"
+echo "#"
+echo "# Now don't forget to eval \$SERVICE_HOME/bin/reposervice-env in order to get the right shell environment setup."
+echo "eval $SERVICE_HOME/bin/reposervice-env"
