@@ -68,6 +68,7 @@
   <xsl:include href="${FEDORA_HOME}/gsearch/fgsconfigFinal/index/FgsIndex/islandora_transforms/text_to_solr.xslt"/>
   <xsl:include href="${FEDORA_HOME}/gsearch/fgsconfigFinal/index/FgsIndex/islandora_transforms/XML_to_one_solr_field.xslt"/>
   <xsl:include href="${FEDORA_HOME}/gsearch/fgsconfigFinal/index/FgsIndex/islandora_transforms/XML_text_nodes_to_solr.xslt"/>
+  <xsl:include href="${FEDORA_HOME}/gsearch/fgsconfigFinal/index/FgsIndex/islandora_transforms/capture_collection_heirarchy.xsl"/>
 
   <!-- Decide which objects to modify the index of -->
   <xsl:template match="/">
@@ -103,6 +104,7 @@
       <!-- These templates are in the islandora_transforms -->
       <xsl:apply-templates select="foxml:objectProperties/foxml:property"/>
       <xsl:apply-templates select="/foxml:digitalObject" mode="index_object_datastreams"/>
+      <xsl:apply-templates select="/foxml:digitalObject" mode="capture_collection_heirarchy"/>
 
       <!-- THIS IS SPARTA!!!
         These lines call a matching template on every datastream id so that you only have to edit included files
