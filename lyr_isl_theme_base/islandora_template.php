@@ -204,3 +204,8 @@ function lyr_isl_theme_base_breadcrumb($variables) {
   }
 }
 
+//
+// Implements islandora_solr_query() hook.
+function lyr_isl_theme_base_islandora_solr_query($query_params) {
+  // dpm($query_params);
+}
