@@ -30,7 +30,7 @@
       </xsl:call-template>
     </xsl:variable>
 
-    <xsl:if test="$textValue">
+    <xsl:if test="$textValue != ''">
       <field>
         <xsl:attribute name="name">
           <xsl:value-of select="concat($prefix, local-name(), '_dt')"/>

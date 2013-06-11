@@ -3,7 +3,7 @@
 		extraResourcePaths="/WEB-INF/classes/fgsconfigFinal=${FEDORA_HOME}/gsearch/fgsconfigFinal"
 		/>
 	<Loader className="org.apache.catalina.loader.VirtualWebappLoader"
-		virtualClasspath="${FEDORA_HOME}/gsearch/fgsconfigFinal"
+		virtualClasspath="${FEDORA_HOME}/gsearch/fgsconfigFinal;${SERVICE_HOME}/binaries/joda-time.jar"
 		/>
 	<JarScanner scanAllDirectories="true" />
 </Context>
