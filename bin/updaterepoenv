@@ -20,11 +20,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	git submodule update --init
 fi
 
-read -p "Run bootstrap script? (y/N) " -n 1 -r
+read -p "Run reposervice-config script? (y/N) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	cd $SERVICE_HOME
-	./bootstrap.sh
+	$SERVICE_HOME/bin/reposervice-config
+	source ./bootstrap.sh
 fi
 
 read -p "Update Drupal features? (y/N) " -n 1 -r

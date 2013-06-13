@@ -36,13 +36,11 @@ PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and 
 
 ## Setting up the environment from the bare Git repo
 
-1. `git clone reposervice.git` -- use either ssh://islandora.lyrasistechnology.org/var/gitrepo/reposervice or file:///var/gitrepo/reposervice as required (whether the git repo is remote or on the local machine)
+1. `git clone git@github.com:lyrasis/reposervice.git` 
 1. `cd reposervice`
 1. `git submodule init`
 1. `git submodule update` -- Use `git submodule status` to make sure all of the submodules are up-to-date.  There should be no plus signs or minus signs in the left-most column.
-1. Download and unpack Apache Tomcat and Apache SOLR 3.x into binaries directory.
-1. Create symbolic links in binaries directory for `tomcat` and `solr` that point to the unpacked directories of each.
-
+1. Run `bin/reposetup-config` multiple times to be told of all of the dependencies in `binaries/` (or simply read the first part of that file to see what all of the current dependencies are).
 
 ## Setting Up Drupal
 
@@ -54,15 +52,14 @@ PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and 
 			flush privileges;
 			EOM
 
-1. Create symbolic link in Apache's htdocs directory to the drupal directory of the git repo.
-1. Delete the `sites/all/settings.php` file
+1. Create symbolic link in Apache's htdocs directory to the `drupal` directory of the git repo.
 1. Go through the Drupal install web pages
-1. `drush enable lyr_base_islandora`
+1. `cd $DRUPAL_HOME && drush enable lyr_base_islandora`
 
 ## Setting up Fedora Commons
-Be sure `$SERVICE_HOME/bootstrap.sh` has been run to set the environment variables.  You'll see failures for the 'sed' replacements in the `$FEDORA_HOME` directory -- that is okay.  Having the `$FEDORA_HOME` and `$CATALINA_HOME` environment variables set, though, will preconfigure defaults in the repository installer.
+Be sure `cd reposervice && source ./bootstrap.sh` has been run to set the environment variables.  You'll see failures for the 'sed' replacements in the `$FEDORA_HOME` directory -- that is okay.  Having the `$FEDORA_HOME` and `$CATALINA_HOME` environment variables set, though, will preconfigure defaults in the repository installer.
 
-You can feed the installer JAR file the properties file created by `bootstrap.sh` to have these choices selected for you: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar $SERVICE_HOME/sed_substituted_files/fedora-install-properties.txt`
+You can feed the installer JAR file the properties file created by `bootstrap.sh` to have these choices selected for you: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar $SERVICE_HOME/sed_substituted_files/fedora_home/install/install.properties`
 
 1. Go into the 'fcrepo' directory: `cd fcrepo`
 
@@ -77,7 +74,7 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 			ALTER DATABASE fcrepo_islandora DEFAULT CHARACTER SET utf8;
 			ALTER DATABASE fcrepo_islandora DEFAULT COLLATE utf8_bin;
 
-1. Run the installer: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar` -- If you add `$SERVICE_HOME/sed_substituted_files/fedora-install-properties.txt` to the command line, the following questions will not be asked and the values from the properties file will be used.
+1. Run the installer: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar` -- If you add `$SERVICE_HOME/sed_substituted_files/fedora_home/install/install.properties` to the command line, the following questions will not be asked and the values from the properties file will be used.
 
 	1. Installation type: `custom`
 	1. Fedora home directory: *use default response; set by the FEDORA_HOME environment variable*
@@ -109,17 +106,17 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 	1. Messaging Provider URI: *use default*
 	1. Deploy local services and demos: *use default `true`*
 
-1. Run `(cd $SERVICE_HOME; sh bootstrap.sh)` to create the configuration files based on the template.  Some copy errors will happen because not all of the directories are in place yet.
+1. Run `$SERVICE_HOME/reposervice-config` to create the configuration files based on the template.  Some copy errors will happen because not all of the directories are in place yet.
 1. Start Tomcat: `catalina.sh start`
 1. Watch the end of the Tomcat logfile for the end of the startup: `tail -f $SERVICE_HOME/binaries/tomcat/logs/catalina.out` -- You'll see "INFO: Server startup in xxxxx ms"
 1. Stop Tomcat: `catalina.sh stop`
-2. Run `(cd $SERVICE_HOME; sh bootstrap.sh)` to create the remaining configuration files.
+2. Run `$SERVICE_HOME/reposervice-config` to create the remaining configuration files.
 
 ## Set up Islandora module and servlet filter
 
 1. `cd $SERVICE_HOME/islandora_drupal_filter`
 1. Build the servlet filter: `mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true`
-1. `source bootstrap.sh` will move the jar into the correct location.
+1. `$SERVICE_HOME/reposervice-config` will move the jar into the correct location.
 
 ## Set up GSearch
 
@@ -141,15 +138,15 @@ Add these lines to the Apache HTTPD configuration:
 		ProxyPassReverse /adore-djatoka http://localhost:8080/adore-djatoka
 		
 ## Committing changes to submodules
-One will need to run `reset` in the terminal after this. 
+From the main reposervice.git repository, it is helpful to have the commit summaries of submodules listed; this command will do it.  One may need to run `reset` in the terminal after this. 
 
 		git diff --cached --no-color --submodule [submodule] | git commit -e --file=-
 
 ## Creating a new site
 
-1. Create instance: `drush site-install standard --account-mail=Peter.Murray+cldemo_demo@lyrasis.org --account-name=cldemo_admin --account-pass=blah --db-su=${DB_ROOT_USER} --db-su-pw=${DB_ROOT_PASSWORD} --locale=en-US --site-name="cldemo Site" --site-mail=Peter.Murray+cldemo@lyrasis.org --sites-subdir=${SITE_HOSTNAME} --db-url="mysql://${DB_DRUPAL_USER}:${DB_DRUPAL_PASSWORD}@localhost/drupal_cldemo"`
+1. Create instance: `drush site-install standard --account-mail=${SITE_ADMIN_EMAIL} --account-name=${SITE_SHORT_CODE}_admin --account-pass=blah --db-su=${DB_ROOT_USER} --db-su-pw=${DB_ROOT_PASSWORD} --locale=en-US --site-name="${SITE_TILE} Site" --site-mail=${SITE_PUBLISHED_EMAIL} --sites-subdir=${SITE_HOSTNAME} --db-url="mysql://${DB_DRUPAL_USER}:${DB_DRUPAL_PASSWORD}@localhost/drupal_${SITE_SHORT_CODE}"`
 1. Set public file directory permissions: `chmod g+w,o+w $DRUPAL_HOME/sites/${SITE_HOSTNAME}/files`
-1. Enable `lyr_base_islandora` module
+1. Enable `lyr_base_islandora` feature module
 
 ## Migrating Content
 [emory-libraries/eulfedora · GitHub](https://github.com/emory-libraries/eulfedora)
@@ -173,4 +170,17 @@ Book batch ingest script for University of Manitoba.
 [UCLALibrary/ucla_migration · GitHub](https://github.com/UCLALibrary/ucla_migration)
 This drush script will migrate an entire collection based on a METS manifest.
 
+## Themes of Other Islandora Sites
+
+[UCLALibrary/UCLA-Theme · GitHub](https://github.com/UCLALibrary/UCLA-Theme)
+
+[jordandukart/UofM-Theme · GitHub](https://github.com/jordandukart/UofM-Theme)
+
+[FLVC/islandoratheme · GitHub](https://github.com/FLVC/islandoratheme)
+
+[rosiel/mona · GitHub](https://github.com/rosiel/mona)
+
+[morganhi/Smith-Theme · GitHub](https://github.com/morganhi/Smith-Theme)
+
+[morganhi/UCLA_Base-Theme · GitHub](https://github.com/morganhi/UCLA_Base-Theme)
 
