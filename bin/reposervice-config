@@ -1,15 +1,33 @@
 #!/bin/bash
 #
 
+
 export SERVICE_HOME=`pwd`
 COMMAND_SETUP_FILE=$SERVICE_HOME/bin/reposervice-env
 
 ##
-## Wipe out any existing reposervice-env file by echoing a command interpreter line to it
+## Wipe out any existing reposervice-env file by echoing a command interpreter line to it.
+## This file is gradually built with commands throughout this script
 echo "#!/bin/bash" > $COMMAND_SETUP_FILE
 
 
 function echoerr { echo "$@" >&2; }
+
+##
+## Function createDirectoryIfNeeded()
+##
+## Given the absolute file path parameter passed in, create any directories that would
+## be needed to store the file.
+##
+## @param string $ABSOLUTE_FILE_PATH
+##   The absolute file path
+function createDirectoryIfNeeded {
+	ABSOLUTE_FILE_PATH=$1
+	ABSOLUTE_FILE_DIR=$(dirname $ABSOLUTE_FILE_PATH)
+	if [ ! -d $ABSOLUTE_FILE_DIR ]; then
+		mkdir -p $ABSOLUTE_FILE_DIR
+	fi
+}
 
 ##
 ## Function checkAndReplace()
@@ -31,11 +49,11 @@ function checkAndReplace {
 			read -p "FOUND UPDATED $DESTINATION_FILE -- replace? (y/N) " -n 1 -r
 			echo
 			if [[ $REPLY =~ ^[Yy]$ ]]; then
-				cp $SOURCE_FILE $DESTINATION_FILE
+				cp -v $SOURCE_FILE $DESTINATION_FILE
 			fi
 		fi
 	else
-		cp $SOURCE_FILE $DESTINATION_FILE
+		cp -v $SOURCE_FILE $DESTINATION_FILE
 	fi
 }
 
@@ -181,12 +199,14 @@ saveSetupAndReturn "CATALINA_OPTS=\"\$CATALINA_OPTS -Djava.awt.headless=true -Dk
 
 SED_TEMPLATES_DIR=$SERVICE_HOME/sed_templates
 EXPANDED_CONFIG_DIR=$SERVICE_HOME/sed_substituted_files
-if [ ! -d $EXPANDED_CONFIG_DIR ]; then
-	mkdir $EXPANDED_CONFIG_DIR
+if [ -d $EXPANDED_CONFIG_DIR ]; then
+	rm -rf $EXPANDED_CONFIG_DIR
 fi
+mkdir $EXPANDED_CONFIG_DIR
 
 SED_CONFIG_SUBSTITUTES=$(mktemp "$EXPANDED_CONFIG_DIR/temp.XXXXXXX")
 cat config-values.sed >> $SED_CONFIG_SUBSTITUTES
+## Add dynamically generated tokens, such as those with absolute file paths
 printf 's:${SERVICE_HOME}:%s:\n' $SERVICE_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${FEDORA_HOME}:%s:\n' $FEDORA_HOME >> $SED_CONFIG_SUBSTITUTES
 printf 's:${DRUPAL_HOME}:%s:\n' $DRUPAL_HOME >> $SED_CONFIG_SUBSTITUTES
@@ -196,72 +216,48 @@ printf 's:${PATH_FITS}:%s/binaries/fits/fits.sh:\n' $SERVICE_HOME >> $SED_CONFIG
 printf 's/${DATA_ENTRY_DRUPAL_UID}/%s/\n' $DATA_ENTRY_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
 printf 's/${SUPERVISOR_DRUPAL_UID}/%s/\n' $SUPERVISOR_DRUPAL_UID >> $SED_CONFIG_SUBSTITUTES
 
-CONFIG_FILES=$( cat <<EOF
-drupal-settings.txt|$DRUPAL_HOME/sites/default/settings.php
-filter-drupal.txt|$FEDORA_HOME/server/config/filter-drupal.xml
-fedora-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedora.xml
-fedora-install-properties.txt|$FEDORA_HOME/install/install.properties
-fedora-fcfg.txt|$FEDORA_HOME/server/config/fedora.fcfg
-solr-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/solr.xml
-fedoragsearch-catalina-context.xml|$CATALINA_HOME/conf/Catalina/localhost/fedoragsearch.xml
-fedora-users.xml|$FEDORA_HOME/server/config/fedora-users.xml
-fgsconfig-islandora-properties.txt|$SERVICE_HOME/gsearch-config/fgsconfig-basic-for-islandora.properties
-gsearch-log4j.xml|$CATALINA_HOME/webapps/fedoragsearch/WEB-INF/classes/log4j.xml
-permit-apim-to-authenticated.xml|$FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
-jaas.conf|$FEDORA_HOME/server/config/jaas.conf
-logback.xml|$FEDORA_HOME/server/config/logback.xml
-lyr_base_islandora.strongarm.inc|$SERVICE_HOME/lyr_base_islandora/lyr_base_islandora.strongarm.inc
-tomcat-server.xml|$CATALINA_HOME/conf/server.xml
-djatoka-log4j.properties|$CATALINA_HOME/webapps/adore-djatoka/WEB-INF/classes/log4j.properties
-EOF
-)
 
-for line in $CONFIG_FILES; do
-    SOURCE_FILE=$(echo $line | cut -d"|" -f1)
-    DEST_FILE=$(echo $line | cut -d"|" -f2)
-	sed -f $SED_CONFIG_SUBSTITUTES $SED_TEMPLATES_DIR/$SOURCE_FILE > $EXPANDED_CONFIG_DIR/$SOURCE_FILE
-	
-	## For Kakadu to function, we need to inject a LD_LIBRARY_PATH (Linux) or 
-	## DYLD_LIBRARY_PATH (MacOSX) environment variable into the Drupal environment. 
-	## We're choosing to do this by appending a PHP putenv() at the end of the
-	## Drupal settings.php File
-	if [ "$SOURCE_FILE" == "drupal-settings.txt" ]; then
-		if [ -n "$DJATOKA_LD_LIBRARY_PATH" ]; then
-    		echo "putenv(\"LD_LIBRARY_PATH=$DJATOKA_LD_LIBRARY_PATH\");" >> $EXPANDED_CONFIG_DIR/$SOURCE_FILE
-		elif [ -n "$DJATOKA_DYLD_LIBRARY_PATH" ]; then
-			echo "putenv(\"DYLD_LIBRARY_PATH=$DJATOKA_DYLD_LIBRARY_PATH\");" >> $EXPANDED_CONFIG_DIR/$SOURCE_FILE
-		fi
-	fi
-
-	checkAndReplace $EXPANDED_CONFIG_DIR/$SOURCE_FILE $DEST_FILE
-done
-
-##
-## Recreate the GSearch configuration directory structure in EXPANDED_CONFIG_DIR and FEDORA_HOME/gsearch
 starting_cwd=$(pwd)
 cd $SED_TEMPLATES_DIR
-find . -type d -exec mkdir -p -- $EXPANDED_CONFIG_DIR/{} \;
 
-cd $SED_TEMPLATES_DIR/fgsconfigFinal
-find . -type d -exec mkdir -p -- $FEDORA_HOME/gsearch/fgsconfigFinal/{} \;
-find . -type f -exec sh -c "sed -f $SED_CONFIG_SUBSTITUTES {} > $EXPANDED_CONFIG_DIR/fgsconfigFinal/{}" \;
+## Each directory in $SED_TEMPLATES_DIR represents a location where config files that
+## have been substituted will be written.  For convenience, within the $SED_TEMPLATES_DIR
+## directories are replaced with the '#' symbol.  NOTE: `find * ...` intentionally excludes 
+## hidden files/directories.
+for line in $(find * -type d -print); do
+	directory=$(echo $line | tr \# /)
+	createDirectoryIfNeeded $EXPANDED_CONFIG_DIR/$directory
+	
+	cd $SED_TEMPLATES_DIR/$line
+	for filename in $(find * -type f -print); do
+	
+		## Calculate paths for the source file, the file with substitutions, and the destination file location
+		SRC_FILE=$SED_TEMPLATES_DIR/$line/$filename
+		SUBS_FILE=$EXPANDED_CONFIG_DIR/$directory/$filename
+		DEST_FILE=$SERVICE_HOME/$directory/$filename
+		
+		## Create intermediate directories if needed
+		createDirectoryIfNeeded $SUBS_FILE
+		createDirectoryIfNeeded $DEST_FILE
+		
+		## Perform token replacement
+		sed -f $SED_CONFIG_SUBSTITUTES $SRC_FILE > $SUBS_FILE
+	
+		## For Kakadu to function, we need to inject a LD_LIBRARY_PATH (Linux) or 
+		## DYLD_LIBRARY_PATH (MacOSX) environment variable into the Drupal environment. 
+		## We're choosing to do this by appending a PHP putenv() at the end of the
+		## Drupal settings.php File
+		if [ "$SRC_FILE" == "$SED_TEMPLATES_DIR/drupal#sites#default/settings.php" ]; then
+			if [ -n "$DJATOKA_LD_LIBRARY_PATH" ]; then
+    			echo "putenv(\"LD_LIBRARY_PATH=$DJATOKA_LD_LIBRARY_PATH\");" >> $SUBS_FILE
+			elif [ -n "$DJATOKA_DYLD_LIBRARY_PATH" ]; then
+				echo "putenv(\"DYLD_LIBRARY_PATH=$DJATOKA_DYLD_LIBRARY_PATH\");" >> $SUBS_FILE
+			fi
+		fi
 
-cd $SED_TEMPLATES_DIR/solr-conf
-find . -type d -exec mkdir -p -- $FEDORA_HOME/gsearch/solr/conf/{} \;
-find . -type f -exec sh -c "sed -f $SED_CONFIG_SUBSTITUTES {} > $EXPANDED_CONFIG_DIR/solr-conf/{}" \;
-
-cd $EXPANDED_CONFIG_DIR/fgsconfigFinal
-for line in $(find . -type f -print); do
-	SOURCE_FILE="$EXPANDED_CONFIG_DIR/fgsconfigFinal/$line"
-	DEST_FILE="$FEDORA_HOME/gsearch/fgsconfigFinal/$line"
-	checkAndReplace $SOURCE_FILE $DEST_FILE
-done
-
-cd $EXPANDED_CONFIG_DIR/solr-conf
-for line in $(find . -type f -print); do
-	SOURCE_FILE="$EXPANDED_CONFIG_DIR/solr-conf/$line"
-	DEST_FILE="$FEDORA_HOME/gsearch/solr/conf/$line"
-	checkAndReplace $SOURCE_FILE $DEST_FILE
+		## See if the file is different and offer to replace
+		checkAndReplace $SUBS_FILE $DEST_FILE
+	done
 done
 
 cd $starting_cwd
@@ -301,5 +297,5 @@ done
 
 echo "#"
 echo "#"
-echo "# Now don't forget to eval \$SERVICE_HOME/bin/reposervice-env in order to get the right shell environment setup."
-echo "eval $SERVICE_HOME/bin/reposervice-env"
+echo "# Now don't forget to run the bootstrap in order to get the right shell environment setup."
+echo "cd $SERVICE_HOME && source ./bootstrap.sh"
