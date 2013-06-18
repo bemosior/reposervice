@@ -6,7 +6,7 @@
 	url = git@github.com:lyrasis/islandora.git
 [submodule "drupal"]
 	path = drupal
-	url = ssh://islandora.lyrasistechnology.org/var/gitrepo/drupal.git
+	url = git@github.com:lyrasis/drupal.git
 [submodule "islandora_drupal_filter"]
 	path = islandora_drupal_filter
 	url = git@github.com:lyrasis/islandora_drupal_filter.git
