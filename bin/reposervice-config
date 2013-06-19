@@ -132,7 +132,8 @@ saveSetupAndReturn "export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:
 saveSetupAndReturn "alias lesscatalinalog=\"less $CATALINA_HOME/logs/catalina.out\"" && eval $SAVED_LINE
 saveSetupAndReturn "alias lessfedoralog=\"less $FEDORA_HOME/server/logs/fedora.log\"" && eval $SAVED_LINE
 saveSetupAndReturn "alias lessgsearchlog=\"less $FEDORA_HOME/server/logs/fedoragsearch.daily.log\"" && eval $SAVED_LINE
-saveSetupAndReturn "alias isltunnel=\"ssh -fNg -R 9000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias ssh_isl_staging=\"ssh -fNg -R 19000:localhost:9000 -L 13306:localhost:3306 -L 18080:localhost:8080 -o ServerAliveInterval=10 islandora-02.lyrasistechnology.org\"" && eval $SAVED_LINE
+saveSetupAndReturn "alias ssh_isl_prod=\"ssh -fNg -R 29000:localhost:9000 -L 23306:localhost:3306 -L 28080:localhost:8080 -o ServerAliveInterval=10 islandora.lyrasistechnology.org\"" && eval $SAVED_LINE
 
 if [ ! -d $FEDORA_HOME/gsearch/solr ]; then
     echoerr "Directory '$FEDORA_HOME/gsearch/solr' not found; copy $SERVICE_HOME/binaries/solr/examples/solr to $FEDORA_HOME/gsearch"
