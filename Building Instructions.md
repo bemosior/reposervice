@@ -11,6 +11,7 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 
 ## Prerequisites for using LYRASIS `reposervice` environment
 
+1. `build-essential` virtual package, because you'll be building some of the prerequisites
 1. Apache HTTPD
 1. MySQL-5.1
 1. Java6 JDK
@@ -117,6 +118,19 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 1. `cd $SERVICE_HOME/islandora_drupal_filter`
 1. Build the servlet filter: `mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true`
 1. `$SERVICE_HOME/reposervice-config` will move the jar into the correct location.
+
+## Adding a new Islandora module as a git submodule
+
+1. Fork module to https://github.org/lyrasis organization account, create `lyr-master` branch, change default branch to `lyr-master` in the GitHub repo settings.
+1. `cd $SERVICE_HOME`
+1. Add the submodule to the reposervice directory: `git submodule add git@github.com:lyrasis/_reponame_.git`
+1. Add an 'upstream' remote to the source of the module: `cd _reponame_ && git remote add upstream https://github.com/islandora/_reponame_.git`
+1. Add a relative symbolic link in the Drupal modules directory to the new module: `cd $DRUPAL_HOME/sites/all/modules && ln -s ../../../../_reponame_`
+1. To semi-automatically check for updates from the upstream source, add an entry to `$SERVICE_HOME/bin/upstreamcheck`
+1. Commit a change to the Drupal submodule with the symbolic link added.
+1. Commit a change of .gitmodules, bin/upstreamcheck, the Drupal submodule and the new submodule.
+
+Note that when pulling changes from the Reposervice repo, be sure to run the `bin/updaterepoenv` script, which will (in part) initialize the submodule in other clones.  @@TODO: Add this as a reposervice.git hook?
 
 ## Set up GSearch
 
