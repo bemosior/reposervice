@@ -85,3 +85,6 @@
 [submodule "islandora_utils"]
 	path = islandora_utils
 	url = git@github.com:lyrasis/islandora_utils.git
+[submodule "islandora_solution_pack_compound"]
+	path = islandora_solution_pack_compound
+	url = git@github.com:lyrasis/islandora_solution_pack_compound.git
