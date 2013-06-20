@@ -25,6 +25,7 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 	1. php-pear
 	1. php5-curl
 	1. php5-xsl
+1. libjasper (install this before ImageMagick so ImageMagick can pick up the library)
 1. ImageMagick
 1. Ghostscript
 1. Poppler or Poppler-utils (for `pdftotext`)
