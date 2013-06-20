@@ -254,6 +254,13 @@ for line in $(find * -type d -print); do
 			elif [ -n "$DJATOKA_DYLD_LIBRARY_PATH" ]; then
 				echo "putenv(\"DYLD_LIBRARY_PATH=$DJATOKA_DYLD_LIBRARY_PATH\");" >> $SUBS_FILE
 			fi
+			if [ `uname` = 'Darwin' ] ; then
+				## Developer is using Bitnami MAMPstack, which sets its own environment variables for
+				## ImageMagick, so we have to override them here.  Sucks, but what else can you do...
+				echo "putenv(\"MAGICK_HOME=/usr/local\");" >> $SUBS_FILE
+				echo "putenv(\"MAGICK_CONFIGURE_PATH=/usr/local/lib/ImageMagick/config-Q16/\");" >> $SUBS_FILE
+				echo "putenv(\"MAGICK_CODER_MODULE_PATH=/usr/local/lib/ImageMagick/modules-Q16/coders\");" >> $SUBS_FILE
+			fi
 		fi
 
 		## See if the file is different and offer to replace
