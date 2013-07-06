@@ -4,4 +4,4 @@
  * Code for the LYR Base Islandora feature.
  */
 
-include_once 'lyr_base_islandora.features.inc';
+include_once 'feature_base_islandora.features.inc';

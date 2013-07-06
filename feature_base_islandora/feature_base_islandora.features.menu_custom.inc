@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * lyr_base_islandora.features.menu_custom.inc
+ * feature_base_islandora.features.menu_custom.inc
  */
 
 /**
  * Implements hook_menu_default_menu_custom().
  */
-function lyr_base_islandora_menu_default_menu_custom() {
+function feature_base_islandora_menu_default_menu_custom() {
   $menus = array();
 
   // Exported menu: navigation.

@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * lyr_base_islandora.features.filter.inc
+ * feature_base_islandora.features.filter.inc
  */
 
 /**
  * Implements hook_filter_default_formats().
  */
-function lyr_base_islandora_filter_default_formats() {
+function feature_base_islandora_filter_default_formats() {
   $formats = array();
 
   // Exported format: Filtered HTML.

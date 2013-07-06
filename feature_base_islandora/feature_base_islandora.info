@@ -1,7 +1,7 @@
-name = LYR Base Islandora
-description = LYRASIS Base Islandora Installation
+name = Reposervice Base Islandora
+description = Reposervice Base Islandora Installation
 core = 7.x
-package = LYRASIS
+package = Reposervice
 php = 5.2.4
 dependencies[] = ctools
 dependencies[] = diff

@@ -128,7 +128,7 @@ saveSetupAndReturn "export FEDORA_HOME=$SERVICE_HOME/fedora_home" && eval $SAVED
 saveSetupAndReturn "export DRUPAL_HOME=$SERVICE_HOME/drupal" && eval $SAVED_LINE
 saveSetupAndReturn "export CATALINA_HOME=$SERVICE_HOME/binaries/tomcat" && eval $SAVED_LINE
 saveSetupAndReturn "export CATALINA_OPTS=\"\$CATALINA_DEBUG -XX:MaxPermSize=256m -Xmx1G -Xms128M\"" && eval $SAVED_LINE
-saveSetupAndReturn "export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$PATH" && eval $SAVED_LINE
+saveSetupAndReturn "export PATH=$FEDORA_HOME/server/bin:$FEDORA_HOME/client/bin:$CATALINA_HOME/bin:$SERVICE_HOME/bin:$PATH" && eval $SAVED_LINE
 saveSetupAndReturn "alias lesscatalinalog=\"less $CATALINA_HOME/logs/catalina.out\"" && eval $SAVED_LINE
 saveSetupAndReturn "alias lessfedoralog=\"less $FEDORA_HOME/server/logs/fedora.log\"" && eval $SAVED_LINE
 saveSetupAndReturn "alias lessgsearchlog=\"less $FEDORA_HOME/server/logs/fedoragsearch.daily.log\"" && eval $SAVED_LINE

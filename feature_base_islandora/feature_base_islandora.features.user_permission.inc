@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * lyr_base_islandora.features.user_permission.inc
+ * feature_base_islandora.features.user_permission.inc
  */
 
 /**
  * Implements hook_user_default_permissions().
  */
-function lyr_base_islandora_user_default_permissions() {
+function feature_base_islandora_user_default_permissions() {
   $permissions = array();
 
   // Exported permission: Associate XML Forms.

@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * lyr_base_islandora.strongarm.inc
+ * feature_base_islandora.strongarm.inc
  */
 
 /**
  * Implements hook_strongarm().
  */
-function lyr_base_islandora_strongarm() {
+function feature_base_islandora_strongarm() {
   $export = array();
 
   $strongarm = new stdClass();
@@ -21,7 +21,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'imagemagick_convert';
-  $strongarm->value = '${PATH_IMAGEMAGICK_CONVERT}';
+  $strongarm->value = '/usr/local/bin/convert';
   $export['imagemagick_convert'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -79,7 +79,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_fits_executable_path';
-  $strongarm->value = '${PATH_FITS}';
+  $strongarm->value = '/Users/peter/reposervice/binaries/fits/fits.sh';
   $export['islandora_fits_executable_path'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -107,7 +107,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_kakadu_url';
-  $strongarm->value = '${PATH_KAKADU}';
+  $strongarm->value = '/Users/peter/reposervice/binaries/adore-djatoka/bin/Mac-x86/kdu_compress';
   $export['islandora_kakadu_url'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -186,7 +186,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_ocr_tesseract';
-  $strongarm->value = '${PATH_TESSERACT}';
+  $strongarm->value = '/usr/local/bin/tesseract';
   $export['islandora_ocr_tesseract'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -202,14 +202,14 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_paged_content_djatoka_url';
-  $strongarm->value = '${ADORE_DJATOKA_URL}';
+  $strongarm->value = 'http://localhost:8080/adore-djatoka';
   $export['islandora_paged_content_djatoka_url'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_paged_content_gs';
-  $strongarm->value = '${PATH_GS}';
+  $strongarm->value = '/usr/local/bin/gs';
   $export['islandora_paged_content_gs'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -230,7 +230,7 @@ function lyr_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_pdf_path_to_pdftotext';
-  $strongarm->value = '${PATH_PDFTOTEXT}';
+  $strongarm->value = '/usr/local/bin/pdftotext';
   $export['islandora_pdf_path_to_pdftotext'] = $strongarm;
 
   $strongarm = new stdClass();
