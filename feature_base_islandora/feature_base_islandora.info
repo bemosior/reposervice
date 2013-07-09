@@ -88,7 +88,6 @@ features[variable][] = islandora_ocr_solr_hocr_highlighting_use_fast
 features[variable][] = islandora_ocr_solr_hocr_result_count
 features[variable][] = islandora_ocr_tesseract
 features[variable][] = islandora_ocr_tesseract_enabled_languages
-features[variable][] = islandora_paged_content_djatoka_url
 features[variable][] = islandora_paged_content_gs
 features[variable][] = islandora_pdf_allow_text_upload
 features[variable][] = islandora_pdf_create_fulltext

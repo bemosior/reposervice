@@ -159,9 +159,7 @@ From the main reposervice.git repository, it is helpful to have the commit summa
 
 ## Creating a new site
 
-1. Create instance: `drush site-install standard --account-mail=${SITE_ADMIN_EMAIL} --account-name=${SITE_SHORT_CODE}_admin --account-pass=blah --db-su=${DB_ROOT_USER} --db-su-pw=${DB_ROOT_PASSWORD} --locale=en-US --site-name="${SITE_TILE} Site" --site-mail=${SITE_PUBLISHED_EMAIL} --sites-subdir=${SITE_HOSTNAME} --db-url="mysql://${DB_DRUPAL_USER}:${DB_DRUPAL_PASSWORD}@localhost/drupal_${SITE_SHORT_CODE}"`
-1. Set public file directory permissions: `chmod g+w,o+w $DRUPAL_HOME/sites/${SITE_HOSTNAME}/files`
-1. Enable `lyr_base_islandora` feature module
+The steps of creating a new Islandora site are codified in the `bin/repositesetup` script.
 
 ## Migrating Content
 [emory-libraries/eulfedora · GitHub](https://github.com/emory-libraries/eulfedora)

@@ -1,47 +1,458 @@
-#!/bin/bash
-#
+#!/usr/bin/perl -w
+##
+###########################################################################
+##
+##  Program:  repositesetup
+##
+##  Purpose:  Create/recreate an Islandora site from a specified configuration
+##
+##  Author:   Peter Murray
+##
+## DOCUMENTATION, in PERL POD format, is at the end of the program.
+## Running the program `perldoc <programname>` should output the manual.
+##
 
-REPOCODE=$1  # A short, database-friendly code
-REPOHOST=$2  # The hostname of the repository
+use strict;
+use warnings;
 
-function echoerr { echo "$@" >&2; }
+use File::Path qw(make_path);
+use File::Copy;
+use Text::Diff;
+use Cwd;
+
+##
+sub _call_command {
+	my $commandline = shift;	
+	my $pid = open(COMMAND, "$commandline |") or die "Couldn't fork command '$commandline': $!\n";
+	my $output;
+	while (<COMMAND>) {
+		$output .= $_;
+	}
+	close COMMAND;
+	if ($? != 0) {
+		my $returncode = $? >> 8;
+		warn "Command '$commandline' returned status code $returncode with ".(defined($output) ? "output $output" : "no output")."\n";
+	}
+	return $output;
+}
+
+##
+sub _call_drush {
+	my @command_options = @_;
+	unshift @command_options, "drush", "--pipe";
+	my $commandline = join " ",@command_options;
+	return _call_command($commandline);
+}
+
+##
+##
+sub _rand_string {
+	my @chars = ("A".."Z", "a".."z", "0".."9");
+	my $string;
+	$string .= $chars[rand @chars] for 1..12;
+	return $string;
+}
+
+##
+##
+sub _make_path_wrapped {
+	my $directory = shift;
+
+	make_path($directory, {error => \my $err} );
+	if (@$err) {
+    	for my $diag (@$err) {
+			my ($file, $message) = %$diag;
+			warn "Could create $file: $message\n";
+		}
+		return undef;
+	}
+	
+	return 1;
+}
 
 
-if [ ! -d $DRUPAL_HOME/sites/$REPOHOST ]; then
-	echoerr "Site $DRUPAL_HOME/sites/$REPOHOST ($REPOCODE) not created. Exiting."
-	exit 1
-fi
+##
+##
+sub _perform_variable_substitution {
+	my $source_file = shift;
+	my $subst_file = shift;
+	my $substitution_variable_hashref = shift;
+	
+	if (! open(SRCFILE, $source_file)) {
+		warn "Couldn't open $source_file for reading: $!\n";
+		return undef;
+	}
+	if (! open(SUBSTITUTEDFILE, "> $subst_file")) {
+		warn "Couldn't open $subst_file for writing: $!\n";
+		return undef;
+	}
+	my @file_contents = <SRCFILE>;
+	foreach my $subst_key (keys %$substitution_variable_hashref) {
+		my $val_string = $$substitution_variable_hashref{$subst_key};
+		for (@file_contents) {
+			s/$subst_key/$val_string/g;
+		}
+	}
+	print SUBSTITUTEDFILE @file_contents;
+	close SUBSTITUTEDFILE;
+	close SRCFILE;
+	
+	return 1;
+}
 
-command -v drush >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-	LOCALADMIN_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/ user-information "$REPOCODE Islandora Administrator" 2>/dev/null | cut -f2 -d',')
-	if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-		LOCALADMIN_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-create "$REPOCODE Islandora Administrator" --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
-		if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-			echoerr "Couldn't create 'Data Entry' Drupal User"
-		fi
-	fi
-	drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-add-role 'Islandora Administrator' --uid=$LOCALADMIN_DRUPAL_UID >/dev/null 2>&1
 
-	DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/ user-information 'Data Entry' 2>/dev/null | cut -f2 -d',')
-	if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-		DATA_ENTRY_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-create 'Data Entry' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
-		if [[ ! "$DATA_ENTRY_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-			echoerr "Couldn't create 'Data Entry' Drupal User"
-		fi
-	fi
-	drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-add-role 'Mediated Data Entry' --uid=$DATA_ENTRY_DRUPAL_UID >/dev/null 2>&1
+##
+## This uses a command line technique to determine if the database exists or not.
+## Concept from http://serverfault.com/questions/173978/from-a-shell-script-how-can-i-check-whether-a-mysql-database-exists
+sub sql_database_exists {
+	my $reposervice_config_file = shift;
+	my $sql_database = shift;
+	
+	my %reposervice_config;
+	load_substitution_variables(\%reposervice_config, $reposervice_config_file);
 
-	SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-information 'Supervisor' 2>/dev/null | cut -f2 -d',')
-	if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-		SUPERVISOR_DRUPAL_UID=$(drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-create 'Supervisor' --password=$(openssl rand -base64 20) 2>/dev/null | cut -f2 -d',')
-		if [[ ! "$SUPERVISOR_DRUPAL_UID" =~ ^[0-9]+$ ]]; then
-			echoerr "Couldn't create 'Supervisor' Drupal User"
-		fi
-	fi
-	drush --pipe --root=$DRUPAL_HOME --uri=http://$REPOHOST/  user-add-role 'Islandora Collection Supervisor' --uid=$SUPERVISOR_DRUPAL_UID >/dev/null 2>&1
-else
-	echoerr "'drush' is not in the current path"
-	exit 1;
-fi
+    my @mysql_parameters;
+    push @mysql_parameters, "mysql";
+    push @mysql_parameters, "--batch";
+    push @mysql_parameters, "--skip-column-names";
+    push @mysql_parameters, "--user=$reposervice_config{DB_DRUPAL_USER}";
+    push @mysql_parameters, "--password=$reposervice_config{DB_DRUPAL_PASSWORD}";
+    push @mysql_parameters, "--execute=\"show databases like '$sql_database'\"";
+    
+    my $mysql_output = _call_command(join(' ',@mysql_parameters));
+    return undef if (undef $mysql_output);
+	return 1;
+}
 
+##
+##
+sub create_drupal_site {
+	my $substitution_variable_hashref = shift;
+
+	my $account_password = _rand_string();
+	my $site_db_password = _rand_string();
+	my $site_db_userid = $$substitution_variable_hashref{'SITE_SHORTCODE'}.'_dbuser';
+	my $site_db_dbname = 'drupal_'.$$substitution_variable_hashref{'SITE_SHORTCODE'};
+	
+	# In preparation for writing out the config-local.conf file; we want to die before
+	# we create the database table if we can't actually write this file.
+	my $local_variables_filename = "$ENV{'SERVICE_HOME'}/repository_sites/$$substitution_variable_hashref{'SITE_HOSTNAME'}/config-local.conf";
+	open VARIABLES, "> $local_variables_filename" or die "Can't write to $local_variables_filename: $!\n";
+	
+	my @drush_parameters;
+	push @drush_parameters, "--root=$ENV{'DRUPAL_HOME'}";
+	push @drush_parameters, 'site-install standard';
+	defined($$substitution_variable_hashref{'SITE_ADMIN_EMAIL'}) ? 
+			push @drush_parameters, "--account-mail=$$substitution_variable_hashref{'SITE_ADMIN_EMAIL'}" :
+			die "SITE_ADMIN_EMAIL substitution variable not defined\n";
+	defined($$substitution_variable_hashref{'SITE_SHORTCODE'}) ?
+			push @drush_parameters, "--account-name=$$substitution_variable_hashref{'SITE_SHORTCODE'}_admin" :
+			die "SITE_SHORTCODE substitution variable not defined\n";
+	push @drush_parameters, "--account-pass=".$account_password;
+	push @drush_parameters, "--locale=en-US";
+	defined($$substitution_variable_hashref{'SITE_TITLE'}) ?
+			push @drush_parameters, "--site-name=\"$$substitution_variable_hashref{'SITE_TITLE'}\"" :
+			die "SITE_TITLE substitution variable not defined\n";
+	defined($$substitution_variable_hashref{'SITE_PUBLISHED_EMAIL'}) ?
+			push @drush_parameters, "--site-mail=$$substitution_variable_hashref{'SITE_PUBLISHED_EMAIL'}" :
+			die "SITE_PUBLISHED_EMAIL substitution variable not defined\n";
+	defined($$substitution_variable_hashref{'SITE_HOSTNAME'}) ?
+			push @drush_parameters, "--sites-subdir=$$substitution_variable_hashref{'SITE_HOSTNAME'}" :
+			die "SITE_HOSTNAME substitution variable not defined\n";
+	push @drush_parameters, "--db-url=\"mysql://${site_db_userid}:${site_db_password}\@localhost/${site_db_dbname}\"";
+	push @drush_parameters, "--db-su=>>DB_ROOT_USER<<";
+	push @drush_parameters, "--db-su-pw=>>DB_ROOT_PASSWORD<<";
+	
+	print VARIABLES "SITE_DB_USERID=$site_db_userid\n";
+	print VARIABLES "SITE_DB_PASSWORD=$site_db_password\n";
+	print VARIABLES "SITE_DB_DBNAME=$site_db_dbname\n";
+	close VARIABLES;
+
+   ## For now, we need to do the database creation step manually since we don't have the database root user and password.
+    my $drush_command = "drush ".join(' ',@drush_parameters);
+	warn "Database Not Found. Manual Intervention Needed.\n";
+	print <<"EOM";
+      The database for this site was not found, and needs to be created
+      and set up manually.  This is what is needed:
+      
+      1. Run this command:  $drush_command
+      
+      2. Run this command: chmod 777 $ENV{'DRUPAL_HOME'}/sites/$$substitution_variable_hashref{'SITE_HOSTNAME'}/files
+      
+      2. Enable the 'feature_base_drupal' and 'feature_base_islandora' modules
+
+      3. Create the root object '$$substitution_variable_hashref{'SITE_SHORTCODE'}:root' in the main Islandora 
+      instance for the site
+      
+      This will set up an admin user '$$substitution_variable_hashref{'SITE_SHORTCODE'}_admin' with the password 
+      '$account_password' on the site.
+      
+      When done, re-run this script to finish the setup process.
+      
+      NOTE: If you are being prompted to create the Drupal site after it has
+      already been created, it is probably because the DB_DRUPAL_USER (as
+      listed in $ENV{SERVICE_HOME}/config-local.conf file)
+      doesn't have the global 'SHOW DATABASES' privilege.  You'll need to
+      execute these MySQL commands:
+      
+        GRANT SHOW DATABASES ON *.* TO >>DB_DRUPAL_USER<<\@'localhost';
+        FLUSH PRIVILEGES;
+
+EOM
+	exit;
+}
+
+##
+##
+sub enable_drupal_module {
+	my $drupal_module = shift;
+	my $substitution_variable_hashref = shift;
+	
+	my @drush_parameters;
+	push @drush_parameters, "--root=$ENV{'DRUPAL_HOME'}";
+	push @drush_parameters, "--uri=http://$$substitution_variable_hashref{'SITE_HOSTNAME'}/";
+	push @drush_parameters, "pm-enable";
+	push @drush_parameters, "$drupal_module"; 
+	_call_drush(@drush_parameters);	
+	return;
+}
+
+##
+##
+sub create_root_object {
+	my $substitution_variable_hashref = shift;
+	my $site_shortcode = $$substitution_variable_hashref{'SITE_SHORTCODE'};
+	warn "This script doesn't yet create the root module of the site.  Go into the default Islandora interface and create ${site_shortcode}:root.\n";
+	return;
+}
+
+##
+##
+sub rename_files_if_needed {
+	my $directory = shift;
+	my $template_string = shift;
+	my $site_string = shift;
+	
+	if ( -d "$directory#$site_string") {
+		return;  # nothing to do; site-specific directory already exists
+	}
+	my %replace_hash = ( $template_string => $site_string );
+	rename("$directory#$template_string","$directory#$site_string") or
+			die "Couldn't rename $directory#$template_string: $!\n";
+	opendir(TFILES, "$directory#$site_string") or
+			die "Couldn't open $directory#$site_string directory: $!\n";
+	while (defined(my $source_file = readdir(TFILES))) {
+		next if $source_file =~ /^\.\.?$/;     # skip . and ..
+		my $destination_file = $source_file;
+		$destination_file =~ s/$template_string/$site_string/;
+		_perform_variable_substitution("$directory#$site_string/$source_file","$directory#$site_string/$destination_file",\%replace_hash);
+		unlink("$directory#$site_string/$source_file") or
+				warn "Couldn't remove $directory#$site_string/$source_file: $!\n";
+	}
+	close TFILES;
+}
+
+##
+##
+sub symlink_if_needed {
+	my $reposervicedir = shift;
+	my $source_relative_dir = shift;
+	my $destination_directory = shift;
+	
+	my $cwd = cwd();
+	return undef if ! _make_path_wrapped($destination_directory);
+	opendir(FILES, "$reposervicedir/$source_relative_dir") or
+			die "Couldn't open $reposervicedir/$source_relative_dir directory: $!\n";
+	chdir($destination_directory);
+	while (defined(my $source_file = readdir(FILES))) {
+		next if $source_file =~ /^\.\.?$/;     # skip . and ..
+		next if -e $source_file;
+		symlink("../../../../$source_relative_dir/$source_file",$source_file) or
+				warn "Couldn't symlink $source_relative_dir/$source_file to $destination_directory: $!\n";
+	}
+	close FILES;
+	chdir($cwd);
+}
+
+##
+##
+sub retrieve_drupal_userid {
+	my $drupal_account = shift;
+	my $drupal_role = shift;
+	my $substitution_variable_hashref = shift;
+	
+	my(@drush_parameters, $drupal_uid, $output);
+	push @drush_parameters, "--root=$ENV{'DRUPAL_HOME'}";
+	push @drush_parameters, "--uri=http://$$substitution_variable_hashref{'SITE_HOSTNAME'}/";
+	push @drush_parameters, "user-information";
+	push @drush_parameters, "\"$drupal_account\""; 
+	$output = _call_drush(@drush_parameters);
+	if (!defined($output)) {
+		my $password = _rand_string();
+		undef @drush_parameters;
+		push @drush_parameters, "--root=$ENV{'DRUPAL_HOME'}";
+		push @drush_parameters, "--uri=http://$$substitution_variable_hashref{'SITE_HOSTNAME'}/";
+		push @drush_parameters, "user-create";
+		push @drush_parameters, "\"$drupal_account\""; 
+		push @drush_parameters, "--password=$password";
+		$output = _call_drush(@drush_parameters);
+		if (!defined($output)) {
+			warn "Couldn't create user '$drupal_account'\n";
+			return undef;
+		} else {
+			warn "Created account \"$drupal_account\" with password \"$password\"\n";
+		}
+	}
+	($drupal_uid = $output) =~ s/^[^,]*?,(\d+),.*/$1/;
+	undef @drush_parameters;
+	push @drush_parameters, "--root=$ENV{'DRUPAL_HOME'}";
+	push @drush_parameters, "--uri=http://$$substitution_variable_hashref{'SITE_HOSTNAME'}/";
+	push @drush_parameters, "user-add-role";
+	push @drush_parameters, "\"$drupal_role\"";
+	push @drush_parameters, "--uid=$drupal_uid";
+	_call_drush(@drush_parameters);
+
+	return $drupal_uid;
+}
+
+##
+##
+sub load_substitution_variables {
+	my $substitution_variable_hashref = shift;
+	my $config_filename = shift;
+	
+	open(CONFIG, "< $config_filename") or warn "Couldn't open $config_filename: $!. Continuing...";
+	while (<CONFIG>) {
+	    chomp;                  # no newline
+    	s/#.*//;                # no comments
+	    s/^\s+//;               # no leading white
+    	s/\s+$//;               # no trailing white
+	    next unless length;     # anything left?
+	    my ($var, $value) = split(/\s*=\s*/, $_, 2);
+	    $substitution_variable_hashref->{$var} = $value;
+	} 
+	close CONFIG;
+	return;
+}
+
+##
+##
+sub fill_in_templates {	
+	my $substitution_variable_hashref = shift;
+	
+	my %marked_substitution_variable;
+	foreach my $subst_key (keys %$substitution_variable_hashref) {
+		$marked_substitution_variable{'##'.$subst_key.'##'} = $$substitution_variable_hashref{$subst_key};
+	}
+
+	my $template_dir = "$$substitution_variable_hashref{'SITE_CONFIG_DIR'}/template_files";
+	opendir(TDIRS, $template_dir) or
+			die "Couldn't open $template_dir: $!\n";
+	while (defined(my $source_dir = readdir(TDIRS))) {
+	    next if $source_dir =~ /^\.\.?$/;     # skip . and ..
+		if (! -d "$template_dir/$source_dir") {
+			warn "Found non-directory file $source_dir in $template_dir; skipping.\n";
+			next;
+		}
+		my($dest_dir) = $source_dir;
+		$dest_dir =~ s/#/\//g;  # Change hashes to slashes
+		my $substituted_dir = "$$substitution_variable_hashref{'SITE_CONFIG_DIR'}/substituted_files/$dest_dir";
+		$dest_dir = "$$substitution_variable_hashref{'SITE_CONFIG_DIR'}/$dest_dir";
+		
+		opendir(TFILES, "$template_dir/$source_dir") or
+				die "Couldn't open $template_dir/$source_dir directory: $!\n";
+		while (defined(my $source_file = readdir(TFILES))) {
+		    next if $source_file =~ /^\.\.?$/;     # skip . and ..
+			next if ! _make_path_wrapped($substituted_dir);
+			next if ! _perform_variable_substitution("$template_dir/$source_dir/$source_file", "$substituted_dir/$source_file", \%marked_substitution_variable);
+			
+			if (-e "$dest_dir/$source_file") {
+				if (my $diffoutput = diff("$dest_dir/$source_file", "$substituted_dir/$source_file")) {
+					print "\nFOUND DIFFERENCE in $dest_dir/$source_file\n$diffoutput";
+					print "REPLACE FILE (y/N)? ";
+					my $answer = <STDIN>;
+					if ($answer =~ /^[Yy]/) {
+						copy("$substituted_dir/$source_file", "$dest_dir/$source_file") or
+								warn "Couldn't copy to $dest_dir/$source_file: $!\n";
+					}
+				}
+			} else {
+				next if ! _make_path_wrapped($dest_dir);
+				copy("$substituted_dir/$source_file", "$dest_dir/$source_file") or
+						warn "Couldn't copy to $dest_dir/$source_file: $!\n";
+			}
+		}   # while (defined(my $source_file = readdir(TFILES)))
+		closedir TFILES;
+	}   # while (defined(my $source_dir = readdir(TDIRS)))
+	closedir TDIRS;
+
+	return;
+}
+
+##
+##
+sub restore_drupal_feature {
+	my $drupal_feature = shift;
+	my $substitution_variable_hashref = shift;
+	
+	my @drush_parameters;
+	push @drush_parameters, "--root=$ENV{'DRUPAL_HOME'}";
+	push @drush_parameters, "--uri=http://$$substitution_variable_hashref{'SITE_HOSTNAME'}/";
+	push @drush_parameters, "features-revert";
+	push @drush_parameters, "$drupal_feature";
+	_call_drush(@drush_parameters);
+	return;
+}
+
+
+
+## Mainline
+
+my $reposervicedir;
+if (defined ($ENV{'SERVICE_HOME'})) {
+	$reposervicedir = $ENV{'SERVICE_HOME'};
+} else {
+	die "REPOSERVICE environment variable not found; have you bootstrapped yet?\n";
+}
+
+# Get the options passed in.
+my($sitehostname, $sitecode);
+$sitehostname = shift or die "Site hostname is a required parameter\n";
+
+my $site_rel_directory = "repository_sites/$sitehostname";
+my $site_directory = "$reposervicedir/$site_rel_directory";
+if ( ! -d $site_directory ) {
+	warn "If this is a new site, copy \$SERVICE_HOME/site_template to \$SERVICE_HOME/repository_sites/$sitehostname, edit config-stored.conf, and rerun.\n";
+	die "Site $sitehostname not found. Cannot continue.\n";
+}
+
+my %substitution_variable;
+$substitution_variable{'SITE_HOSTNAME'} = $sitehostname;
+$substitution_variable{'SITE_CONFIG_DIR'} = $site_directory;
+load_substitution_variables(\%substitution_variable, "$site_directory/config-stored.conf");
+load_substitution_variables(\%substitution_variable, "$site_directory/config-local.conf");
+$sitecode = $substitution_variable{'SITE_SHORTCODE'};
+
+unless (sql_database_exists("$reposervicedir/config-local.conf","drupal_$sitecode")) {
+	create_drupal_site(\%substitution_variable);
+}
+rename_files_if_needed("$site_directory/template_files/modules", "feature_sitetemplate_islandora", "feature_${sitecode}_islandora" );
+rename_files_if_needed("$site_directory/template_files/themes", "theme_sitetemplate_islandora", "theme_${sitecode}_islandora" );
+
+my $userid_siteadmin = retrieve_drupal_userid("$sitecode Islandora Administrator",'Islandora Administrator',\%substitution_variable);
+my $userid_dataentry = retrieve_drupal_userid("Data Entry",'Mediated Data Entry',\%substitution_variable);
+my $userid_supervisor = retrieve_drupal_userid("Supervisor",'Islandora Collection Supervisor',\%substitution_variable);
+
+$substitution_variable{'SITEADMIN_DRUPAL_UID'} = $userid_siteadmin;
+$substitution_variable{'DATAENTRY_DRUPAL_UID'} = $userid_dataentry;
+$substitution_variable{'SUPERVISOR_DRUPAL_UID'} = $userid_supervisor;
+fill_in_templates(\%substitution_variable);
+
+symlink_if_needed($reposervicedir, "$site_rel_directory/modules", "$reposervicedir/drupal/sites/$sitehostname/modules");
+symlink_if_needed($reposervicedir, "$site_rel_directory/themes", "$reposervicedir/drupal/sites/$sitehostname/themes");
+enable_drupal_module("feature_${sitecode}_islandora",\%substitution_variable);
+restore_drupal_feature('feature_base_drupal',\%substitution_variable);
+restore_drupal_feature('feature_base_islandora',\%substitution_variable);
+restore_drupal_feature("feature_${sitecode}_islandora",\%substitution_variable);
+
+exit;

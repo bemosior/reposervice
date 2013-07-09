@@ -53,6 +53,14 @@ These are FedoraGSearch configuration files based on the per-datastream-type tra
 
 There are several perquisite binaries that are not included in the git repo for reasons of size and/or relatively static nature (e.g., Apache Tomcat, Apache SOLR, djatoka, FITS).  The `bin/reposervice-config` script checks for the existence of these prerequisites and prompts if they are not there.
 
+### `repository_sites/` directory
+
+This directory contains the configuration (e.g., Drupal settings, features and themes, Fedora server setup, and Islandora XML Builder forms) that are specific to a site.  See the `repositesetup` script for more discussion about how this directory is used.
+
+### `site_tempate/` directory
+
+This directory is the template of a new Islandora site.  It will be copied to the `repository_sites/` directory and named as the hostname of the new Islandora site as part of the site setup process.
+
 ### `bin/reposervice-config` shell script
 
 This shell script has several purposes in setting up the `reposervice/` setup:
@@ -62,6 +70,10 @@ This shell script has several purposes in setting up the `reposervice/` setup:
 * Generates the `bin/reposervice-env` shell script, use subsequently by the `bootstrap.sh` script to set up the shell environment.
 * Runs the `sed` replacements on the configuration template files, checks to see if they match the current configuration, shows context-sensitive diffs and prompts the user for file replacement.
 * Verifies that binary files that have been copied into `reposervice/` tree are at their latest versions (e.g., the compile Fedora Commons WARs, the Islandora Drupal Filter JAR file)
+
+### `bin/repositesetup` script
+
+This Perl script creates and updates an Islandora repository instance under the Drupal multisite setup.  The script takes one parameter -- the hostname of the multisite.  Prior to running this script, copy the `$SERVICE_HOME/site_template` directory into the `$SERVICE_HOME/repository_sites` directory (naming it the hostname of the site being created) and modify the values in the `config-stored.conf` file.  This script generates a `config-local.conf` file, which is not stored in the Git repo, that contains the database parameters for the local machine.  Re-run this script whenever `config-stored.conf` is changed or when anything in the `template_files` is changed; the script prompts you to decide whether running code will be updated.
 
 ### `bin/upstreamcheck` script
 

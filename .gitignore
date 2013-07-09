@@ -5,3 +5,4 @@ sed_substituted_files
 gsearch-config/fgsconfig-basic-for-islandora.properties
 gsearch-config/configForIslandora
 bin/reposervice-env
+/repository_sites
