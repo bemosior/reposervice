@@ -1,4 +1,4 @@
-# Building the LYRASIS Repository Environment
+# Building the Repository Environment
 
 ## Git repo setup
 
@@ -9,9 +9,11 @@ If the submodule changes -- e.g., has a commit applied to it -- then you will al
 
 ## Project Naming Conventions
 
-## Prerequisites for using LYRASIS `reposervice` environment
+## Prerequisites for using the `reposervice` environment
 
-1. `build-essential` virtual package, because you'll be building some of the prerequisites
+These packages must be installed on your system.  The configuration has been tested using Ubuntu and MacOSX 10.8 with Homebrew.
+
+1. (For Ubuntu) The `build-essential` virtual package, because you'll be building some of the prerequisites. (For MacOSX) The XCode package from Apple; same reason.
 1. Apache HTTPD
 1. MySQL-5.1
 1. Java6 JDK
@@ -197,3 +199,6 @@ This drush script will migrate an entire collection based on a METS manifest.
 
 [morganhi/UCLA_Base-Theme · GitHub](https://github.com/morganhi/UCLA_Base-Theme)
 
+## Acknowledgments
+
+The initial version of `reposervice` was created by Peter Murray at LYRASIS.  There is some historic mention of LYRASIS or the 'lyr' prefix in the documentation and implementation.
