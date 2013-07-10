@@ -1,0 +1,36 @@
+#!/bin/bash
+
+PAIRED_FILES=$( cat <<EOF
+feature_base_islandora/feature_base_islandora.strongarm.inc|sed_templates/feature_base_islandora/feature_base_islandora.strongarm.inc
+feature_sitetemplate_islandora/feature_sitetemplate_islandora.strongarm.inc|site_template/template_files/modules#feature_sitetemplate_islandora/feature_sitetemplate_islandora.strongarm.inc
+EOF
+)
+
+function run_test {
+	GITDIR=`git rev-parse --git-dir`
+	cd $GITDIR/.. > /dev/null
+
+	for line in $PAIRED_FILES; do
+		LIVE_FILE=$(echo $line | cut -d"|" -f1)
+		TEMPLATE_FILE=$(echo $line | cut -d"|" -f2)
+		if [ $LIVE_FILE -nt $TEMPLATE_FILE ]; then
+			printf "NOTE: %s\n is newer than %s\n" $LIVE_FILE $TEMPLATE_FILE
+			FOUNDONE="yup"
+		fi
+	done;
+
+	if [ "$FOUNDONE" == "yup" ]; then
+		echo "This may mean that the template file needs to be updated from the source file.  To"
+		echo "clear this error, 'touch' the file."
+		exit 1
+	fi
+}
+
+case "${1}" in
+	--about )
+		echo "Check the relative file modification dates."
+		;;
+	* )
+		run_test
+		;;
+esac
