@@ -303,6 +303,11 @@ for line in $BINARY_FILES; do
     fi
 done
 
+# THIS IS A TEMPORARY FILE.  Until $SERVICE_HOME/bin/reposervice-config
+# is refactored from bash to Perl (and the config file format redone)
+# this file is needed to drive the repositesetup script.
+mv $SERVICE_HOME/binaries/config-local.conf $SERVICE_HOME/config-local.conf
+
 echo "#"
 echo "#"
 echo "# Now don't forget to run the bootstrap in order to get the right shell environment setup."
