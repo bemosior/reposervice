@@ -7,8 +7,6 @@ The `lyr-master` branch is set to be the branch we are running for production se
 Remember -- Git submodule directories represent specific commits of the target Git repository.
 If the submodule changes -- e.g., has a commit applied to it -- then you will also need to commit the enclosing `reposervice` module so that all users would be at the same submodule point.
 
-## Project Naming Conventions
-
 ## Prerequisites for using the `reposervice` environment
 
 These packages must be installed on your system.  The configuration has been tested using Ubuntu and MacOSX 10.8 with Homebrew.
@@ -44,32 +42,22 @@ PHP pear is needed to install uploadprogress: `pecl install uploadprogress` and 
 1. `cd reposervice`
 1. `git submodule init`
 1. `git submodule update` -- Use `git submodule status` to make sure all of the submodules are up-to-date.  There should be no plus signs or minus signs in the left-most column.
+1. Copy `config-values.sed-sample` to `config-values.sed` at the top level of the reposervice setup, then edit it with passwords, executable locations, and other configuration options.
 1. Run `bin/reposetup-config` multiple times to be told of all of the dependencies in `binaries/` (or simply read the first part of that file to see what all of the current dependencies are).
+1. When `bin/reposetup-config` runs to completion (there will be notices of directories missing in the `fedora_home` directory, and that is okay at this point), run `source ./bootstrap.sh` to set environment variables of the current shell.
 
-## Setting Up Drupal
+When starting subsequent shells, be sure to run `source ./bootstrap.sh` to get these key environment variables:
 
-1. Create database
+* `$SERVICE_HOME` -- the top directory of the repository service home
+* `$FEDORA_HOME` -- the top directory of the Fedora Commons installation
+* `$DRUPAL_HOME` -- the top directory of the Drupal installation
 
-	    mysqladmin -u root -p create drupal_islandora
-	    mysql -u root -p << EOM
-    	    grant all on drupal_islandora.* to drisl@localhost identified by '<password>';
-			flush privileges;
-			EOM
-
-1. Create symbolic link in Apache's htdocs directory to the `drupal` directory of the git repo.
-1. Go through the Drupal install web pages
-1. `cd $DRUPAL_HOME && drush enable lyr_base_islandora`
+These environment variables can be used in shell commands (e.g. "`cd $SERVICE_HOME`") and are used in the remainder of this document to specify specific file locations.
 
 ## Setting up Fedora Commons
-Be sure `cd reposervice && source ./bootstrap.sh` has been run to set the environment variables.  You'll see failures for the 'sed' replacements in the `$FEDORA_HOME` directory -- that is okay.  Having the `$FEDORA_HOME` and `$CATALINA_HOME` environment variables set, though, will preconfigure defaults in the repository installer.
+Be sure `cd reposervice && source bin/reposervice-config` has been run to set the environment variables.  You'll see failures for the 'sed' replacements in the `$FEDORA_HOME` directory -- that is okay.  Having the `$FEDORA_HOME` and `$CATALINA_HOME` environment variables set, though, will preconfigure defaults in the repository installer.
 
-You can feed the installer JAR file the properties file created by `bootstrap.sh` to have these choices selected for you: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar $SERVICE_HOME/sed_substituted_files/fedora_home/install/install.properties`
-
-1. Go into the 'fcrepo' directory: `cd fcrepo`
-
-1. Build repository installer:  `mvn clean install -Dintegration.test.skip=true`  (see [Install Fedora from source](https://wiki.duraspace.org/display/FEDORA35/Installation+From+Source)).
-Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
-1. Create database
+Create the Fedora Commons database using these commands.  Note that the password in the GRANT ALL ON line must match the password in the `$SERVICE_HOME/config-values.sed` file.
 
 		mysqladmin -u root -p create fcrepo_islandora
 		mysql -u root -p << EOM
@@ -77,6 +65,22 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 			FLUSH PRIVILEGES;
 			ALTER DATABASE fcrepo_islandora DEFAULT CHARACTER SET utf8;
 			ALTER DATABASE fcrepo_islandora DEFAULT COLLATE utf8_bin;
+
+You can install Fedora in one of two ways: from a binary distribution of "fcrepo-installer" or by building the installer from source.
+
+### Using a pre-built Fedora Commons installer
+
+The `reposervice-config` script will generate an `install.properties` file with the settings needed to make Fedora run in the reposervice environment.  Use this file to install Fedora Commons to those specifications: 
+
+		java -jar _location_/fcrepo-installer-3.6.2.jar \
+		$SERVICE_HOME/sed_substituted_files/fedora_home/install/install.properties
+
+### Building Fedora Commons from source
+
+1. Go into the 'fcrepo' directory: `cd fcrepo`
+
+1. Build repository installer:  `mvn clean install -Dintegration.test.skip=true`  (see [Install Fedora from source](https://wiki.duraspace.org/display/FEDORA35/Installation+From+Source)).
+Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 
 1. Run the installer: `java -jar fcrepo-installer/target/fcrepo-installer-3.6.2.jar` -- If you add `$SERVICE_HOME/sed_substituted_files/fedora_home/install/install.properties` to the command line, the following questions will not be asked and the values from the properties file will be used.
 
@@ -110,8 +114,10 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 	1. Messaging Provider URI: *use default*
 	1. Deploy local services and demos: *use default `true`*
 
+### After installing Fedora Commons from installer or from source
+
 1. Run `$SERVICE_HOME/reposervice-config` to create the configuration files based on the template.  Some copy errors will happen because not all of the directories are in place yet.
-1. Start Tomcat: `catalina.sh start`
+1. Start Tomcat: `catalina.sh start` (note that `$SERVICE_HOME/binaries/tomcat/bin` was put in your path by `reposervice-config`, so you can run this script from the command line).
 1. Watch the end of the Tomcat logfile for the end of the startup: `tail -f $SERVICE_HOME/binaries/tomcat/logs/catalina.out` -- You'll see "INFO: Server startup in xxxxx ms"
 1. Stop Tomcat: `catalina.sh stop`
 2. Run `$SERVICE_HOME/reposervice-config` to create the remaining configuration files.
@@ -121,6 +127,20 @@ Results are in `fcrepo-installer/target/fcrepo-installer-VERSION.jar`
 1. `cd $SERVICE_HOME/islandora_drupal_filter`
 1. Build the servlet filter: `mvn install:install-file -Dfile=fcrepo/fcrepo-security/fcrepo-security-http/target/fcrepo-security-http-3.6.2.jar -DgroupId=org.fcrepo -DartifactId=fcrepo-security-http -Dversion=3.6.2 -Dpackaging=jar -DgeneratePom=true`
 1. `$SERVICE_HOME/reposervice-config` will move the jar into the correct location.
+
+## Setting Up Drupal
+
+1. Create database.  Note that the password in the GRANT ALL ON line must match the password in the `$SERVICE_HOME/config-values.sed` file.
+
+	    mysqladmin -u root -p create drupal_islandora
+	    mysql -u root -p << EOM
+    	    grant all on drupal_islandora.* to drisl@localhost identified by '<password>';
+			flush privileges;
+			EOM
+
+1. Configure Apache HTTPD to find Drupal in the `$SERVICE_HOME/drupal` directory.  In the simplest case, create symbolic link in Apache's htdocs directory to the `drupal` directory of `$SERVICE_HOME`.
+1. Go through the Drupal install web pages
+1. `cd $DRUPAL_HOME && drush enable feature_base_islandora` -- This will enable the Fedora modules and create the Islandora objects.
 
 ## Adding a new Islandora module as a git submodule
 
@@ -161,9 +181,16 @@ From the main reposervice.git repository, it is helpful to have the commit summa
 
 ## Creating a new site
 
-The steps of creating a new Islandora site are codified in the `bin/repositesetup` script.
+The steps of creating a new Islandora site are codified in the `bin/repositesetup` script.  The script takes one parameter -- the hostname of the multisite.  Prior to running this script, copy the `$SERVICE_HOME/site_template` directory into the `$SERVICE_HOME/repository_sites` directory (naming it the hostname of the site being created) and modify the values in the `config-stored.conf` file.  This script generates a `config-local.conf` file, which is not stored in the Git repo, that contains the database parameters for the local machine.  Re-run this script whenever `config-stored.conf` is changed or when anything in the `template_files` is changed; the script prompts you to decide whether running code will be updated.
 
-## Migrating Content
+## Committing changes to submodules
+From the main reposervice.git repository, it is helpful to have the commit summaries of submodules listed; this command will do it.  One may need to run `reset` in the terminal after this. 
+
+		git diff --cached --no-color --submodule [submodule] | git commit -e --file=-
+
+## (Other Notes)
+
+### Migrating Content
 [emory-libraries/eulfedora · GitHub](https://github.com/emory-libraries/eulfedora)
 EULfedora is a Python module that provides utilities, API wrappers, and classes for interacting with the Fedora-Commons Repository (versions 3.4.x and 3.5) in a pythonic, object-oriented way, with optional Django integration.
 
@@ -185,7 +212,7 @@ Book batch ingest script for University of Manitoba.
 [UCLALibrary/ucla_migration · GitHub](https://github.com/UCLALibrary/ucla_migration)
 This drush script will migrate an entire collection based on a METS manifest.
 
-## Themes of Other Islandora Sites
+### Themes of Other Islandora Sites
 
 [UCLALibrary/UCLA-Theme · GitHub](https://github.com/UCLALibrary/UCLA-Theme)
 

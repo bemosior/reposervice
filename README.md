@@ -14,7 +14,11 @@ This repository contains git submodules, configuration template system, and supp
 
 * Apache HTTPD (with some specific configuration directives specific to Islandora)
 * MySQL RDBMS for Drupal and Fedora Commons
-* Java VMS
+* Java JVM
+* ImageMagick
+* Poppler Utils
+* Ghostscript
+* Tesseract
 
 ## Description of key files, directories, and scripts
 
@@ -55,7 +59,7 @@ There are several perquisite binaries that are not included in the git repo for 
 
 ### `repository_sites/` directory
 
-This directory contains the configuration (e.g., Drupal settings, features and themes, Fedora server setup, and Islandora XML Builder forms) that are specific to a site.  See the `repositesetup` script for more discussion about how this directory is used.
+This directory contains the configuration (e.g., Drupal settings, features and themes, Fedora server setup, and Islandora XML Builder forms) that are specific to a site.  See the `repositesetup` script for more discussion about how this directory is used.  This directory is in the reposervice `.gitignore` file; you probably want to create private Git repo to version control this content outside of reposervice.
 
 ### `site_tempate/` directory
 
@@ -73,7 +77,7 @@ This shell script has several purposes in setting up the `reposervice/` setup:
 
 ### `bin/repositesetup` script
 
-This Perl script creates and updates an Islandora repository instance under the Drupal multisite setup.  The script takes one parameter -- the hostname of the multisite.  Prior to running this script, copy the `$SERVICE_HOME/site_template` directory into the `$SERVICE_HOME/repository_sites` directory (naming it the hostname of the site being created) and modify the values in the `config-stored.conf` file.  This script generates a `config-local.conf` file, which is not stored in the Git repo, that contains the database parameters for the local machine.  Re-run this script whenever `config-stored.conf` is changed or when anything in the `template_files` is changed; the script prompts you to decide whether running code will be updated.
+This Perl script creates and updates an Islandora repository instance under the Drupal multisite setup.  See the "Building Instructions" document for details on using the script.
 
 ### `bin/upstreamcheck` script
 
