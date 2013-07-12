@@ -32,7 +32,7 @@ read -p "Update Drupal features? (y/N) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	cd $DRUPAL_HOME
-	drush features-revert lyr_base_islandora lyrasis_drupal_base
+	drush features-revert feature_base_islandora feature_drupal_base
 fi
 
 read -p "Run Drupal database update? (y/N) " -n 1 -r
