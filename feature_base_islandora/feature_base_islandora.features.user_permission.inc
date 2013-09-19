@@ -14,7 +14,6 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['Associate XML Forms'] = array(
     'name' => 'Associate XML Forms',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -51,8 +50,10 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['List XML Forms'] = array(
     'name' => 'List XML Forms',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'xml_form_builder',
@@ -62,8 +63,10 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['add fedora datastreams'] = array(
     'name' => 'add fedora datastreams',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -91,7 +94,8 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['bypass inactive object state'] = array(
     'name' => 'bypass inactive object state',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_simple_workflow',
@@ -101,7 +105,9 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['create child collection'] = array(
     'name' => 'create child collection',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -111,7 +117,9 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['delete fedora objects and datastreams'] = array(
     'name' => 'delete fedora objects and datastreams',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -121,8 +129,10 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['edit fedora metadata'] = array(
     'name' => 'edit fedora metadata',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -132,8 +142,10 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['ingest fedora objects'] = array(
     'name' => 'ingest fedora objects',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -143,7 +155,9 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['manage collection policy'] = array(
     'name' => 'manage collection policy',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -153,7 +167,9 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['manage inactive objects'] = array(
     'name' => 'manage inactive objects',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_simple_workflow',
@@ -163,7 +179,9 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['manage object properties'] = array(
     'name' => 'manage object properties',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora',
@@ -182,7 +200,7 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['masquerade as user'] = array(
     'name' => 'masquerade as user',
     'roles' => array(
-      'Islandora Administrator' => 'Islandora Administrator',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'masquerade',
@@ -192,7 +210,9 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['migrate collection members'] = array(
     'name' => 'migrate collection members',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_basic_collection',
@@ -202,10 +222,13 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['search islandora solr'] = array(
     'name' => 'search islandora solr',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
       'anonymous user' => 'anonymous user',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'islandora_solr',
   );
@@ -214,7 +237,7 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['view fedora repository objects'] = array(
     'name' => 'view fedora repository objects',
     'roles' => array(
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
       'administrator' => 'administrator',
       'anonymous user' => 'anonymous user',
@@ -226,9 +249,10 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['view technical metadata'] = array(
     'name' => 'view technical metadata',
     'roles' => array(
-      'Islandora Administrator' => 'Islandora Administrator',
-      'Islandora Collection Supervisor' => 'Islandora Collection Supervisor',
+      'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
     'module' => 'islandora_fits',

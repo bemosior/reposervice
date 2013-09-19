@@ -10,22 +10,28 @@
 function feature_base_islandora_user_default_roles() {
   $roles = array();
 
-  // Exported role: Islandora Administrator.
-  $roles['Islandora Administrator'] = array(
-    'name' => 'Islandora Administrator',
-    'weight' => '3',
+  // Exported role: Collection Supervisor.
+  $roles['Collection Supervisor'] = array(
+    'name' => 'Collection Supervisor',
+    'weight' => '4',
   );
 
-  // Exported role: Islandora Collection Supervisor.
-  $roles['Islandora Collection Supervisor'] = array(
-    'name' => 'Islandora Collection Supervisor',
+  // Exported role: Data Entry Supervisor.
+  $roles['Data Entry Supervisor'] = array(
+    'name' => 'Data Entry Supervisor',
     'weight' => '5',
   );
 
   // Exported role: Mediated Data Entry.
   $roles['Mediated Data Entry'] = array(
     'name' => 'Mediated Data Entry',
-    'weight' => '4',
+    'weight' => '6',
+  );
+
+  // Exported role: Repository Administrator.
+  $roles['Repository Administrator'] = array(
+    'name' => 'Repository Administrator',
+    'weight' => '3',
   );
 
   return $roles;

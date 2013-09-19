@@ -439,13 +439,15 @@ unless (sql_database_exists("$reposervicedir/config-local.conf","drupal_$sitecod
 rename_files_if_needed("$site_directory/template_files/modules", "feature_sitetemplate_islandora", "feature_${sitecode}_islandora" );
 rename_files_if_needed("$site_directory/template_files/themes", "theme_sitetemplate_islandora", "theme_${sitecode}_islandora" );
 
-my $userid_siteadmin = retrieve_drupal_userid("$sitecode Islandora Administrator",'Islandora Administrator',\%substitution_variable);
+my $userid_siteadmin = retrieve_drupal_userid("$sitecode Repository Administrator",'Repository Administrator',\%substitution_variable);
+my $userid_collection_supervisor = retrieve_drupal_userid("Collection Supervisor",'Collection Supervisor',\%substitution_variable);
+my $userid_dataentry_supervisor = retrieve_drupal_userid("Data EntrySupervisor",'Data Entry Supervisor',\%substitution_variable);
 my $userid_dataentry = retrieve_drupal_userid("Data Entry",'Mediated Data Entry',\%substitution_variable);
-my $userid_supervisor = retrieve_drupal_userid("Supervisor",'Islandora Collection Supervisor',\%substitution_variable);
 
 $substitution_variable{'SITEADMIN_DRUPAL_UID'} = $userid_siteadmin;
+$substitution_variable{'COLLECTION_SUPERVISOR_DRUPAL_UID'} = $userid_collection_supervisor;
+$substitution_variable{'DATAENTRY_SUPERVISOR_DRUPAL_UID'} = $userid_dataentry_supervisor;
 $substitution_variable{'DATAENTRY_DRUPAL_UID'} = $userid_dataentry;
-$substitution_variable{'SUPERVISOR_DRUPAL_UID'} = $userid_supervisor;
 fill_in_templates(\%substitution_variable);
 
 symlink_if_needed($reposervicedir, "$site_rel_directory/modules", "$reposervicedir/drupal/sites/$sitehostname/modules");
