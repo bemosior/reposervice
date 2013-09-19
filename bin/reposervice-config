@@ -303,6 +303,13 @@ for line in $BINARY_FILES; do
     fi
 done
 
+cp $SERVICE_HOME/bin/filter-drupal-template.xml $SERVICE_HOME/sed_substituted_files/filter-drupal.xml
+sed -i -e "/<!-- TOKEN -->/r $SERVICE_HOME/binaries/filter-drupal.xml-fragment" $SERVICE_HOME/sed_substituted_files/filter-drupal.xml
+for site in $(ls $SERVICE_HOME/repository_sites); do
+	sed -i -e "/<!-- TOKEN -->/r $SERVICE_HOME/repository_sites/$site/settings/filter-drupal.xml-fragment" $SERVICE_HOME/sed_substituted_files/filter-drupal.xml
+done
+checkAndReplace $SERVICE_HOME/sed_substituted_files/filter-drupal.xml $FEDORA_HOME/server/config/filter-drupal.xml
+
 # THIS IS A TEMPORARY FILE.  Until $SERVICE_HOME/bin/reposervice-config
 # is refactored from bash to Perl (and the config file format redone)
 # this file is needed to drive the repositesetup script.
