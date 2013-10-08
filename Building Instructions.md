@@ -173,6 +173,9 @@ Add these lines to the Apache HTTPD configuration:
 
 		ProxyPass /adore-djatoka http://localhost:8080/adore-djatoka
 		ProxyPassReverse /adore-djatoka http://localhost:8080/adore-djatoka
+
+## For production servers
+A startup script for tomcat is provided in `$SERVICE_HOME/bin/islandora-tomcat` that assumes an installation in the `/reposervice` directory and that a service user named `reposervice` has been created (`useradd -s /bin/bash -r -M reposervice`).  Copy the script to `/etc/init.d/` adjust variables if needed, and install with `insserv islandora-tomcat`
 		
 ## Committing changes to submodules
 From the main reposervice.git repository, it is helpful to have the commit summaries of submodules listed; this command will do it.  One may need to run `reset` in the terminal after this. 
