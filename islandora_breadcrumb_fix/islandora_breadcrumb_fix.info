@@ -1,0 +1,4 @@
+name = Islandora Breadcrumb Fix
+description = Remove multisite global portions of the breadcrumb
+core = 7.x
+package = Reposervice

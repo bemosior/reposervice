@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_islandora_breadcrumbs_alter();
+ *
+ * Removes Islandora top-level breadcrumbs that would send the user astray.
+ *
+ */
+function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $item) {
+  foreach ($breadcrumbs as $value) {
+    if (strpos($value, ':root">') !== FALSE) {  ## Member's root level collections
+      $breadcrumbs = array_diff($breadcrumbs, array($value));
+    }
+    if (strpos($value, 'islandora">') !== FALSE) {  ## Top level Islandora collection
+      $breadcrumbs = array_diff($breadcrumbs, array($value));
+    }
+  }
+}
