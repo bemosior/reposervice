@@ -88,3 +88,6 @@
 [submodule "islandora_solution_pack_compound"]
 	path = islandora_solution_pack_compound
 	url = git@github.com:lyrasis/islandora_solution_pack_compound.git
+[submodule "islandora_ip_embargo"]
+	path = islandora_ip_embargo
+	url = git@github.com:lyrasis/islandora_ip_embargo.git
