@@ -5,3 +5,41 @@
  */
 
 include_once 'feature_base_islandora.features.inc';
+
+define('ISLANDORA_SOLR_ADVANCED_SEARCH_PATH', 'islandora/advanced-search');
+
+/**
+ * Implements hook_menu().
+ *
+ * Adapted from code by Rosemary Le Faive
+ * https://groups.google.com/d/msg/islandora/EhW1j10tm-o/tglfL7mbI6oJ
+ */
+function feature_base_islandora_menu() {
+	$menus = array();
+	if (module_exists('islandora_solr')) {
+		$menus[ISLANDORA_SOLR_ADVANCED_SEARCH_PATH] = array(
+			'title' => t('Advanced Search'),
+			'page callback' => 'feature_base_islandora_advanced_search',
+			'access callback' => TRUE,
+			'type' => MENU_NORMAL_ITEM,
+		);
+	}
+	return $menus;
+}
+ 
+/**
+ * Implements hook_block_view_MODULE_DELTA_alter().
+ */
+function feature_base_islandora_block_view_islandora_solr_simple_alter(&$data, $block) {
+	$data['subject'] = t('Search All Collections');
+	$data['content']['adv_link'] = array(
+	    '#type' => 'link',
+    	'#title' => t('Advanced Search'),
+	    '#href' => ISLANDORA_SOLR_ADVANCED_SEARCH_PATH,
+    	'#weight' => 1,
+	  );
+}
+
+function feature_base_islandora_advanced_search() {
+    return module_invoke('islandora_solr', 'block_view', 'advanced');
+}
