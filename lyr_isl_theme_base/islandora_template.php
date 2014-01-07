@@ -188,21 +188,8 @@ function lyr_isl_theme_base_preprocess_islandora_basic_collection(&$variables) {
 }
 
 // This function makes customizations to the breadcrumb region
-function lyr_isl_theme_base_breadcrumb($variables) {
-  if (!empty($variables['breadcrumb'][1])) {
-    //Append title if it's a search
-    if (strpos($variables['breadcrumb'][1], 'islandora-solr-breadcrumb-super') !== false)
-    {
-      unset($variables['breadcrumb'][0]);
-      return '<p><strong>Current Search: </strong>&nbsp;' . implode(' &raquo; ', $variables['breadcrumb']) . '</p>';
-    }
-    else
-    {
-      unset($variables['breadcrumb'][0]);
-      return theme_breadcrumb($variables);
-    }
-  }
-}
+// function lyr_isl_theme_base_breadcrumb($variables) {
+// }
 
 //
 // Implements islandora_solr_query() hook.
