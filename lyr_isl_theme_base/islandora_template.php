@@ -27,6 +27,7 @@ function lyr_isl_theme_base_variables(&$vars) {
 function lyr_isl_theme_base_preprocess_html(&$vars) {
   drupal_add_library ('system', 'ui.tabs');
   drupal_add_js('jQuery(document).ready(function(){jQuery("#tabs").tabs();});', 'inline');
+  drupal_add_css(drupal_get_path('theme', 'lyr_isl_theme_base').'/islandora_css/islandoratheme.css', array('group' => CSS_THEME, 'type' => 'file'));
 }
 
 function lyr_isl_theme_base_process_html(&$vars) {
@@ -38,7 +39,7 @@ function lyr_isl_theme_base_process_html(&$vars) {
  */
 function lyr_isl_theme_base_preprocess_islandora_basic_image(&$variables) {
   
-  drupal_add_css(drupal_get_path('theme', 'islandoratheme') . '/css/basic-image.css', array('group' => CSS_THEME, 'type' => 'file'));
+  drupal_add_css(drupal_get_path('theme', 'lyr_isl_theme_base') . '/islandora_css/basic-image.css', array('group' => CSS_THEME, 'type' => 'file'));
   
   $islandora_object = $variables['islandora_object'];
   
