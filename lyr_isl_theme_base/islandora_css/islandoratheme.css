@@ -266,6 +266,12 @@ body.no-sidebars .islandora-large-image-sidebar { padding: 0; }
   box-shadow: 8px 8px 5px #888888;
   max-width: none;
 }
+div.islandora-book-tabs #tabs-1 {
+  padding: 0;
+}
+div.islandora-book-tabs * div#BRpage {
+    width: 300px;
+}
 
 /* Basic Image Module Styles */
 
