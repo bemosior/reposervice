@@ -28,7 +28,7 @@ class MODS {
           if(isset($titleInfo->subTitle))
           {
             $subTitle = static::addPeriod($titleInfo->subTitle);
-            $title = $title . ': ' . $subTitle;
+            $title = static::addColon($title) . ' ' . $subTitle;
           }
           
           // If it has a NonSort element, add it before the title
@@ -40,7 +40,7 @@ class MODS {
           // If it has a Display Label attribute, add it before the NonSort and Title
           if(isset($titleInfo['displayLabel']))
           {
-            $title = $titleInfo['displayLabel'] . ': ' . $title;
+            $title = static::addColon($titleInfo['displayLabel']) . ' ' . $title;
           }
           
           // If it has a Part Number, add it
@@ -215,14 +215,16 @@ class MODS {
           $mods_array['mods:date']['label'] = 'Date Issued';
           $mods_array['mods:date']['class'] = $dateIssued->getName();
           $date_counter++;
-        }
-        elseif ($dateIssued != '')
+        }       
+        // The code below was removed to display only one 'Date Issued'.
+        //If you would like to display all 'Date Issued' fields uncomment the code below.
+        /*elseif ($dateIssued != '')
         {
           $mods_array[$i]['value'] = $dateIssued;
           $mods_array[$i]['label'] = 'Date Issued';
           $mods_array[$i]['class'] = $dateIssued->getName();
           $i++;
-        }
+        }*/
       }
     }    
     
@@ -291,9 +293,9 @@ class MODS {
       $mods_array[$i]['value'] = '';
       $mods_array[$i]['label'] = 'Place of Publication';
       foreach ($mods_object->originInfo->place->placeTerm as $place_of_publication) {
-        if ($counter == 0) {
+        if ($counter == 0 && ($place_of_publication['type'] != 'code')) {
           $mods_array[$i]['value'] = $mods_array[$i]['value'] . $place_of_publication;
-        } else {
+        } elseif($place_of_publication['type'] != 'code') {
           $mods_array[$i]['value'] = $mods_array[$i]['value'] . '<br />' . $place_of_publication;
         }
         $counter++;
@@ -370,7 +372,7 @@ class MODS {
           
           $mods_array['mods:description']['label'] = 'Abstract/Description';
           $mods_array['mods:description']['class'] = $abstract->getName();
-          $counter++;
+          $description_counter++;
         }
         elseif ($abstract != '')
         {
@@ -405,18 +407,36 @@ class MODS {
     // Identifier Section
     if (isset($mods_object->identifier))
     {
+      $count = 0;
       $mods_array['mods:identifier']['value'] = NULL;
       
       foreach ($mods_object->identifier as $identifier) {
+        
         if (isset ($identifier['type']) && $identifier != '') {
-            $mods_array['mods:identifier']['value'] .= trim($identifier) . ' (' . $identifier['type'] . ') ';
-            $mods_array['mods:identifier']['label'] = 'Identifier';
-            $mods_array['mods:identifier']['class'] = $identifier->getName() . '_' . $identifier['type'];
+          
+          if($count > 0) {
+            $mods_array['mods:identifier']['value'] .= ', ' . trim($identifier) . ' ' . static::addParentheses($identifier['type']);
+          }
+          else {
+            $mods_array['mods:identifier']['value'] .= trim($identifier) . ' ' . static::addParentheses($identifier['type']);
+          }  
+          
+          $mods_array['mods:identifier']['label'] = 'Identifier';
+          $mods_array['mods:identifier']['class'] = $identifier->getName() . '_' . $identifier['type'];
         } elseif ($identifier != '') {
-            $mods_array['mods:identifier']['value'] .= trim($identifier) . ' ';
-            $mods_array['mods:identifier']['label'] = 'Identifier';
-            $mods_array['mods:identifier']['class'] = $identifier->getName() . '_id';
+          
+          if($count > 0) {
+            $mods_array['mods:identifier']['value'] .= ', ' . trim($identifier);
+          }
+          else {
+            $mods_array['mods:identifier']['value'] .= trim($identifier);      
+          }
+
+          $mods_array['mods:identifier']['label'] = 'Identifier';
+          $mods_array['mods:identifier']['class'] = $identifier->getName() . '_id';
         }
+        
+        $count++;
       }
     }
     
@@ -439,6 +459,11 @@ class MODS {
     // Subject Section
     if (isset($mods_object->subject))
     {
+      $total_counter = 0;
+      
+      $mods_array[$i]['label'] = 'Subject';
+      $mods_array[$i]['value'] = '';
+      
       foreach ($mods_object->subject as $subject) {
         $j = 0;
         $counter = 0;
@@ -447,8 +472,11 @@ class MODS {
         $hierarchical_geographic_flag = false;
         $subject_as_type = null;
         $cartographic_info_array = array();
-        $mods_array[$i]['value'] = '';
-        $mods_array[$i]['label'] = 'Subject';
+        
+        if($total_counter > 0)
+        {
+          $mods_array[$i]['value'] .= '<br />';
+        }
         
         // Check to see if this is a specific type of Subject
         foreach ($subject->children() as $subject_child){
@@ -474,9 +502,11 @@ class MODS {
           }
         }
         
+        $total_counter++;
+        
         if($name_flag == true)
         {
-          static::addMODSName('Subject', $subject_as_type, $mods_array, $i);
+          static::addMODSName('Subject', $subject_as_type, $mods_array, $i, $total_counter);
         }
         elseif ($title_flag == true && $subject->title != '')
         {
@@ -510,33 +540,40 @@ class MODS {
             } 
           }
           
-          $mods_array[$i]['value'] = $title;
+          $mods_array[$i]['value'] .= '<a href="' . base_path() . 'islandora/search/catch_all_subjects_mt%3A(' . $title . ')">' . $title . '</a>';
         }
         elseif ($hierarchical_geographic_flag == true)
         {
+          $temp_subject = NULL;
+
           foreach ($subject_as_type->children() as $subject_child) {
             if ($counter > 0 && $subject_child != '') {
-              $mods_array[$i]['value'] = $mods_array[$i]['value'] . ' -- ' . $subject_child;
+              $temp_subject = $temp_subject . ' -- ' . $subject_child;
             } elseif ($subject_child != '') {
-              $mods_array[$i]['value'] = $mods_array[$i]['value'] . $subject_child;
+              $temp_subject = $temp_subject . $subject_child;
             }
             $counter++;
           }
+
+          $temp_subject = '<a href="' . base_path() . 'islandora/search/catch_all_subjects_mt%3A(' . $temp_subject . ')">' . $temp_subject . '</a>';
+          $mods_array[$i]['value'] = $mods_array[$i]['value'] . $temp_subject;
         }
         else
         {
+          $temp_subject = NULL;
+
           foreach ($subject->children() as $subject_child) {
             if ($counter > 0 && $subject_child != '') {
-              $mods_array[$i]['value'] = $mods_array[$i]['value'] . ' -- ' . $subject_child;
+              $temp_subject = $temp_subject . ' -- ' . $subject_child;
             } elseif ($subject_child != '') {
-              $mods_array[$i]['value'] = $mods_array[$i]['value'] . $subject_child;
+              $temp_subject = $temp_subject . $subject_child;
             }
             $counter++;
           }
+ 
+          $temp_subject = '<a href="' . base_path() . 'islandora/search/catch_all_subjects_mt%3A(' . $temp_subject . ')">' . $temp_subject . '</a>';
+          $mods_array[$i]['value'] = $mods_array[$i]['value'] . $temp_subject;
         }
-        
-        $mods_array[$i]['class'] = $subject->getName();
-        $i++;
         
         /*foreach($cartographic_info_array as $cartographic_info)
         {
@@ -565,6 +602,9 @@ class MODS {
           }
         }*/
       }
+      
+      $mods_array[$i]['class'] = $mods_object->subject->getName();
+      $i++;
     }
     
     // Library Classification Section    
@@ -590,19 +630,27 @@ class MODS {
           $i++;
         }
         
-        if(isset($location->URL) && $location->URL != '')
+        if(isset($location->url) && $location->url != '')
         {
-          if(isset($location->URL['displayLabel']) && $location->URL['displayLabel'] != '')
+          if(isset($location->url['displayLabel']) && $location->url['displayLabel'] != '')
           { 
-            $mods_array[$i]['value'] = '<a href="' . $location->URL . '" target="_blank">' . $location->URL['displayLabel'] . '</a>';
+            $mods_array[$i]['value'] = '<a href="' . $location->url . '" target="_blank">' . $location->url['displayLabel'] . '</a>';
           }
           else
           {
-            $mods_array[$i]['value'] = '<a href="' . $location->URL . '" target="_blank">' . $location->URL . '</a>';
+            $mods_array[$i]['value'] = '<a href="' . $location->url . '" target="_blank">' . $location->url . '</a>';
           }
 
-          $mods_array[$i]['label'] = 'Links';
-          $mods_array[$i]['class'] = $location->URL->getName();
+          if($location['displayLabel'] == 'purl')
+          {
+            $mods_array[$i]['label'] = 'Persistent Link to This Record';
+          }
+          else
+          {
+            $mods_array[$i]['label'] = 'Links';        
+          }
+    
+          $mods_array[$i]['class'] = $location->url->getName();
           $i++;
         }
       }
@@ -620,31 +668,262 @@ class MODS {
     } 
     
     // Owning Institution Section    
-    if (isset($mods_object->extension->owningInstitution))
+    if (isset($mods_object->extension))
     {
-      $mods_array['mods:owner_inst']['value'] = $mods_object->extension->owningInstitution;
-      $mods_array['mods:owner_inst']['label'] = 'Owner Institution';
-      $mods_array['mods:owner_inst']['class'] = $mods_object->extension->owningInstitution->getName();
-      $i++;
+      foreach ($mods_object->extension as $extension) 
+      {
+        $namespaces = $extension->getNameSpaces(true);
+        $flvc = $extension->children($namespaces['flvc']);
+        
+        $mods_array['mods:owner_inst']['value'] = $flvc->flvc->owningInstitution;
+        $mods_array['mods:owner_inst']['label'] = 'Owner Institution';
+        $mods_array['mods:owner_inst']['class'] = $flvc->flvc->owningInstitution->getName();
+        $i++;
+      }
     }
    
     // Other Logo Section
-    if (isset($mods_object->extension->otherLogo))
+    if (isset($mods_object->extension))
     {
       $local_counter = 0;
+      
+      foreach ($mods_object->extension as $extension)
+      {
+        $namespaces = $extension->getNameSpaces(true);
+        $flvc = $extension->children($namespaces['flvc']);
 
-      foreach($mods_object->extension->otherLogo as $otherLogo) {
-        $mods_array['mods:other_logo_' . $local_counter]['value'] = $otherLogo;
-        $mods_array['mods:other_logo_' . $local_counter]['label'] = 'Other Logo ' . $local_counter;
-        $mods_array['mods:other_logo_' . $local_counter]['class'] = $otherLogo->getName();
-        $local_counter++;
+        foreach($flvc->flvc->otherLogo as $otherLogo) {
+          $mods_array['mods:other_logo_' . $local_counter]['value'] = $otherLogo;
+          $mods_array['mods:other_logo_' . $local_counter]['label'] = 'Other Logo ' . $local_counter;
+          $mods_array['mods:other_logo_' . $local_counter]['class'] = $otherLogo->getName();
+          $local_counter++;
+        }
       }
     }
+    
+   // Related Item Section
+    if (isset($mods_object->relatedItem))
+    {
+      foreach ($mods_object->relatedItem as $relatedItem) {
+        if (isset($relatedItem->titleInfo))
+        {
+          $title = static::formatTitleInfo($relatedItem->titleInfo);
+          
+          static::traverseRelatedItem($relatedItem, $title);
+          
+          switch((string) $relatedItem['type']) { // Get attributes as element indices
+            case 'preceding':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Preceding Title';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_preceding';
+              $i++;
+              break;
+            case 'succeeding':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Succeeding Title';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_succeeding';
+              $i++;
+              break;
+            case 'original':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Original Title';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_original';
+              $i++;
+              break;
+            case 'host':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Is Part Of';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_host';
+              $i++;
+              break;
+            case 'constituent':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Has Part';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_constituent';
+              $i++;
+              break;
+            case 'series':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Is Part of Series';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_series';
+              $i++;
+              break;
+            case 'otherVersion':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Other Version';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_otherversion';
+              $i++;
+              break;
+            case 'otherFormat':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Other Format';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_otherformat';
+              $i++;
+              break;
+            case 'isReferencedBy':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Is Referenced By';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_isreferencedby';
+              $i++;
+              break;
+            case 'references':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'References';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_references';
+              $i++;
+              break;
+            case 'reviewOf':
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Review Of';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName() . '_reviewof';
+              $i++;
+              break; 
+            default:
+              $mods_array[$i]['value'] = $title;
+              $mods_array[$i]['label'] = 'Related Title';
+              $mods_array[$i]['class'] = $relatedItem->titleInfo->title->getName();
+              $i++;
+          }
+        }
+      }
+    }    
  
     return $mods_array;
   }
   
-  protected static function addMODSName($label, $name, &$mods_array, &$i)
+  protected static function traverseRelatedItem($simple_xml_object, &$value)
+  {
+    foreach($simple_xml_object->children() as $child) {
+      
+      if($child->getName() == 'url')
+      {
+        if(isset($child['displayLabel']))
+        {
+          $string = '<a href="' . $child . '" target="_blank">' . $child['displayLabel'] . '</a>';
+        }
+        else
+        {
+          $string = '<a href="' . $child . '" target="_blank">' . $child . '</a>';
+        }
+        
+        if(isset($child['note']))
+        {
+          $string .= ' ' . $child['note'];
+        }
+        
+        static::spaceCheck($string, $value);
+      } 
+
+      if($child->getName() == 'physicalLocation')
+      {
+        $string = $child;
+        static::spaceCheck($string, $value);
+      }
+      
+      if($child->getName() == 'name')
+      {
+        $string = '';
+        
+        foreach ($child->namePart as $namePart) {
+          if($namePart != '' && isset($namePart['type']) && $namePart['type'] == 'family')
+          {
+            $string = $namePart . ', ' . $string;
+          }
+          elseif ($namePart != '' && isset($namePart['type']) && $namePart['type'] == 'date')
+          {
+            $string = $name_value . ', ' . $string;
+          }
+          elseif ($namePart != '')
+          {
+            $string = $string . ' ' . $namePart;
+          }
+        }
+        
+        $string = '<a href="' . base_path() . 'islandora/search/catch_all_names_mt%3A(' . $string . ')">' . $string . '</a>';
+        
+        if(isset($child->role))
+        {
+          foreach ($child->role as $role) {
+            if(isset($role->roleTerm) && ($role->roleTerm['type'] == 'text') && ($role->roleTerm != ''))
+            {
+              $string = $string . ', ' . $role->roleTerm;
+            }
+          } 
+        }
+        
+        static::spaceCheck($string, $value);
+      }
+     
+      if($child->getName() != 'titleInfo' && $child->getName != 'name')
+      {
+        static::traverseRelatedItem($child, $value);
+      }
+    }
+  }
+
+  //This function ensures there is a new line tag after each line
+  protected static function spaceCheck($string, &$value)
+  {
+    $space_check = substr($value, -6);
+    
+    if ($space_check != '<br />') {
+        $value .= '<br />' . $string;
+    }
+    else {
+        $value .= $string;
+    }
+  }
+  
+  protected static function formatTitleInfo($titleInfo)
+  {
+    $title = $titleInfo->title;
+    
+    // If it has a subtitle, add it
+    if(isset($titleInfo->subTitle))
+    {
+      $subTitle = static::addPeriod($titleInfo->subTitle);
+      $title = static::addColon($title) . ' ' . $subTitle;
+    }
+          
+    // If it has a NonSort element, add it before the title
+    if(isset($titleInfo->nonSort))
+    {
+      $title = $titleInfo->nonSort . ' ' . $title;
+    }
+          
+    // If it has a Display Label attribute, add it before the NonSort and Title
+    if(isset($titleInfo['displayLabel']))
+    {
+      $title = static::addColon($titleInfo['displayLabel']) . ' ' . $title;
+    }
+          
+    // If it has a Part Number, add it
+    if(isset($titleInfo->partNumber))
+    {
+      foreach ($titleInfo->partNumber as $partNumber) {
+        $partNumber = static::addPeriod($partNumber);
+        $title = $title . ' ' . $partNumber;
+      } 
+    }
+          
+    // If it has a Part Name, add it
+    if(isset($titleInfo->partName))
+    {
+      foreach ($titleInfo->partName as $partName) {
+        $partName = static::addPeriod($partName);
+        $title = $title . ' ' . $partName;
+      } 
+    }
+
+    if ($title != '')
+    {
+      $title = static::addPeriod($title);
+    }
+    
+    return $title;
+  }
+  
+  protected static function addMODSName($label, $name, &$mods_array, &$i, $randomize_name = NULL)
   {
     $name_value = '';
     
@@ -666,6 +945,10 @@ class MODS {
         }
       } 
     }
+    
+    if($randomize_name == NULL) {
+      $name_value = '<a href="' . base_path() . 'islandora/search/catch_all_names_mt%3A(' . $name_value . ')">' . $name_value . '</a>';
+    }  
         
     // If it has a Role, add it
     if(isset($name->role))
@@ -677,10 +960,18 @@ class MODS {
         }
       } 
     }
-          
-    $mods_array[$i]['value'] = $name_value;
-    $mods_array[$i]['label'] = $label;
-    $mods_array[$i]['class'] = $name->getName();
+    
+    if($randomize_name == NULL) {
+      $mods_array[$i]['value'] = $name_value;
+      $mods_array[$i]['label'] = $label;
+      $mods_array[$i]['class'] = $name->getName();
+    }
+    else {
+      $add_to_array = $i . '_subject_' . $randomize_name;
+      $mods_array[$add_to_array]['value'] = '<a href="' . base_path() . 'islandora/search/catch_all_subjects_mt%3A(' . $name_value . ')">' . $name_value . '</a>';
+      $mods_array[$add_to_array]['label'] = $label;
+      $mods_array[$add_to_array]['class'] = $add_to_array;
+    }
   }
   
   // if there isn't a period at the end of $string, add one
@@ -689,6 +980,38 @@ class MODS {
     if (substr($string, -1) != '.')
     {
       $string.= '.';
+    }
+    
+    return $string;
+  }
+  
+  // if there isn't a colon at the end of $string, add one
+  protected static function addColon($string)
+  {
+    if (substr($string, -1) != ':')
+    {
+      $string.= ':';
+    }
+    
+    return $string;
+  }
+
+  // if there isn't a parentheses at the beginning and end of $string, add one
+  protected static function addParentheses($string)
+  {
+    if($string == '')
+    {
+      return $string;
+    }
+    
+    if (substr($string, 0, 1) != '(')
+    {
+      $string = '(' . $string;
+    }
+
+    if (substr($string, -1) != ')')
+    {
+      $string.= ')';
     }
     
     return $string;
