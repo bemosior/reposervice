@@ -620,36 +620,6 @@ class MODS {
       }
     }
 
-    // Owning Institution Section    
-    if (isset($mods_object->extension)) {
-      foreach ($mods_object->extension as $extension) {
-        $namespaces = $extension->getNameSpaces(true);
-        $flvc = $extension->children($namespaces['flvc']);
-
-        $mods_array['mods:owner_inst']['value'] = $flvc->flvc->owningInstitution;
-        $mods_array['mods:owner_inst']['label'] = 'Owner Institution';
-        $mods_array['mods:owner_inst']['class'] = $flvc->flvc->owningInstitution->getName();
-        $i++;
-      }
-    }
-
-    // Other Logo Section
-    if (isset($mods_object->extension)) {
-      $local_counter = 0;
-
-      foreach ($mods_object->extension as $extension) {
-        $namespaces = $extension->getNameSpaces(true);
-        $flvc = $extension->children($namespaces['flvc']);
-
-        foreach ($flvc->flvc->otherLogo as $otherLogo) {
-          $mods_array['mods:other_logo_' . $local_counter]['value'] = $otherLogo;
-          $mods_array['mods:other_logo_' . $local_counter]['label'] = 'Other Logo ' . $local_counter;
-          $mods_array['mods:other_logo_' . $local_counter]['class'] = $otherLogo->getName();
-          $local_counter++;
-        }
-      }
-    }
-
     // Related Item Section
     if (isset($mods_object->relatedItem)) {
       foreach ($mods_object->relatedItem as $relatedItem) {
