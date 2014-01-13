@@ -49,13 +49,15 @@
           <div class="islandora-definition-row">
             <table class="islandora-table-display">
               <tbody>
-                <?php foreach (array('mods:date', 'mods:description') as $key): ?>
-                  <?php $mods_element = $mods_array[$key]; ?>
-                  <?php if (isset($mods_element['value'])): ?>
-                    <tr>
-                      <th class="full-description-heading"><?php print $mods_element['label']; ?>:</th>
-                      <td class="<?php print $mods_element['class']; ?>"><?php print $mods_element['value']; ?></td>
-                    </tr>
+                <?php foreach (array('mods:creator', 'mods:contributor', 'mods:subject', 'mods:date') as $key): ?>
+                  <?php if (array_key_exists($key, $mods_array)): ?>
+                    <?php $mods_element = $mods_array[$key]; ?>
+                    <?php if (isset($mods_element['value'])): ?>
+                      <tr>
+                        <th class="full-description-heading"><?php print $mods_element['label']; ?>:</th>
+                        <td class="<?php print $mods_element['class']; ?>"><?php print $mods_element['value']; ?></td>
+                      </tr>
+                    <?php endif; ?>
                   <?php endif; ?>
                 <?php endforeach; ?>
               </tbody>
