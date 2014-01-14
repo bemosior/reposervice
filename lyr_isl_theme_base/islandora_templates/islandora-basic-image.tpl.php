@@ -49,7 +49,7 @@
           <div class="islandora-definition-row">
             <table class="islandora-table-display">
               <tbody>
-                <?php foreach (array('mods:creator', 'mods:contributor', 'mods:subject', 'mods:date') as $key): ?>
+                <?php foreach (array('mods:description', 'mods:creator', 'mods:contributor', 'mods:subject', 'mods:date') as $key): ?>
                   <?php if (array_key_exists($key, $mods_array)): ?>
                     <?php $mods_element = $mods_array[$key]; ?>
                     <?php if (isset($mods_element['value'])): ?>
