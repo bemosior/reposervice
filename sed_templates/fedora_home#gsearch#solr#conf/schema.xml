@@ -1049,8 +1049,21 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.
         Copy fields do not follow transitive property.-->
-
-
+  
+  <copyField source="mods_subject_topic_ms" dest="catch_all_subjects_mt" />
+  <copyField source="mods_subject_geographic_ms" dest="catch_all_subjects_mt" />
+  <copyField source="mods_subject_temporal_ms" dest="catch_all_subjects_mt" />
+  
+  <copyField source="mods_name_namePart_ms" dest="catch_all_names_mt" />
+  <copyField source="mods_name_corporate_namePart_ms" dest="catch_all_names_mt" />
+  <copyField source="mods_name_personal_namePart_ms" dest="catch_all_names_mt" />
+  <copyField source="mods_subject_name_namePart_ms" dest="catch_all_names_mt" />
+  
+  <copyField source="mods*" dest="catch_all_keyword_mt" />
+  <copyField source="full_text_t" dest="catch_all_keywords_mt" />
+  <copyField source="ocr_t" dest="catch_all_keywords_mt" />
+  
+  
 <copyField source="*_s" dest="*_mlt"/>
 <copyField source="*_s" dest="*_t"/>
 <copyField source="*_ms" dest="*_mt"/>
