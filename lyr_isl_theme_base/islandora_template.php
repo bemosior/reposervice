@@ -27,6 +27,7 @@ function lyr_isl_theme_base_variables(&$vars) {
 function lyr_isl_theme_base_preprocess_html(&$vars) {
   drupal_add_library ('system', 'ui.tabs');
   drupal_add_js('jQuery(document).ready(function(){jQuery("#tabs").tabs();});', 'inline');
+  drupal_add_css(drupal_get_path('theme', 'lyr_isl_theme_base').'/islandora_css/islandoratheme.css', array('group' => CSS_THEME, 'type' => 'file'));
 }
 
 function lyr_isl_theme_base_process_html(&$vars) {
@@ -38,7 +39,7 @@ function lyr_isl_theme_base_process_html(&$vars) {
  */
 function lyr_isl_theme_base_preprocess_islandora_basic_image(&$variables) {
   
-  drupal_add_css(drupal_get_path('theme', 'islandoratheme') . '/css/basic-image.css', array('group' => CSS_THEME, 'type' => 'file'));
+  drupal_add_css(drupal_get_path('theme', 'lyr_isl_theme_base') . '/islandora_css/basic-image.css', array('group' => CSS_THEME, 'type' => 'file'));
   
   $islandora_object = $variables['islandora_object'];
   
@@ -223,4 +224,14 @@ function lyr_isl_theme_base_preprocess_islandora_book_book(array &$variables) {
   $variables['islandora_object_label'] = $islandora_object->label;
   $variables['theme_hook_suggestions'][] = 'islandora_basic_image__' . str_replace(':', '_', $islandora_object->id);
   $variables['parent_collections'] = islandora_get_parents_from_rels_ext($islandora_object);
+  
+  try {
+    $mods = $islandora_object['MODS']->content;
+    $mods_object = simplexml_load_string($mods);
+  } catch (Exception $e) {
+    drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
+  }
+ 
+  $variables['mods_array'] = isset($mods_object) ? MODS::as_formatted_array($mods_object) : array();
+
 }
