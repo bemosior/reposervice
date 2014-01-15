@@ -824,7 +824,7 @@ class MODS {
     return $title;
   }
 
-  protected static function addMODSName($label, $name, &$mods_array, &$i, $randomize_name = NULL) {
+  protected static function addMODSName($label, $name, &$mods_array, $i, $randomize_name = NULL) {
     $name_value = '';
 
     // If it has a Name Part, add it
