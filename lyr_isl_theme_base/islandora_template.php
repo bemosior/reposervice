@@ -82,6 +82,11 @@ function lyr_isl_theme_base_preprocess_islandora_pdf(&$variables) {
  */
 function lyr_isl_theme_base_preprocess_islandora_large_image(&$variables) {
 
+  // When switching back to the Summary tab from the metadata details tab, the openseadragon view does not restore the
+  // image.  This JavaScript from FLVC will force the page to reload when the Summary tab is selected.
+  drupal_add_js('function tabLinkReload() {jQuery("#tabs a:first").click(function() {window.location.reload(true);});}', 'inline');
+  drupal_add_js('jQuery(document).ready(function(){tabLinkReload();});', 'inline');
+
   drupal_add_css(drupal_get_path('theme', 'islandoratheme') . '/css/large-image.css', array('group' => CSS_THEME, 'type' => 'file'));
   
   $islandora_object = $variables['islandora_object'];
