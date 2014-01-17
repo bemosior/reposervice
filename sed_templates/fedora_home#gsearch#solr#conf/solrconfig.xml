@@ -596,7 +596,7 @@
        named "/select" to something else without a leading "/", such as
        simply "select" and add default="true" to it.
    -->
-  <requestDispatcher>
+  <requestDispatcher handleSelect="true">
     <!-- Request Parsing
 
          These settings indicate how Solr Requests may be parsed, and
@@ -616,8 +616,8 @@
          using enableRemoteStreaming="true"
 
       --> 
-    <requestParsers enableRemoteStreaming="true" 
-                    multipartUploadLimitInKB="2048000" />
+    <requestParsers enableRemoteStreaming="false" 
+                    multipartUploadLimitInKB="2048" />
 
     <!-- HTTP Caching
 
@@ -703,7 +703,7 @@
      If no qt is defined, the requestHandler that declares default="true"
      will be used.
   -->
-  <requestHandler name="/select" class="solr.SearchHandler">
+  <requestHandler name="standard" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
       -->
@@ -711,6 +711,7 @@
        <str name="echoParams">explicit</str>
        <int name="rows">10</int>
        <str name="df">text</str>
+       <str name="qf">PID^0.5 catch_all_fields_mt^0.1</str>
      </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of
@@ -766,17 +767,16 @@
       -->
   </requestHandler>
 
-  <requestHandler name="standard" class="solr.SearchHandler" default="true">
-    <!-- default values for query parameters -->
+<!--  <requestHandler name="standard" class="solr.SearchHandler">
+    <!-\- default values for query parameters -\->
      <lst name="defaults">
        <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">catch_all_fields_mt</str>
        <str name="fl">*</str>
        <str name="q.alt">*:*</str>
+       <str name="qf">PID^0.5 catch_all_fields_mt^0.1</str>
      </lst>
   </requestHandler>
-
+-->
   <!-- DisMaxRequestHandler allows easy searching across multiple fields
        for simple user-entered phrases.  It's implementation is now
        just the standard SearchHandler with a default query type
