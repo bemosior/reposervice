@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Implements hook_islandora_breadcrumbs_alter();
+ * Implements hook_islandora_breadcrumbs_alter().
  *
  * Removes Islandora top-level breadcrumbs that would send the user astray.
- *
  */
 function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $item) {
   foreach ($breadcrumbs as $value) {
@@ -15,4 +14,16 @@ function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $it
       $breadcrumbs = array_diff($breadcrumbs, array($value));
     }
   }
+}
+
+/**
+ * Implements hook_menu().
+ *
+ * Prevent user from getting access to islandora:root
+ */
+function islandora_breadcrumb_fix_menu() {
+	$items['islandora/object/islandora:root'] = array (
+		'page callback' => 'islandora_breadcrumb_intercept_root',
+	);
+	return $items;
 }
