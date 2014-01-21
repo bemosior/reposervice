@@ -709,9 +709,10 @@
       -->
      <lst name="defaults">
        <str name="echoParams">explicit</str>
-       <int name="rows">10</int>
-       <str name="df">text</str>
-       <str name="qf">PID^0.5 catch_all_fields_mt^0.1</str>
+       <str name="fl">*</str>
+       <str name="q.alt">*:*</str>
+       <str name="df">catch_all_keyword_mt</str>
+       <str name="qf">PID^0.5 catch_all_keyword_mt^0.1</str>
      </lst>
     <!-- In addition to defaults, "appends" params can be specified
          to identify values which should be appended to the list of
