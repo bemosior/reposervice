@@ -1,0 +1,4 @@
+name = Reposervice
+description = Functionality and overrides that are specific to LYRASIS' implementation of Islandora.
+core = 7.x
+files[] = tests/reposervice.test

@@ -31,6 +31,7 @@ dependencies[] = menu
 dependencies[] = objective_forms
 dependencies[] = pathologic
 dependencies[] = php_lib
+dependencies[] = reposervice
 dependencies[] = strongarm
 dependencies[] = xml_form_api
 dependencies[] = xml_form_builder

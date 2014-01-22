@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file reposervice.module
+ * TODO: Enter file description here.
+ */
+
+//// Permissions.
+//define('REPOSERVICE_EDIT_COLLECTION_DETAILS', 'edit islandora collection details');
+//
+///**
+// * Implements hook_permission().
+// */
+//function reposervice_permission() {
+//  return array(
+//    REPOSERVICE_EDIT_COLLECTION_DETAILS => array(
+//      'title' => t('Edit Collection Details'),
+//      'description' => t("Edit the collection banner and description."),
+//    ),
+//  );
+//}
+
+/**
+ * Implements hook_menu().
+ */
+function reposervice_menu() {
+  $items['islandora/object/%islandora_object/details'] = array(
+    'title' => 'Collection Details',
+    'description' => 'Edit the collection banner and description',
+    'file' => 'includes/forms.inc',
+    'page arguments' => array('reposervice_collection_details_form', 2),
+    'page callback' => 'drupal_get_form',
+    'access callback' => 'islandora_basic_collection_manage_access',
+    'access arguments' => array(2),
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+

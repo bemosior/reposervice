@@ -100,7 +100,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_internet_archive_bookreader_ocr_filter_field';
-  $strongarm->value = 'rels.isMemberOf';
+  $strongarm->value = 'RELS_EXT_isMemberOf_uri_mt';
   $export['islandora_internet_archive_bookreader_ocr_filter_field'] = $strongarm;
 
   $strongarm = new stdClass();
