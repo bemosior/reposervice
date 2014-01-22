@@ -22,7 +22,7 @@ use Cwd;
 
 ##
 sub _call_command {
-	my $commandline = shift;	
+	my $commandline = shift;
 	my $pid = open(COMMAND, "$commandline |") or die "Couldn't fork command '$commandline': $!\n";
 	my $output;
 	while (<COMMAND>) {
@@ -120,7 +120,7 @@ sub sql_database_exists {
     push @mysql_parameters, "--execute=\"show databases like '$sql_database'\"";
     
     my $mysql_output = _call_command(join(' ',@mysql_parameters));
-    return undef if (undef $mysql_output);
+    return undef if (! defined($mysql_output));
 	return 1;
 }
 
@@ -179,9 +179,9 @@ sub create_drupal_site {
       
       2. Run this command: chmod 777 $ENV{'DRUPAL_HOME'}/sites/$$substitution_variable_hashref{'SITE_HOSTNAME'}/files
       
-      2. Enable the 'feature_base_drupal' and 'feature_base_islandora' modules
+      3. Enable the 'feature_base_drupal' and 'feature_base_islandora' modules
 
-      3. Create the root object '$$substitution_variable_hashref{'SITE_SHORTCODE'}:root' in the main Islandora 
+      4. Create the root object '$$substitution_variable_hashref{'SITE_SHORTCODE'}:root' in the main Islandora 
       instance for the site
       
       This will set up an admin user '$$substitution_variable_hashref{'SITE_SHORTCODE'}_admin' with the password 
@@ -437,11 +437,11 @@ unless (sql_database_exists("$reposervicedir/config-local.conf","drupal_$sitecod
 	create_drupal_site(\%substitution_variable);
 }
 rename_files_if_needed("$site_directory/template_files/modules", "feature_sitetemplate_islandora", "feature_${sitecode}_islandora" );
-rename_files_if_needed("$site_directory/template_files/themes", "theme_sitetemplate_islandora", "theme_${sitecode}_islandora" );
+#rename_files_if_needed("$site_directory/template_files/themes", "theme_sitetemplate_islandora", "theme_${sitecode}_islandora" );
 
 my $userid_siteadmin = retrieve_drupal_userid("$sitecode Repository Administrator",'Repository Administrator',\%substitution_variable);
 my $userid_collection_supervisor = retrieve_drupal_userid("Collection Supervisor",'Collection Supervisor',\%substitution_variable);
-my $userid_dataentry_supervisor = retrieve_drupal_userid("Data EntrySupervisor",'Data Entry Supervisor',\%substitution_variable);
+my $userid_dataentry_supervisor = retrieve_drupal_userid("Data Entry Supervisor",'Data Entry Supervisor',\%substitution_variable);
 my $userid_dataentry = retrieve_drupal_userid("Data Entry",'Mediated Data Entry',\%substitution_variable);
 
 $substitution_variable{'SITEADMIN_DRUPAL_UID'} = $userid_siteadmin;
