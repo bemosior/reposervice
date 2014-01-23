@@ -37,3 +37,27 @@ function reposervice_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * 
+ * Override the Islandora simple search form to suppress the 'limit_to_collection'
+ * checkbox (make it a hidden element), change the Submit button text, and override
+ * form styling.
+ * 
+ * @param array $form
+ *   The Drupal form definition.
+ * @param array $form_state
+ *   The Drupal form state.
+ * @param type $form_id
+ *   The string representing the name of the form itself.
+ */
+function reposervice_form_islandora_solr_simple_search_form_alter(&$form, &$form_state, $form_id) {
+  $form['simple']['islandora_simple_search_query']['#attributes'] = array('class' => array('collection-search-input-text'));
+  $form['simple']['submit']['#attributes'] = array('class' => array('form-submit'));
+  if (array_key_exists('limit_to_collection', $form['simple'])) {
+    unset($form['simple']['islandora_simple_search_query']['#size']); 
+    $form['simple']['limit_to_collection']['#type'] = 'hidden';
+    $form['simple']['limit_to_collection']['#value'] = $form['simple']['limit_to_collection']['#return_value'];
+    $form['simple']['submit']['#value'] = t('Search Collection');
+  }
+}

@@ -24,20 +24,12 @@ function reposervice_collection_details_form($form, &$form_state, $islandora_obj
   }
   
   $form['description'] = array(
-    '#title' => t('Description'),
-    '#type' => 'textarea',
-    '#description' => t('Description of the collection.'),
+    '#title' => t('Collection Description'),
+    '#type' => 'text_format',
+    '#format' => 'filtered_html',
     '#default_value' => $desc_text,
   );
-  
-  $form['image_example_image_fid'] = array(
-    '#title' => t('Banner Image'),
-    '#type' => 'managed_file',
-    '#description' => t('Image used as a replacement for the collection title in the collection display.  Allowed extensions: gif, png, jpg, jpeg.'),
-    '#default_value' => variable_get('image_example_image_fid', ''),
-    '#upload_location' => 'private://',
-  );
-  
+    
   $form['submit'] = array('#type' => 'submit', '#value' => t('Save Details'));
 
   return $form;
@@ -54,6 +46,7 @@ function reposervice_collection_details_form($form, &$form_state, $islandora_obj
 function reposervice_collection_details_form_submit($form, &$form_state) {
   $form_state['storage']['reposervice_collection_details']['update'] = TRUE;
   $pid = $form_state['storage']['reposervice']['pid'];
+  $description = $form_state['values']['description']['value'];
   $islandora_object = islandora_object_load($pid);
   if (!$islandora_object) {
     drupal_set_message(t('Object with identifer @pid not found in repository.', array('pid' => $pid)), 'error');
@@ -67,7 +60,7 @@ function reposervice_collection_details_form_submit($form, &$form_state) {
   }
   $desc_ds->label = 'Collection Description';
   $desc_ds->mimetype = 'text/plain';
-  $desc_ds->setContentFromString($form_state['values']['description']);
+  $desc_ds->setContentFromString($description);
   $islandora_object->ingestDatastream($desc_ds);
 
   return $form;
