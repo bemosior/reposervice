@@ -104,10 +104,10 @@
   <copyField source="*_ms" dest="text"/>
   <copyField source="OCR_t" dest="text"/>
   <copyField source="FULL_TEXT_t" dest="text"/>
-  <copyField source="RELS_EXT_*"  dest="text"/>
 
   <!-- copy everything from text to text_rev to improve *search_term" searches -->
 
+  <copyField source="text" dest="text_rev"/>
 
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
