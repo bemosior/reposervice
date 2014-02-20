@@ -120,77 +120,98 @@ function lyr_isl_theme_base_process_islandora_internet_archive_bookreader(&$vari
   $variables['mods_array'] = isset($mods_object) ? MODS::as_formatted_array($mods_object) : array();
 }
 
+function lyr_isl_theme_base_preprocess_islandora_basic_collection_grid(&$variables) {
+  lyr_isl_theme_base_preprocess_islandora_basic_collection($variables);
+}
 /**
  * Override the Islandora Collection preprocess function
  */
 function lyr_isl_theme_base_preprocess_islandora_basic_collection(&$variables) {  
-  // base url
+
   global $base_url;
-  // base path
   global $base_path;
   $islandora_object = $variables['islandora_object'];
-  
+
+  try {
+    $dc = $islandora_object['DC']->content;
+    $dc_object = DublinCore::importFromXMLString($dc);
+  }
+  catch (Exception $e) {
+    drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
+  }
   $page_number = (empty($_GET['page'])) ? 0 : $_GET['page'];
   $page_size = (empty($_GET['pagesize'])) ? variable_get('islandora_basic_collection_page_size', '10') : $_GET['pagesize'];
-  $results = $variables['collection_results']; //islandora_basic_collection_get_objects($islandora_object, $page_number, $page_size); 
+  $results = $variables['collection_results'];
   $total_count = count($results);
+  $variables['islandora_dublin_core'] = isset($dc_object) ? $dc_object : array();
+  $variables['islandora_object_label'] = $islandora_object->label;
+  $display = (empty($_GET['display'])) ? 'list' : $_GET['display'];
+  if ($display == 'grid') {
+    $variables['theme_hook_suggestions'][] = 'islandora_basic_collection_grid__' . str_replace(':', '_', $islandora_object->id);
+  }
+  else {
+    $variables['theme_hook_suggestions'][] = 'islandora_basic_collection__' . str_replace(':', '_', $islandora_object->id);
+  }
+  if (isset($islandora_object['OBJ'])) {
+    $full_size_url = url("islandora/object/{$islandora_object->id}/datastram/OBJ/view");
+    $params = array(
+      'title' => $islandora_object->label,
+      'path' => $full_size_url);
+    $variables['islandora_full_img'] = theme('image', $params);
+  }
+  if (isset($islandora_object['TN'])) {
+    $full_size_url = url("islandora/objects/{$islandora_object->id}/datastream/TN/view");
+    $params = array(
+      'title' => $islandora_object->label,
+      'path' => $full_size_url);
+    $variables['islandora_thumbnail_img'] = theme('image', $params);
+  }
+  if (isset($islandora_object['MEDIUM_SIZE'])) {
+    $full_size_url = url("islandora/object/{$islandora_object->id}/datastream/MEDIUM_SIZE/view");
+    $params = array(
+      'title' => $islandora_object->label,
+      'path' => $full_size_url);
+    $variables['islandora_medium_img'] = theme('params', $params);
+  }
 
-  $associated_objects_mods_array = array(); 
-  $start = $page_size * ($page_number);
-  $end = min($start + $page_size, $total_count);
+  $associated_objects_array = array();
 
-  for ($i = $start; $i < $end; $i++) {
-    $pid = $results[$i]['object']['value'];
+  foreach ($results as $result) {
+    $pid = $result['object']['value'];
     $fc_object = islandora_object_load($pid);
-    if (!isset($fc_object)) {
-      continue; //null object so don't show in collection view;
+    if (!is_object($fc_object)) {
+      // NULL object so don't show in collection view.
+      continue;
     }
-    $associated_objects_mods_array[$pid]['object'] = $fc_object;
-
-    if (isset($fc_object['MODS']))
-    {
-      try {
-        $mods = $fc_object['MODS']->content;
-        $mods_object = simplexml_load_string($mods);
-        $associated_objects_mods_array[$pid]['mods_array'] = isset($mods_object) ? MODS::as_formatted_array($mods_object) : array();
-      } catch (Exception $e) {
-        drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
-      }
+    $associated_objects_array[$pid]['object'] = $fc_object;
+    try {
+      $dc = $fc_object['DC']->content;
+      $dc_object = DublinCore::importFromXMLString($dc);
+      $associated_objects_array[$pid]['dc_array'] = $dc_object->asArray();
+      $dc_title = $associated_objects_array[$pid]['dc_array']['dc:title']['value'];
     }
-      
+    catch (Exception $e) {
+      drupal_set_message(t('Error retrieving object %s %t', array('%s' => $islandora_object->id, '%t' => $e->getMessage())), 'error', FALSE);
+    }
     $object_url = 'islandora/object/' . $pid;
-    $thumbnail_img = '<img src="' . $base_path . $object_url . '/datastream/TN/view"' . '/>';
-    $title = $results[$i]['title']['value'];
-    
-    //If the object is a collection, get description information.
-    $collection_description = false;
-    if (isset($fc_object['DESC-TEXT']))
-    {
-        $collection_description = $fc_object['DESC-TEXT']->content;
-    }
-    //end of obtaining collection description
-    
-    $associated_objects_mods_array[$pid]['pid'] = $pid;
-    $associated_objects_mods_array[$pid]['path'] = $object_url;
-    $associated_objects_mods_array[$pid]['title'] = $title;
-    $associated_objects_mods_array[$pid]['class'] = drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $pid));
+
+    $title = (isset($dc_title))? $dc_title : $result['title']['value'];
+    $associated_objects_array[$pid]['pid'] = $pid;
+    $associated_objects_array[$pid]['path'] = $object_url;
+    $associated_objects_array[$pid]['title'] = $title;
+    $associated_objects_array[$pid]['class'] = drupal_strtolower(preg_replace('/[^A-Za-z0-9]/', '-', $pid));
     if (isset($fc_object['TN'])) {
-      $thumbnail_img = '<img src="' . $base_path . $object_url . '/datastream/TN/view"' . '/>';
+      $thumbnail_img = theme('image', array('path' => "$object_url/datastream/TN/view"));
     }
     else {
       $image_path = drupal_get_path('module', 'islandora');
-      $thumbnail_img = '<img src="' . $base_path . $image_path . '/images/Crystal_Clear_action_filenew.png"/>';
+      $thumbnail_img = theme('image', array('path' => "$image_path/images/folder.png"));
     }
-    $associated_objects_mods_array[$pid]['thumbnail'] = $thumbnail_img;
-    $associated_objects_mods_array[$pid]['title_link'] = l($title, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
-    $associated_objects_mods_array[$pid]['thumb_link'] = l($thumbnail_img, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
-    
-    if($collection_description)
-    {
-      $associated_objects_mods_array[$pid]['collection_description'] = $collection_description;
-    }
+    $associated_objects_array[$pid]['thumbnail'] = $thumbnail_img;
+    $associated_objects_array[$pid]['title_link'] = l($title, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
+    $associated_objects_array[$pid]['thumb_link'] = l($thumbnail_img, $object_url, array('html' => TRUE, 'attributes' => array('title' => $title)));
   }
-  $variables['associated_objects_mods_array'] = $associated_objects_mods_array;
+  $variables['associated_objects_array'] = $associated_objects_array;
 }
 
 // This function makes customizations to the breadcrumb region
