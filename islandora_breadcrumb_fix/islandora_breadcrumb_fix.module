@@ -17,6 +17,23 @@ function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $it
 }
 
 /**
+ * Implements hook_menu_breadcrumb_alter().
+ * 
+ * This removes certain unwanted breadcrumbs. The islandora breadcrumb alter hook
+ * is limited to views and solr results pages, so this should catch the rest.
+ */
+function islandora_breadcrumb_fix_menu_breadcrumb_alter(&$active_trail, $item){
+  foreach ($active_trail as $key => $value){
+    if (strpos($value['link_path'], ':root') !== FALSE) {  ## Member's root level collections
+      unset($active_trail[$key]);
+    }
+    if (strpos($value['link_path'], 'islandora') !== FALSE) {  ## Top level Islandora collection
+      unset($active_trail[$key]);
+    }
+  }
+}
+
+/**
  * Implements hook_menu().
  *
  * Prevent user from getting access to islandora:root
