@@ -189,7 +189,8 @@ The steps of creating a new Islandora site are codified in the `bin/repositesetu
 ## Committing changes to submodules
 From the main reposervice.git repository, it is helpful to have the commit summaries of submodules listed; this command will do it.  One may need to run `reset` in the terminal after this. 
 
-		git diff --cached --no-color --submodule [submodule] | git commit -e --file=-
+	1. cd $SERVICE_HOME
+	1. git diff --cached --no-color --submodule [submodule(s)] | git commit -e --file=-
 
 ## (Other Notes)
 
