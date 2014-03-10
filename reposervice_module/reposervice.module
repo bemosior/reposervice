@@ -41,8 +41,7 @@ function reposervice_menu() {
  * Implements hook_form_FORM_ID_alter().
  * 
  * Override the Islandora simple search form to suppress the 'limit_to_collection'
- * checkbox (make it a hidden element), change the Submit button text, and override
- * form styling.
+ * checkbox (make it a hidden element), and apply common changes.
  * 
  * @param array $form
  *   The Drupal form definition.
@@ -51,13 +50,90 @@ function reposervice_menu() {
  * @param type $form_id
  *   The string representing the name of the form itself.
  */
-function reposervice_form_islandora_solr_simple_search_form_alter(&$form, &$form_state, $form_id) {
-  $form['simple']['islandora_simple_search_query']['#attributes'] = array('class' => array('collection-search-input-text'));
-  $form['simple']['submit']['#attributes'] = array('class' => array('form-submit'));
-  if (array_key_exists('limit_to_collection', $form['simple'])) {
+function reposervice_form_reposervice_solr_simple_collection_search_form_alter(&$form, &$form_state, $form_id) {
+  _reposervice_form_alter($form, $form_state);
+ if (array_key_exists('limit_to_collection', $form['simple'])) {
     unset($form['simple']['islandora_simple_search_query']['#size']); 
     $form['simple']['limit_to_collection']['#type'] = 'hidden';
     $form['simple']['limit_to_collection']['#value'] = $form['simple']['limit_to_collection']['#return_value'];
     $form['simple']['submit']['#value'] = t('Search Collection');
   }
 }
+
+/**
+ * Apply common alterations to simple search form.
+ * @param array $form
+ *   The Drupal form definition.
+ * @param array $form_state
+ *   The Drupal form state.
+ * @param type $form_id
+ *   The string representing the name of the form itself.
+ */
+function reposervice_form_islandora_solr_simple_search_form_alter(&$form, &$form_state, $form_id){
+  _reposervice_form_alter($form, $form_state);
+}
+
+/**
+ * Function to apply common alterations to reposervice forms.
+ *
+ * Includes changing the submit button text and override form styling.
+ */
+function _reposervice_form_alter(&$form, &$form_state) {
+  $form['simple']['islandora_simple_search_query']['#attributes'] = array('class' => array('collection-search-input-text'));
+  $form['simple']['submit']['#attributes'] = array('class' => array('form-submit'));
+ 
+}
+
+
+
+/**
+ * Implements hook_islandora_solr_query_blocks().
+ *
+ *   Adds a block for simple searching within a collection.
+ */
+function reposervice_islandora_solr_query_blocks() {
+  return array(
+    'simple_collection' => array(
+      'name' => t('Islandora simple collection search'),
+      'module' => 'reposervice',
+      'file' => 'reposervice.module',
+      'class' => NULL,
+      'function' => NULL,
+      'form' => 'reposervice_solr_simple_collection_search_form',
+      'cache' => DRUPAL_NO_CACHE,
+    ),     
+  );
+}
+
+/**
+ * Creates form for searching within a collection.
+ */
+function reposervice_solr_simple_collection_search_form($form, &$form_state, $collection = NULL) {
+  module_load_include('inc', 'islandora_solr_search', 'includes/blocks');
+  $form = islandora_solr_simple_search_form($form, $form_state, $collection);
+  if ($collection !== NULL) {
+    $form['simple']['limit_to_collection'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Search only this collection?'),
+      '#return_value' => $collection,
+    );
+  }
+  return $form;
+}
+ 
+function reposervice_solr_simple_collection_search_form_submit(&$form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+  $options = array();
+  $search_string = $form_state['values']['islandora_simple_search_query'];
+  // XXX: Shouldn't this use islandora_solr_replace_string()?
+  $search_string = str_replace('/', '~slsh~', $search_string);
+  if (isset($form_state['values']['limit_to_collection']) && $form_state['values']['limit_to_collection'] !== 0) {
+    $options = array('query' => array('limit_to_collection' => $form_state['values']['limit_to_collection']));
+  }
+
+  $options['type'] = 'dismax';
+
+  drupal_goto('islandora/search/' . $search_string, $options);
+
+}
+

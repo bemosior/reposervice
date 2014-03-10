@@ -17,7 +17,7 @@
 
       <?php
         $object_id=$islandora_object->id;
-        print drupal_render(drupal_get_form('islandora_solr_simple_search_form',$object_id));
+        print drupal_render(drupal_get_form('reposervice_solr_simple_collection_search_form',$object_id));
       ?>
     </div>
   </div>

@@ -24,18 +24,40 @@ class ReposerviceTestCase extends DrupalWebTestCase {
   /**
    * Implements setUp().
    */
-  function setUp() {
-    // Call the parent with an array of modules to enable for the test.
-    parent::setUp(array('reposervice'));
+ function setUp() {
+     $this->setup = TRUE;
+     $this->public_files_directory = variable_get('file_public_path');
+   }
 
-    // TODO: perform additional setup tasks here if required.
+  function tearDown() {
   }
 
   /**
    * Test the module's functionality.
    */
-  function testTodoChangeThisName() {
-    // TODO: write test!
+  function testSearchByCollectionBlockAvailable() {
+    $test_user = $this->drupalCreateUser(
+      array(
+        'administer blocks',
+        'search islandora solr',
+        'view fedora repository objects'
+        )
+      );
+    $test_user->role = "administrator";
+    $this->drupalLogin($test_user);
+    $this->drupalGet('admin/structure/block');
+
+    $message = "Simple search collection block is registered and available";
+    $this->assertPattern('|Islandora simple collection search|', $message);
+
+    $edit['islandora_simple_search_query'] = 'test';
+    $this->drupalPost('islandora/object/islandora:root', $edit, 'Search Collection');
+    $url = $this->getUrl();
+    $is_limited = preg_match('/limit_to_collection=.*/', $url);
+    $message = "The Search Collection form appends the required url parameter";
+    $this->assertTrue($is_limited, $message);
+
+    user_delete($test_user->uid);
   }
 
 }
