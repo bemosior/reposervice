@@ -115,7 +115,6 @@ features[variable][] = islandora_solr_facet_max_limit
 features[variable][] = islandora_solr_facet_min_limit
 features[variable][] = islandora_solr_facet_soft_limit
 features[variable][] = islandora_solr_limit_result_fields
-features[variable][] = islandora_solr_namespace_restriction
 features[variable][] = islandora_solr_num_of_results
 features[variable][] = islandora_solr_object_label_field
 features[variable][] = islandora_solr_primary_display
