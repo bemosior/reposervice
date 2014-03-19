@@ -17,6 +17,9 @@
       <xsl:with-param name="prefix" select="$prefix"/>
       <xsl:with-param name="suffix" select="$suffix"/>
     </xsl:apply-templates>
+
+    <xsl:apply-templates mode="mods_sorts" select="$content/mods:mods" />
+
   </xsl:template>
 
   <!-- Handle dates. -->
@@ -74,4 +77,52 @@
       <xsl:with-param name="suffix" select="$suffix"/>
     </xsl:apply-templates>
   </xsl:template>
+
+    <xsl:template match="mods:mods/mods:name[1]" mode="mods_sorts">
+        <field>
+            <xsl:attribute name="name">creator_sort</xsl:attribute>
+            <xsl:value-of select="mods:namePart" />
+        </field>
+        <field>
+            <xsl:attribute name="name">creator_sort_ms</xsl:attribute>
+            <xsl:value-of select="mods:namePart" />
+        </field>
+
+    </xsl:template>
+
+    <xsl:template match="mods:originInfo" mode="mods_sorts">
+        <xsl:choose>
+            <xsl:when test="mods:dateIssued" >
+                <field>
+                    <xsl:attribute name="name">date_sort</xsl:attribute>
+                    <xsl:value-of select="mods:dateIssued" />
+                </field>
+            </xsl:when>
+            <xsl:when test="mods:dateCreated">
+                <field>
+                    <xsl:attribute name="name">date_sort</xsl:attribute>
+                    <xsl:value-of select="mods:dateCreated" />
+                </field>
+            </xsl:when>
+            <xsl:when test="mods:dateOther">
+                <field>
+                    <xsl:attribute name="name">date_sort</xsl:attribute>
+                    <xsl:value-of select="mods:dateOther" />
+                </field>
+            </xsl:when>
+            <xsl:otherwise>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+
+    <xsl:template match="mods:mods/mods:titleInfo[not(@type)]" mode="mods_sorts">
+        <field>
+            <xsl:attribute name="name">title_sort</xsl:attribute>
+            <xsl:value-of select="mods:title" />
+        </field>
+    </xsl:template>
+
+    <xsl:template match="text()" mode="mods_sorts"/>
 </xsl:stylesheet>
+
