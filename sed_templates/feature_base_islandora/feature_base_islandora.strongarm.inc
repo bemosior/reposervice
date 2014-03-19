@@ -272,7 +272,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_base_sort';
-  $strongarm->value = 'title_sort asc';
+  $strongarm->value = 'score asc';
   $export['islandora_solr_base_sort'] = $strongarm;
 
   $strongarm = new stdClass();
