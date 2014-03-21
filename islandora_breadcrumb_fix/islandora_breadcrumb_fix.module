@@ -5,13 +5,16 @@
  *
  * Removes Islandora top-level breadcrumbs that would send the user astray.
  */
-function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $item) {
-  foreach ($breadcrumbs as $value) {
+function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $item, $object) {
+  foreach ($breadcrumbs as &$value) {
     if (strpos($value, ':root">') !== FALSE) {  ## Member's root level collections
       $breadcrumbs = array_diff($breadcrumbs, array($value));
     }
     if (strpos($value, 'islandora">') !== FALSE) {  ## Top level Islandora collection
       $breadcrumbs = array_diff($breadcrumbs, array($value));
+    }
+    if (strpos($value, 'Home') !== FALSE) {
+       $value = l(t('Repository Home'), '<front>');
     }
   }
 }
@@ -23,11 +26,15 @@ function islandora_breadcrumb_fix_islandora_breadcrumbs_alter(&$breadcrumbs, $it
  * is limited to views and solr results pages, so this should catch the rest.
  */
 function islandora_breadcrumb_fix_menu_breadcrumb_alter(&$active_trail, $item){
+
   foreach ($active_trail as $key => $value){
-    if (strpos($value['link_path'], ':root') !== FALSE) {  ## Member's root level collections
+    if ($value['href'] == '<front>') {
+      $active_trail[$key]['title'] = 'Repository Home';
+    }
+    if (is_object($value) && strpos($value['link_path'], ':root') !== FALSE) {  ## Member's root level collections
       unset($active_trail[$key]);
     }
-    if (strpos($value['link_path'], 'islandora') !== FALSE) {  ## Top level Islandora collection
+    if (is_object($value) && strpos($value['link_path'], 'islandora') !== FALSE) {  ## Top level Islandora collection
       unset($active_trail[$key]);
     }
   }
@@ -40,7 +47,8 @@ function islandora_breadcrumb_fix_menu_breadcrumb_alter(&$active_trail, $item){
  */
 function islandora_breadcrumb_fix_menu() {
 	$items['islandora/object/islandora:root'] = array (
-		'page callback' => 'islandora_breadcrumb_intercept_root',
+    'access callback' => FALSE,
 	);
+
 	return $items;
 }
