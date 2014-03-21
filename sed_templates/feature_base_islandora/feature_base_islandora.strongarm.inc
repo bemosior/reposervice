@@ -349,7 +349,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_primary_display';
-  $strongarm->value = 'grid';
+  $strongarm->value = 'default';
   $export['islandora_solr_primary_display'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -362,11 +362,11 @@ function feature_base_islandora_strongarm() {
       'grid' => '0',
       'table' => '0',
     ),
-    'default' => 'grid',
+    'default' => 'default',
     'enabled' => array(
-      'default' => 'default',
-      'table' => 'table',
       'grid' => 'grid',
+      'table' => 'table',
+      'default' => 'default',
     ),
   );
   $export['islandora_solr_primary_display_table'] = $strongarm;
@@ -397,7 +397,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_secondary_display';
   $strongarm->value = array(
-    'csv' => 0,
+    'csv' => 'csv',
   );
   $export['islandora_solr_secondary_display'] = $strongarm;
 
