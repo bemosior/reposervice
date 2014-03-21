@@ -272,7 +272,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_base_sort';
-  $strongarm->value = 'score desc';
+  $strongarm->value = 'score asc';
   $export['islandora_solr_base_sort'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -328,7 +328,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_limit_result_fields';
-  $strongarm->value = 0;
+  $strongarm->value = 1;
   $export['islandora_solr_limit_result_fields'] = $strongarm;
 
   $strongarm = new stdClass();

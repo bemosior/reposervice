@@ -27,9 +27,8 @@ function feature_base_islandora_menu_default_menu_links() {
     'external' => 0,
     'has_children' => 0,
     'expanded' => 0,
-    'weight' => -48,
-    'customized' => 1,
-    'parent_identifier' => 'navigation_islandora-repository:islandora',
+    'weight' => 0,
+    'customized' => 0,
   );
   // Exported menu link: navigation_manage-ip-embargo-networks:admin/islandora/ip_embargo
   $menu_links['navigation_manage-ip-embargo-networks:admin/islandora/ip_embargo'] = array(
@@ -48,9 +47,8 @@ function feature_base_islandora_menu_default_menu_links() {
     'external' => 0,
     'has_children' => 0,
     'expanded' => 0,
-    'weight' => -49,
+    'weight' => 0,
     'customized' => 1,
-    'parent_identifier' => 'navigation_islandora-repository:islandora',
   );
   // Translatables
   // Included for use with string extractors like potx.
