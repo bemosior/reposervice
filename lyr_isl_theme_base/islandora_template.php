@@ -62,8 +62,10 @@ function lyr_isl_theme_base_preprocess_islandora_pdf(&$variables) {
   drupal_add_css(drupal_get_path('theme', 'islandoratheme') . '/css/pdf.css', array('group' => CSS_THEME, 'type' => 'file'));
   
   // Create full screen view
-  $variables['islandora_view_link'] = str_replace("download", "view", $variables['islandora_download_link']);
-  $variables['islandora_view_link'] = str_replace("Download pdf", "Full Screen View", $variables['islandora_view_link']);
+  if (isset($variables['islandora_view_link'])) {
+    $variables['islandora_view_link'] = str_replace("download", "view", $variables['islandora_download_link']);
+    $variables['islandora_view_link'] = str_replace("Download pdf", "Full Screen View", $variables['islandora_view_link']);
+  }
   
   $islandora_object = $variables['islandora_object'];
   
