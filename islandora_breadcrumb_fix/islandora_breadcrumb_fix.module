@@ -49,6 +49,9 @@ function islandora_breadcrumb_fix_menu() {
 	$items['islandora/object/islandora:root'] = array (
     'access callback' => FALSE,
 	);
+  $items['islandora'] = array (
+    'access callback' => FALSE,
+	);
 
 	return $items;
 }
