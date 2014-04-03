@@ -397,7 +397,7 @@ function feature_base_islandora_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'islandora_solr_secondary_display';
   $strongarm->value = array(
-    'csv' => 'csv',
+    'csv' => 0,
   );
   $export['islandora_solr_secondary_display'] = $strongarm;
 
