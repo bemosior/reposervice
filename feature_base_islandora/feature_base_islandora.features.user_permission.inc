@@ -270,10 +270,13 @@ function feature_base_islandora_user_default_permissions() {
   $permissions['view fedora repository objects'] = array(
     'name' => 'view fedora repository objects',
     'roles' => array(
+      'Collection Supervisor' => 'Collection Supervisor',
       'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Mediated Data Entry' => 'Mediated Data Entry',
+      'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
       'anonymous user' => 'anonymous user',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'islandora',
   );
