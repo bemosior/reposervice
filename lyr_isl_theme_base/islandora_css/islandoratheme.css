@@ -144,6 +144,10 @@ div#top-panels-wrapper .three-3x33 { margin: 0px 20px; height: 48px; }
   vertical-align: top;
 }
 
+#islandora-solr-simple-search-form > div > div.adv-search-link {
+	display: block;
+}
+
 #block-islandora-solr-simple #edit-islandora-simple-search-query { margin-left: 10px; width: auto; } 
 #block-islandora-solr-simple #edit-submit { display: inline; }
 
