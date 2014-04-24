@@ -117,6 +117,8 @@ function feature_base_islandora_user_default_permissions() {
     'name' => 'control islandora ip embargoes',
     'roles' => array(
       'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
@@ -128,7 +130,6 @@ function feature_base_islandora_user_default_permissions() {
     'name' => 'create child collection',
     'roles' => array(
       'Collection Supervisor' => 'Collection Supervisor',
-      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
@@ -178,7 +179,6 @@ function feature_base_islandora_user_default_permissions() {
     'name' => 'manage collection policy',
     'roles' => array(
       'Collection Supervisor' => 'Collection Supervisor',
-      'Data Entry Supervisor' => 'Data Entry Supervisor',
       'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
@@ -202,6 +202,8 @@ function feature_base_islandora_user_default_permissions() {
     'name' => 'manage islandora ip embargoes',
     'roles' => array(
       'Collection Supervisor' => 'Collection Supervisor',
+      'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
@@ -245,6 +247,7 @@ function feature_base_islandora_user_default_permissions() {
     'roles' => array(
       'Collection Supervisor' => 'Collection Supervisor',
       'Data Entry Supervisor' => 'Data Entry Supervisor',
+      'Mediated Data Entry' => 'Mediated Data Entry',
       'Repository Administrator' => 'Repository Administrator',
       'administrator' => 'administrator',
     ),
