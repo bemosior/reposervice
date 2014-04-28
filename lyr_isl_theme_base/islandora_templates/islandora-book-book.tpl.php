@@ -5,8 +5,8 @@
  */
 ?>
 
-<?php if (isset($islandora_object_label)): ?>
-  <?php drupal_set_title("$islandora_object_label"); ?>
+<?php if (isset($dc_array["dc:title"])): ?>
+  <?php drupal_set_title($dc_array['dc:title']['value']); ?>
 <?php endif; ?>
 
 <div id="tabs" class="islandora-book-tabs">
